@@ -1,5 +1,6 @@
 import { Outlet, Link } from 'react-router-dom'
 import ThemeSwitcher from './ThemeSwitcher'
+import { LAYOUT } from '../shared/labels'
 
 function Layout() {
   return (
@@ -9,7 +10,7 @@ function Layout() {
         style={{ backgroundColor: 'var(--nav-bg)', borderBottom: '1px solid var(--border)', color: 'var(--nav-text)' }}
       >
         <Link to="/" className="text-lg md:text-xl font-bold no-underline" style={{ color: 'var(--nav-text)' }}>
-          💰 Gestione Soldi
+          {LAYOUT.appName}
         </Link>
         <div className="flex-1" />
         <ThemeSwitcher />
@@ -22,7 +23,7 @@ function Layout() {
       </main>
 
       <footer className="px-4 py-3 md:px-8 text-center text-sm transition-colors duration-300" style={{ borderTop: '1px solid var(--border)', color: 'var(--text-muted)' }}>
-        Gestione Soldi &copy; {new Date().getFullYear()}
+        {LAYOUT.footerText} &copy; {new Date().getFullYear()}
       </footer>
     </div>
   )

@@ -1,9 +1,10 @@
 import { useTheme } from '../shared/ThemeContext'
 import type { Theme } from '../shared/ThemeContext'
+import { TEMI } from '../shared/labels'
 
 const THEMES: { id: Theme; label: string; icon: string; color: string; ring: string }[] = [
-  { id: 'giungla', label: 'Giungla', icon: '🌴', color: '#228B22', ring: '#50C878' },
-  { id: 'spazio',  label: 'Spazio',  icon: '🚀', color: '#0b0d17', ring: '#7c4dff' },
+  { id: 'giungla', label: TEMI.giungla, icon: '🌴', color: '#228B22', ring: '#50C878' },
+  { id: 'spazio',  label: TEMI.spazio,  icon: '🚀', color: '#0b0d17', ring: '#7c4dff' },
 ]
 
 function ThemeSwitcher() {

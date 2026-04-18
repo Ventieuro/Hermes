@@ -16,22 +16,6 @@ export interface AppSettings {
   userName: string
 }
 
-export const CATEGORIES = {
-  entrata: [
-    'Stipendio',
-    'Freelance',
-    'Regalo',
-    'Rimborso',
-    'Altro',
-  ],
-  uscita: [
-    'Affitto',
-    'Bollette',
-    'Spesa',
-    'Trasporti',
-    'Svago',
-    'Salute',
-    'Abbonamenti',
-    'Altro',
-  ],
-} as const
+// Le categorie sono ora in src/shared/labels.ts → CATEGORIE
+import { CATEGORIE } from './labels'
+export const CATEGORIES = CATEGORIE

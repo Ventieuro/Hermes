@@ -3,6 +3,7 @@ import Mascot from '../components/Mascot'
 import AddTransactionForm from '../components/AddTransactionForm'
 import { loadTransactions, getTransactionsInPeriod, deleteTransaction, loadSettings, saveSettings } from '../shared/storage'
 import type { Transaction } from '../shared/types'
+import { DASHBOARD, MASCOTTE } from '../shared/labels'
 
 function getPeriod(payDay: number, offset: number) {
   const today = new Date()
@@ -33,11 +34,11 @@ function formatDay(iso: string) {
 }
 
 function getMascotMessage(saldo: number, count: number): { mood: 'happy' | 'sad' | 'neutral' | 'excited'; message: string } {
-  if (count === 0) return { mood: 'neutral', message: 'Nessun movimento ancora! Inizia aggiungendo la tua prima entrata o uscita 😊' }
-  if (saldo > 500) return { mood: 'excited', message: 'Wow, stai risparmiando un bel po\'! Continua così! 🚀' }
-  if (saldo > 0) return { mood: 'happy', message: `Bene! Hai messo da parte ${formatEuro(saldo)} questo mese 👍` }
-  if (saldo === 0) return { mood: 'neutral', message: 'Sei in pari questo mese. Proviamo a risparmiare qualcosina?' }
-  return { mood: 'sad', message: `Attenzione, sei in rosso di ${formatEuro(Math.abs(saldo))}... Rivediamo le spese?` }
+  if (count === 0) return { mood: 'neutral', message: MASCOTTE.messaggi.vuoto }
+  if (saldo > 500) return { mood: 'excited', message: MASCOTTE.messaggi.ottimo }
+  if (saldo > 0) return { mood: 'happy', message: MASCOTTE.messaggi.bene(formatEuro(saldo)) }
+  if (saldo === 0) return { mood: 'neutral', message: MASCOTTE.messaggi.pari }
+  return { mood: 'sad', message: MASCOTTE.messaggi.rosso(formatEuro(Math.abs(saldo))) }
 }
 
 function Dashboard() {
@@ -69,7 +70,7 @@ function Dashboard() {
   }
 
   function handleDelete(tx: Transaction) {
-    if (confirm(`Vuoi eliminare "${tx.description}"?`)) {
+    if (confirm(DASHBOARD.eliminaConferma(tx.description))) {
       deleteTransaction(tx.id)
       refresh()
     }
@@ -91,7 +92,7 @@ function Dashboard() {
             onClick={() => setMonthOffset(monthOffset - 1)}
             className="w-10 h-10 flex items-center justify-center rounded-xl active:scale-95 transition"
             style={{ backgroundColor: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-secondary)' }}
-            aria-label="Periodo precedente"
+            aria-label={DASHBOARD.periodoPrecedente}
           >
             ◀
           </button>
@@ -109,7 +110,7 @@ function Dashboard() {
             onClick={() => setMonthOffset(monthOffset + 1)}
             className="w-10 h-10 flex items-center justify-center rounded-xl active:scale-95 transition"
             style={{ backgroundColor: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-secondary)' }}
-            aria-label="Periodo successivo"
+            aria-label={DASHBOARD.periodoSuccessivo}
           >
             ▶
           </button>
@@ -117,7 +118,7 @@ function Dashboard() {
 
         <div className="flex items-center justify-between mt-3 pt-3" style={{ borderTop: '1px solid var(--border)' }}>
           <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
-            <label htmlFor="payday">📅 Stipendio il:</label>
+            <label htmlFor="payday">{DASHBOARD.stipendioIl}</label>
             <select
               id="payday"
               value={payDay}
@@ -136,7 +137,7 @@ function Dashboard() {
               className="text-sm font-medium"
               style={{ color: 'var(--accent)' }}
             >
-              📍 Oggi
+              {DASHBOARD.oggi}
             </button>
           )}
         </div>
@@ -145,14 +146,14 @@ function Dashboard() {
       {/* Riepilogo */}
       <div className="grid grid-cols-3 gap-3">
         <div className="bg-green-50 border border-green-200 rounded-2xl p-3 text-center">
-          <p className="text-[10px] font-semibold text-green-600 uppercase tracking-wide">Entrate</p>
+          <p className="text-[10px] font-semibold text-green-600 uppercase tracking-wide">{DASHBOARD.entrate}</p>
           <p className="mt-1 text-base md:text-xl font-bold text-green-700">
             {formatEuro(entrate)}
           </p>
         </div>
 
         <div className="bg-red-50 border border-red-200 rounded-2xl p-3 text-center">
-          <p className="text-[10px] font-semibold text-red-600 uppercase tracking-wide">Uscite</p>
+          <p className="text-[10px] font-semibold text-red-600 uppercase tracking-wide">{DASHBOARD.uscite}</p>
           <p className="mt-1 text-base md:text-xl font-bold text-red-700">
             {formatEuro(uscite)}
           </p>
@@ -165,7 +166,7 @@ function Dashboard() {
         }`}>
           <p className={`text-[10px] font-semibold uppercase tracking-wide ${
             saldo >= 0 ? 'text-indigo-600' : 'text-orange-600'
-          }`}>Risparmi</p>
+          }`}>{DASHBOARD.risparmi}</p>
           <p className={`mt-1 text-base md:text-xl font-bold ${
             saldo >= 0 ? 'text-indigo-700' : 'text-orange-700'
           }`}>
@@ -177,15 +178,15 @@ function Dashboard() {
       {/* Lista movimenti */}
       <div>
         <h2 className="text-sm font-semibold uppercase tracking-wide mb-3" style={{ color: 'var(--text-muted)' }}>
-          Movimenti
+          {DASHBOARD.movimenti}
         </h2>
 
         {sortedTx.length === 0 ? (
           <div className="rounded-2xl p-6 text-center" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-            <p className="text-4xl mb-2">📭</p>
+            <p className="text-4xl mb-2">{DASHBOARD.nessunoMovimentoEmoji}</p>
             <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-              Nessun movimento in questo periodo.<br />
-              Premi il bottone qui sotto per aggiungerne uno!
+              {DASHBOARD.nessunoMovimento}<br />
+              {DASHBOARD.nessunoMovimentoSuggerimento}
             </p>
           </div>
         ) : (
@@ -216,7 +217,7 @@ function Dashboard() {
                 <button
                   onClick={() => handleDelete(tx)}
                   className="w-7 h-7 flex items-center justify-center rounded-full text-gray-300 hover:text-red-500 hover:bg-red-50 transition text-xs"
-                  aria-label="Elimina"
+                  aria-label={DASHBOARD.eliminaLabel}
                 >
                   🗑
                 </button>
@@ -231,7 +232,7 @@ function Dashboard() {
         onClick={() => setShowForm(true)}
         className="fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-lg active:scale-95 transition flex items-center justify-center text-2xl z-40"
         style={{ backgroundColor: 'var(--fab-bg)', color: 'var(--fab-text)' }}
-        aria-label="Aggiungi movimento"
+        aria-label={DASHBOARD.aggiungiMovimento}
       >
         +
       </button>

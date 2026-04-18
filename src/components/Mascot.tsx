@@ -1,3 +1,5 @@
+import { MASCOTTE as MASCOTTE_LABELS } from '../shared/labels'
+
 interface MascotProps {
   mood: 'happy' | 'sad' | 'neutral' | 'excited'
   message: string
@@ -20,7 +22,7 @@ const SIZES: Record<NonNullable<MascotProps['size']>, string> = {
 function Mascot({ mood, message, size = 'md' }: MascotProps) {
   return (
     <div className="flex items-center gap-3 py-2">
-      <span className={SIZES[size]} role="img" aria-label="mascotte">
+      <span className={SIZES[size]} role="img" aria-label={MASCOTTE_LABELS.ariaLabel}>
         {EMOJIS[mood]}
       </span>
       <div className="bg-amber-50 border border-amber-200 rounded-2xl rounded-bl-none px-4 py-2 text-sm text-amber-900 max-w-xs">

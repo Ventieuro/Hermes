@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { CATEGORIES } from '../shared/types'
 import type { TransactionType, Transaction } from '../shared/types'
 import { generateId, addTransaction } from '../shared/storage'
 import Mascot from './Mascot'
+import { FORM, CATEGORIE } from '../shared/labels'
 
 interface AddTransactionProps {
   onClose: () => void
@@ -21,7 +21,7 @@ function AddTransactionForm({ onClose, onSaved, defaultDate }: AddTransactionPro
   const [recurring, setRecurring] = useState(false)
   const [recurringMonths, setRecurringMonths] = useState(1)
 
-  const categories = CATEGORIES[type]
+  const categories = CATEGORIE[type]
   const isValid = description.trim() && Number(amount) > 0 && category
 
   function handleSubmit(e: React.FormEvent) {
@@ -65,7 +65,7 @@ function AddTransactionForm({ onClose, onSaved, defaultDate }: AddTransactionPro
         {/* Header */}
         <div className="flex items-center justify-between p-4" style={{ borderBottom: '1px solid var(--border)' }}>
           <h2 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
-            {type === 'entrata' ? '💚 Nuova entrata' : '🔴 Nuova uscita'}
+            {type === 'entrata' ? FORM.titoloEntrata : FORM.titoloUscita}
           </h2>
           <button
             onClick={onClose}
@@ -90,7 +90,7 @@ function AddTransactionForm({ onClose, onSaved, defaultDate }: AddTransactionPro
               }`}
               style={type !== 'entrata' ? { backgroundColor: 'var(--bg-secondary)', color: 'var(--text-muted)' } : undefined}
             >
-              ➕ Entrata
+              {FORM.toggleEntrata}
             </button>
             <button
               type="button"
@@ -102,34 +102,34 @@ function AddTransactionForm({ onClose, onSaved, defaultDate }: AddTransactionPro
               }`}
               style={type !== 'uscita' ? { backgroundColor: 'var(--bg-secondary)', color: 'var(--text-muted)' } : undefined}
             >
-              ➖ Uscita
+              {FORM.toggleUscita}
             </button>
           </div>
 
           {/* Importo */}
           <div>
-            <label className="block text-xs mb-1" style={{ color: 'var(--text-muted)' }}>Quanto?</label>
+            <label className="block text-xs mb-1" style={{ color: 'var(--text-muted)' }}>{FORM.labelQuanto}</label>
             <div className="relative">
               <input
                 type="number"
                 step="0.01"
                 min="0.01"
-                placeholder="0,00"
+                placeholder={FORM.placeholderImporto}
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 className="w-full rounded-xl px-4 py-3 text-2xl font-bold text-center focus:outline-none focus:ring-2"
                 style={{ backgroundColor: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)', '--tw-ring-color': 'var(--accent)' } as React.CSSProperties}
               />
-              <span className="absolute right-4 top-1/2 -translate-y-1/2 font-bold" style={{ color: 'var(--text-muted)' }}>€</span>
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 font-bold" style={{ color: 'var(--text-muted)' }}>{FORM.simboloValuta}</span>
             </div>
           </div>
 
           {/* Descrizione */}
           <div>
-            <label className="block text-xs mb-1" style={{ color: 'var(--text-muted)' }}>Per cosa?</label>
+            <label className="block text-xs mb-1" style={{ color: 'var(--text-muted)' }}>{FORM.labelPerCosa}</label>
             <input
               type="text"
-              placeholder="es. Spesa al supermercato"
+              placeholder={FORM.placeholderDescrizione}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="w-full rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2"
@@ -139,7 +139,7 @@ function AddTransactionForm({ onClose, onSaved, defaultDate }: AddTransactionPro
 
           {/* Categoria */}
           <div>
-            <label className="block text-xs mb-1" style={{ color: 'var(--text-muted)' }}>Categoria</label>
+            <label className="block text-xs mb-1" style={{ color: 'var(--text-muted)' }}>{FORM.labelCategoria}</label>
             <div className="flex flex-wrap gap-2">
               {categories.map((cat) => (
                 <button
@@ -163,7 +163,7 @@ function AddTransactionForm({ onClose, onSaved, defaultDate }: AddTransactionPro
 
           {/* Data */}
           <div>
-            <label className="block text-xs mb-1" style={{ color: 'var(--text-muted)' }}>Quando?</label>
+            <label className="block text-xs mb-1" style={{ color: 'var(--text-muted)' }}>{FORM.labelQuando}</label>
             <input
               type="date"
               value={date}
@@ -183,13 +183,13 @@ function AddTransactionForm({ onClose, onSaved, defaultDate }: AddTransactionPro
                 className="w-5 h-5 rounded accent-amber-500"
               />
                 <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
-                Si ripete ogni mese? 🔄
+                {FORM.labelRicorrente}
               </span>
             </label>
 
             {recurring && (
               <div className="mt-3 flex items-center gap-2">
-                <Mascot mood="neutral" message="Per quanti mesi vuoi che si ripeta?" size="sm" />
+                <Mascot mood="neutral" message={FORM.messaggioRicorrente} size="sm" />
               </div>
             )}
 
@@ -204,7 +204,7 @@ function AddTransactionForm({ onClose, onSaved, defaultDate }: AddTransactionPro
                   className="w-20 rounded-lg px-3 py-2 text-sm text-center focus:outline-none focus:ring-2"
                   style={{ backgroundColor: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}
                 />
-                <span className="text-sm" style={{ color: 'var(--text-muted)' }}>mesi</span>
+                <span className="text-sm" style={{ color: 'var(--text-muted)' }}>{FORM.unitaMesi}</span>
               </div>
             )}
           </div>
@@ -222,7 +222,7 @@ function AddTransactionForm({ onClose, onSaved, defaultDate }: AddTransactionPro
             }`}
             style={!isValid ? { backgroundColor: 'var(--text-muted)' } : undefined}
           >
-            {type === 'entrata' ? '✅ Aggiungi entrata' : '✅ Aggiungi uscita'}
+            {type === 'entrata' ? FORM.submitEntrata : FORM.submitUscita}
           </button>
         </form>
       </div>

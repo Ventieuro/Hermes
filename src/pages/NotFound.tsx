@@ -1,12 +1,13 @@
 import { Link } from 'react-router-dom'
+import { NOT_FOUND } from '../shared/labels'
 
 function NotFound() {
   return (
     <div>
       <h1 className="text-2xl md:text-3xl font-bold">404</h1>
-      <p className="mt-2 text-gray-500">Pagina non trovata.</p>
-      <Link to="/" className="mt-4 inline-block text-indigo-600 hover:text-indigo-800 font-medium">
-        Torna alla Home
+      <p className="mt-2" style={{ color: 'var(--text-muted)' }}>{NOT_FOUND.messaggio}</p>
+      <Link to="/" className="mt-4 inline-block font-medium" style={{ color: 'var(--accent)' }}>
+        {NOT_FOUND.tornaHome}
       </Link>
     </div>
   )

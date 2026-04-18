@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { HOME } from '../shared/labels'
 
 function Home() {
   return (
@@ -6,21 +7,22 @@ function Home() {
       <div className="w-40 h-40 md:w-52 md:h-52 mb-6">
         <img
           src="/mascot.svg"
-          alt="Scimmia mascotte con denari"
+          alt={HOME.altMascotte}
           className="w-full h-full object-contain drop-shadow-lg"
         />
       </div>
-      <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
-        Gestione Soldi
+      <h1 className="text-3xl md:text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>
+        {HOME.titolo}
       </h1>
-      <p className="mt-3 text-lg text-gray-500">
-        Tieni sotto controllo entrate, uscite e risparmi
+      <p className="mt-3 text-lg" style={{ color: 'var(--text-secondary)' }}>
+        {HOME.sottotitolo}
       </p>
       <Link
-        to="/dashboard"
-        className="mt-6 px-6 py-3 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition-colors"
+        to="/"
+        className="mt-6 px-6 py-3 rounded-xl font-semibold text-white transition-colors"
+        style={{ backgroundColor: 'var(--accent)' }}
       >
-        Vai alla Dashboard
+        {HOME.vaiDashboard}
       </Link>
     </div>
   )
