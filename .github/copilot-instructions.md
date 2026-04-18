@@ -83,21 +83,22 @@ Il tema attivo si gestisce con `ThemeContext.tsx` (`useTheme()` hook).
 ## Sistema i18n (labels.ts)
 
 Tutte le stringhe visibili all'utente stanno in `src/shared/labels.ts`.
-Le lingue supportate sono IT (default) e EN.
+Le lingue supportate sono IT (default), EN e ES.
 
 **Per aggiungere una nuova label:**
 ```ts
 // Testo semplice → una riga
-nomeLabel: t('Testo italiano', 'English text'),
+nomeLabel: t('Testo italiano', 'English text', 'Texto en español'),
 
 // Funzione con parametri
 saluto: tf(
   (nome: string) => `Ciao ${nome}!`,
   (nome: string) => `Hello ${nome}!`,
+  (nome: string) => `¡Hola ${nome}!`,
 ),
 
 // Array di stringhe
-opzioni: ta(['Uno', 'Due'], ['One', 'Two']),
+opzioni: ta(['Uno', 'Due'], ['One', 'Two'], ['Uno', 'Dos']),
 ```
 
 **Come usare le label nei componenti:**
@@ -150,7 +151,7 @@ Tutte le funzioni sono in `src/shared/storage.ts`.
 | `gestione-soldi-transactions` | `Transaction[]` |
 | `gestione-soldi-settings` | `AppSettings` |
 | `gestione-soldi-theme` | `'giungla' \| 'spazio'` |
-| `gestione-soldi-lang` | `'it' \| 'en'` |
+| `gestione-soldi-lang` | `'it' \| 'en' \| 'es'` |
 
 API: `loadTransactions()`, `addTransaction()`, `deleteTransaction()`, `getTransactionsInPeriod()`, `loadSettings()`, `saveSettings()`, `generateId()`
 

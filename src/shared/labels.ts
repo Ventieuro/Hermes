@@ -1,35 +1,36 @@
 /**
  * Sistema i18n dell'app.
  *
- * ╔══════════════════════════════════════════════════════════╗
- * ║  AGGIUNGERE UNA NUOVA LABEL:                           ║
- * ║                                                         ║
- * ║  1. Trova la sezione giusta (layout, dashboard, ecc.)   ║
- * ║  2. Aggiungi UNA riga:                                  ║
- * ║                                                         ║
- * ║     nomeLabel:  t('Testo italiano', 'English text'),    ║
- * ║                                                         ║
- * ║  Per funzioni con parametri:                            ║
- * ║     saluto: tf(                                         ║
- * ║       (nome: string) => `Ciao ${nome}!`,               ║
- * ║       (nome: string) => `Hello ${nome}!`,              ║
- * ║     ),                                                  ║
- * ║                                                         ║
- * ║  Per array:                                             ║
- * ║     frutti: ta(['Mela', 'Pera'], ['Apple', 'Pear']),   ║
- * ║                                                         ║
- * ║  Fatto! Non serve toccare nient'altro.                  ║
- * ╚══════════════════════════════════════════════════════════╝
+ * ╔══════════════════════════════════════════════════════════════════╗
+ * ║  AGGIUNGERE UNA NUOVA LABEL:                                   ║
+ * ║                                                                 ║
+ * ║  1. Trova la sezione giusta (layout, dashboard, ecc.)           ║
+ * ║  2. Aggiungi UNA riga:                                          ║
+ * ║                                                                 ║
+ * ║     nomeLabel: t('Italiano', 'English', 'Español'),             ║
+ * ║                                                                 ║
+ * ║  Per funzioni con parametri:                                    ║
+ * ║     saluto: tf(                                                 ║
+ * ║       (nome: string) => `Ciao ${nome}!`,                       ║
+ * ║       (nome: string) => `Hello ${nome}!`,                      ║
+ * ║       (nome: string) => `¡Hola ${nome}!`,                      ║
+ * ║     ),                                                          ║
+ * ║                                                                 ║
+ * ║  Per array:                                                     ║
+ * ║     frutti: ta(['Mela','Pera'], ['Apple','Pear'], ['Manzana','Pera']), ║
+ * ║                                                                 ║
+ * ║  Fatto! Non serve toccare nient'altro.                          ║
+ * ╚══════════════════════════════════════════════════════════════════╝
  */
 
 // ─── Lingue disponibili ──────────────────────────────────
-export type Locale = 'it' | 'en'
+export type Locale = 'it' | 'en' | 'es'
 
-// ─── Helper: scrivi it + en sulla stessa riga ────────────
+// ─── Helper: scrivi it + en + es sulla stessa riga ───────
 type I18n<V> = Record<Locale, V>
-function t(it: string, en: string): I18n<string> { return { it, en } }
-function tf<A extends unknown[]>(it: (...a: A) => string, en: (...a: A) => string): I18n<(...a: A) => string> { return { it, en } }
-function ta(it: readonly string[], en: readonly string[]): I18n<readonly string[]> { return { it, en } }
+function t(it: string, en: string, es: string): I18n<string> { return { it, en, es } }
+function tf<A extends unknown[]>(it: (...a: A) => string, en: (...a: A) => string, es: (...a: A) => string): I18n<(...a: A) => string> { return { it, en, es } }
+function ta(it: readonly string[], en: readonly string[], es: readonly string[]): I18n<readonly string[]> { return { it, en, es } }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 //                    TUTTE LE LABEL
@@ -39,76 +40,82 @@ const STRINGS = {
 
   // ── Layout ─────────────────────────────────────────────
   layout: {
-    appName:    t('💰 Gestione Soldi',  '💰 Money Manager'),
-    footerText: t('Gestione Soldi',     'Money Manager'),
+    appName:    t('💰 Gestione Soldi',  '💰 Money Manager',     '💰 Gestión de Dinero'),
+    footerText: t('Gestione Soldi',     'Money Manager',        'Gestión de Dinero'),
   },
 
   // ── Temi ───────────────────────────────────────────────
   temi: {
-    giungla: t('Giungla', 'Jungle'),
-    spazio:  t('Spazio',  'Space'),
+    giungla: t('Giungla', 'Jungle', 'Jungla'),
+    spazio:  t('Spazio',  'Space',  'Espacio'),
   },
 
   // ── Dashboard ──────────────────────────────────────────
   dashboard: {
-    periodoPrecedente:            t('Periodo precedente',                            'Previous period'),
-    periodoSuccessivo:            t('Periodo successivo',                            'Next period'),
-    stipendioIl:                  t('📅 Stipendio il:',                              '📅 Pay day:'),
-    oggi:                         t('📍 Oggi',                                       '📍 Today'),
-    entrate:                      t('Entrate',                                       'Income'),
-    uscite:                       t('Uscite',                                        'Expenses'),
-    risparmi:                     t('Risparmi',                                      'Savings'),
-    movimenti:                    t('Movimenti',                                     'Transactions'),
-    nessunoMovimentoEmoji:        t('📭',                                            '📭'),
-    nessunoMovimento:             t('Nessun movimento in questo periodo.',            'No transactions in this period.'),
-    nessunoMovimentoSuggerimento: t('Premi il bottone qui sotto per aggiungerne uno!','Tap the button below to add one!'),
-    eliminaLabel:                 t('Elimina',                                       'Delete'),
+    periodoPrecedente:            t('Periodo precedente',                             'Previous period',                        'Período anterior'),
+    periodoSuccessivo:            t('Periodo successivo',                              'Next period',                            'Período siguiente'),
+    stipendioIl:                  t('📅 Stipendio il:',                                '📅 Pay day:',                             '📅 Día de pago:'),
+    oggi:                         t('📍 Oggi',                                         '📍 Today',                                '📍 Hoy'),
+    entrate:                      t('Entrate',                                         'Income',                                 'Ingresos'),
+    uscite:                       t('Uscite',                                          'Expenses',                               'Gastos'),
+    risparmi:                     t('Risparmi',                                        'Savings',                                'Ahorros'),
+    movimenti:                    t('Movimenti',                                       'Transactions',                           'Movimientos'),
+    nessunoMovimentoEmoji:        t('📭',                                              '📭',                                      '📭'),
+    nessunoMovimento:             t('Nessun movimento in questo periodo.',              'No transactions in this period.',         'No hay movimientos en este período.'),
+    nessunoMovimentoSuggerimento: t('Premi il bottone qui sotto per aggiungerne uno!', 'Tap the button below to add one!',       '¡Pulsa el botón de abajo para añadir uno!'),
+    eliminaLabel:                 t('Elimina',                                         'Delete',                                 'Eliminar'),
     eliminaConferma: tf(
       (desc: string) => `Vuoi eliminare "${desc}"?`,
       (desc: string) => `Delete "${desc}"?`,
+      (desc: string) => `¿Eliminar "${desc}"?`,
     ),
-    aggiungiMovimento:            t('Aggiungi movimento',                            'Add transaction'),
+    aggiungiMovimento:            t('Aggiungi movimento',                              'Add transaction',                        'Añadir movimiento'),
   },
 
   // ── Mascotte ───────────────────────────────────────────
   mascotte: {
-    ariaLabel: t('mascotte', 'mascot'),
+    ariaLabel: t('mascotte', 'mascot', 'mascota'),
     messaggi: {
       vuoto:  t('Nessun movimento ancora! Inizia aggiungendo la tua prima entrata o uscita 😊',
-                'No transactions yet! Start by adding your first income or expense 😊'),
+                'No transactions yet! Start by adding your first income or expense 😊',
+                '¡Aún no hay movimientos! Empieza añadiendo tu primer ingreso o gasto 😊'),
       ottimo: t('Wow, stai risparmiando un bel po\'! Continua così! 🚀',
-                'Wow, you\'re saving a lot! Keep it up! 🚀'),
+                'Wow, you\'re saving a lot! Keep it up! 🚀',
+                '¡Vaya, estás ahorrando mucho! ¡Sigue así! 🚀'),
       bene: tf(
         (saldo: string) => `Bene! Hai messo da parte ${saldo} questo mese 👍`,
         (saldo: string) => `Nice! You saved ${saldo} this month 👍`,
+        (saldo: string) => `¡Bien! Ahorraste ${saldo} este mes 👍`,
       ),
       pari:   t('Sei in pari questo mese. Proviamo a risparmiare qualcosina?',
-                'You broke even this month. Shall we try to save a little?'),
+                'You broke even this month. Shall we try to save a little?',
+                'Este mes quedaste en cero. ¿Intentamos ahorrar un poco?'),
       rosso: tf(
         (importo: string) => `Attenzione, sei in rosso di ${importo}... Rivediamo le spese?`,
         (importo: string) => `Watch out, you're ${importo} in the red... Let's review expenses?`,
+        (importo: string) => `Cuidado, estás en rojo por ${importo}... ¿Revisamos los gastos?`,
       ),
     },
   },
 
   // ── Form Transazione ───────────────────────────────────
   form: {
-    titoloEntrata:          t('💚 Nuova entrata',                  '💚 New income'),
-    titoloUscita:           t('🔴 Nuova uscita',                   '🔴 New expense'),
-    toggleEntrata:          t('➕ Entrata',                         '➕ Income'),
-    toggleUscita:           t('➖ Uscita',                          '➖ Expense'),
-    labelQuanto:            t('Quanto?',                            'How much?'),
-    placeholderImporto:     t('0,00',                               '0.00'),
-    simboloValuta:          t('€',                                  '€'),
-    labelPerCosa:           t('Per cosa?',                          'What for?'),
-    placeholderDescrizione: t('es. Spesa al supermercato',          'e.g. Grocery shopping'),
-    labelCategoria:         t('Categoria',                          'Category'),
-    labelQuando:            t('Quando?',                            'When?'),
-    labelRicorrente:        t('Si ripete ogni mese? 🔄',            'Repeats every month? 🔄'),
-    messaggioRicorrente:    t('Per quanti mesi vuoi che si ripeta?', 'For how many months?'),
-    unitaMesi:              t('mesi',                               'months'),
-    submitEntrata:          t('✅ Aggiungi entrata',                 '✅ Add income'),
-    submitUscita:           t('✅ Aggiungi uscita',                  '✅ Add expense'),
+    titoloEntrata:          t('💚 Nuova entrata',                   '💚 New income',                  '💚 Nuevo ingreso'),
+    titoloUscita:           t('🔴 Nuova uscita',                    '🔴 New expense',                 '🔴 Nuevo gasto'),
+    toggleEntrata:          t('➕ Entrata',                          '➕ Income',                       '➕ Ingreso'),
+    toggleUscita:           t('➖ Uscita',                           '➖ Expense',                      '➖ Gasto'),
+    labelQuanto:            t('Quanto?',                             'How much?',                      '¿Cuánto?'),
+    placeholderImporto:     t('0,00',                                '0.00',                           '0,00'),
+    simboloValuta:          t('€',                                   '€',                              '€'),
+    labelPerCosa:           t('Per cosa?',                           'What for?',                      '¿Para qué?'),
+    placeholderDescrizione: t('es. Spesa al supermercato',           'e.g. Grocery shopping',          'ej. Compra en el supermercado'),
+    labelCategoria:         t('Categoria',                           'Category',                       'Categoría'),
+    labelQuando:            t('Quando?',                             'When?',                          '¿Cuándo?'),
+    labelRicorrente:        t('Si ripete ogni mese? 🔄',             'Repeats every month? 🔄',        '¿Se repite cada mes? 🔄'),
+    messaggioRicorrente:    t('Per quanti mesi vuoi che si ripeta?', 'For how many months?',           '¿Durante cuántos meses?'),
+    unitaMesi:              t('mesi',                                'months',                         'meses'),
+    submitEntrata:          t('✅ Aggiungi entrata',                  '✅ Add income',                   '✅ Añadir ingreso'),
+    submitUscita:           t('✅ Aggiungi uscita',                   '✅ Add expense',                  '✅ Añadir gasto'),
   },
 
   // ── Categorie ──────────────────────────────────────────
@@ -116,25 +123,27 @@ const STRINGS = {
     entrata: ta(
       ['Stipendio', 'Freelance', 'Regalo', 'Rimborso', 'Altro'],
       ['Salary',    'Freelance', 'Gift',   'Refund',   'Other'],
+      ['Salario',   'Freelance', 'Regalo', 'Reembolso','Otro'],
     ),
     uscita: ta(
       ['Affitto', 'Bollette', 'Spesa',     'Trasporti', 'Svago',         'Salute', 'Abbonamenti',   'Altro'],
       ['Rent',    'Bills',    'Groceries', 'Transport', 'Entertainment', 'Health', 'Subscriptions', 'Other'],
+      ['Alquiler','Facturas', 'Compras',   'Transporte','Ocio',          'Salud',  'Suscripciones', 'Otro'],
     ),
   },
 
   // ── Pagina 404 ─────────────────────────────────────────
   notFound: {
-    messaggio: t('Pagina non trovata.', 'Page not found.'),
-    tornaHome: t('Torna alla Home',     'Back to Home'),
+    messaggio: t('Pagina non trovata.', 'Page not found.',  'Página no encontrada.'),
+    tornaHome: t('Torna alla Home',     'Back to Home',     'Volver al inicio'),
   },
 
   // ── Home ───────────────────────────────────────────────
   home: {
-    altMascotte:  t('Scimmia mascotte con denari',                      'Monkey mascot with coins'),
-    titolo:       t('Gestione Soldi',                                   'Money Manager'),
-    sottotitolo:  t('Tieni sotto controllo entrate, uscite e risparmi', 'Keep track of income, expenses and savings'),
-    vaiDashboard: t('Vai alla Dashboard',                               'Go to Dashboard'),
+    altMascotte:  t('Scimmia mascotte con denari',                      'Monkey mascot with coins',               'Mono mascota con monedas'),
+    titolo:       t('Gestione Soldi',                                   'Money Manager',                          'Gestión de Dinero'),
+    sottotitolo:  t('Tieni sotto controllo entrate, uscite e risparmi', 'Keep track of income, expenses and savings', 'Controla tus ingresos, gastos y ahorros'),
+    vaiDashboard: t('Vai alla Dashboard',                               'Go to Dashboard',                        'Ir al Panel'),
   },
 }
 
@@ -153,7 +162,7 @@ const LANG_KEY = 'gestione-soldi-lang'
 function getStoredLocale(): Locale {
   try {
     const v = localStorage.getItem(LANG_KEY)
-    if (v === 'it' || v === 'en') return v
+    if (v === 'it' || v === 'en' || v === 'es') return v
   } catch { /* SSR / test */ }
   return 'it'
 }
@@ -177,7 +186,7 @@ function resolve(obj: Record<string, any>): Record<string, unknown> {
   const out: Record<string, unknown> = {}
   for (const k in obj) {
     const v = obj[k]
-    if (v && typeof v === 'object' && 'it' in v && 'en' in v) {
+    if (v && typeof v === 'object' && 'it' in v && 'en' in v && 'es' in v) {
       out[k] = v[currentLocale]
     } else if (v && typeof v === 'object' && !Array.isArray(v)) {
       out[k] = resolve(v)
@@ -196,7 +205,7 @@ function localize(obj: Record<string, any>): any {
       if (typeof prop === 'symbol') return undefined
       const v = obj[prop]
       if (!v) return v
-      if (typeof v === 'object' && 'it' in v && 'en' in v) return v[currentLocale]
+      if (typeof v === 'object' && 'it' in v && 'en' in v && 'es' in v) return v[currentLocale]
       if (typeof v === 'object' && !Array.isArray(v)) return localize(v)
       return v
     },
