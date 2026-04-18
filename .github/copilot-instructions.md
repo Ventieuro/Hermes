@@ -1,4 +1,4 @@
-# Gestione Soldi — Linee Guida Progetto
+# AstroCoin — Linee Guida Progetto
 
 ## Stack Tecnologico
 
@@ -148,10 +148,10 @@ Tutte le funzioni sono in `src/shared/storage.ts`.
 
 | Chiave | Contenuto |
 |--------|-----------|
-| `gestione-soldi-transactions` | `Transaction[]` |
-| `gestione-soldi-settings` | `AppSettings` |
-| `gestione-soldi-theme` | `'giungla' \| 'spazio'` |
-| `gestione-soldi-lang` | `'it' \| 'en' \| 'es'` |
+| `astrocoin-transactions` | `Transaction[]` |
+| `astrocoin-settings` | `AppSettings` |
+| `astrocoin-theme` | `'giungla' \| 'spazio'` |
+| `astrocoin-lang` | `'it' \| 'en' \| 'es'` |
 
 API: `loadTransactions()`, `addTransaction()`, `deleteTransaction()`, `getTransactionsInPeriod()`, `loadSettings()`, `saveSettings()`, `generateId()`
 

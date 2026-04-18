@@ -40,8 +40,8 @@ const STRINGS = {
 
   // ── Layout ─────────────────────────────────────────────
   layout: {
-    appName:    t('💰 Gestione Soldi',  '💰 Money Manager',     '💰 Gestión de Dinero'),
-    footerText: t('Gestione Soldi',     'Money Manager',        'Gestión de Dinero'),
+    appName:    t('🪙 AstroCoin',  '🪙 AstroCoin',     '🪙 AstroCoin'),
+    footerText: t('AstroCoin',     'AstroCoin',        'AstroCoin'),
   },
 
   // ── Temi ───────────────────────────────────────────────
@@ -144,7 +144,7 @@ const STRINGS = {
   // ── Home ───────────────────────────────────────────────
   home: {
     altMascotte:  t('Scimmia mascotte con denari',                      'Monkey mascot with coins',               'Mono mascota con monedas'),
-    titolo:       t('Gestione Soldi',                                   'Money Manager',                          'Gestión de Dinero'),
+    titolo:       t('AstroCoin',                                         'AstroCoin',                              'AstroCoin'),
     sottotitolo:  t('Tieni sotto controllo entrate, uscite e risparmi', 'Keep track of income, expenses and savings', 'Controla tus ingresos, gastos y ahorros'),
     vaiDashboard: t('Vai alla Dashboard',                               'Go to Dashboard',                        'Ir al Panel'),
   },
@@ -160,7 +160,7 @@ type Resolve<S> = { [K in keyof S]: S[K] extends I18n<infer V> ? V : Resolve<S[K
 export type Labels = Resolve<typeof STRINGS>
 
 // ─── Lingua attiva ───────────────────────────────────────
-const LANG_KEY = 'gestione-soldi-lang'
+const LANG_KEY = 'astrocoin-lang'
 
 function getStoredLocale(): Locale {
   try {

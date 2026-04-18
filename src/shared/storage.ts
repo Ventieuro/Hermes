@@ -1,7 +1,7 @@
 import type { Transaction, AppSettings } from './types'
 
-const STORAGE_KEY = 'gestione-soldi-transactions'
-const SETTINGS_KEY = 'gestione-soldi-settings'
+const STORAGE_KEY = 'astrocoin-transactions'
+const SETTINGS_KEY = 'astrocoin-settings'
 
 export function loadTransactions(): Transaction[] {
   try {
