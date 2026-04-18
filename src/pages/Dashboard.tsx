@@ -3,6 +3,7 @@ import Mascot from '../components/Mascot'
 import AddTransactionForm from '../components/AddTransactionForm'
 import { loadTransactions, getTransactionsInPeriod, deleteTransaction, loadSettings, saveSettings } from '../shared/storage'
 import type { Transaction } from '../shared/types'
+import ExpensePieChart from '../components/ExpensePieChart'
 import { DASHBOARD, MASCOTTE } from '../shared/labels'
 
 function getPeriod(payDay: number, offset: number) {
@@ -82,8 +83,11 @@ function Dashboard() {
   return (
     <div className="space-y-5 pb-24">
 
-      {/* Mascotte saluto */}
-      <Mascot mood={mascot.mood} message={mascot.message} />
+      {/* Mascotte + Grafico insieme */}
+      <div className="space-y-3">
+        <Mascot mood={mascot.mood} message={mascot.message} />
+        <ExpensePieChart transactions={periodTx} />
+      </div>
 
       {/* Navigazione periodo */}
       <div className="rounded-2xl p-4 transition-colors duration-300" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border)' }}>

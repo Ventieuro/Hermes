@@ -70,6 +70,9 @@ const STRINGS = {
       (desc: string) => `¿Eliminar "${desc}"?`,
     ),
     aggiungiMovimento:            t('Aggiungi movimento',                              'Add transaction',                        'Añadir movimiento'),
+    graficoSpese:                 t('Dove vanno i soldi',                              'Where your money goes',                  'A dónde va el dinero'),
+    nessunGrafico:                t('Nessuna uscita in questo periodo.',               'No expenses in this period.',            'No hay gastos en este período.'),
+    risparmiLabel:                t('Risparmi',                                        'Savings',                                'Ahorros'),
   },
 
   // ── Mascotte ───────────────────────────────────────────

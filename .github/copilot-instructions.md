@@ -185,8 +185,10 @@ StrictMode → BrowserRouter → ThemeProvider → App
 ## Comandi
 
 ```bash
-npm run dev       # Server di sviluppo (porta 5173+, accessibile in rete)
-npm run build     # Type-check + build produzione
-npm run lint      # ESLint
-npm run preview   # Preview build produzione
+npm run dev -- --host   # Server di sviluppo (SEMPRE con --host per accesso da telefono)
+npm run build           # Type-check + build produzione
+npm run lint            # ESLint
+npm run preview         # Preview build produzione
 ```
+
+**Importante:** Avviare SEMPRE il dev server con `--host` per renderlo accessibile in rete locale (test da telefono).
