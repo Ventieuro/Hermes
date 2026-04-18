@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import type { ReactNode } from 'react'
 
-export type Theme = 'light' | 'dark' | 'green' | 'blue'
+export type Theme = 'giungla' | 'spazio'
 
 const THEME_KEY = 'gestione-soldi-theme'
 
@@ -11,16 +11,17 @@ interface ThemeContextValue {
 }
 
 const ThemeContext = createContext<ThemeContextValue>({
-  theme: 'light',
+  theme: 'giungla',
   setTheme: () => {},
 })
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
     try {
-      return (localStorage.getItem(THEME_KEY) as Theme) || 'light'
+      const saved = localStorage.getItem(THEME_KEY) as Theme
+      return saved === 'giungla' || saved === 'spazio' ? saved : 'giungla'
     } catch {
-      return 'light'
+      return 'giungla'
     }
   })
 

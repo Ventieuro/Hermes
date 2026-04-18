@@ -1,28 +1,33 @@
 import { useTheme } from '../shared/ThemeContext'
 import type { Theme } from '../shared/ThemeContext'
 
-const THEMES: { id: Theme; label: string; icon: string; preview: string }[] = [
-  { id: 'light', label: 'Chiaro', icon: '☀️', preview: 'bg-white border-gray-300' },
-  { id: 'dark', label: 'Scuro', icon: '🌙', preview: 'bg-gray-800 border-gray-600' },
-  { id: 'green', label: 'Verde', icon: '🌿', preview: 'bg-green-500 border-green-600' },
-  { id: 'blue', label: 'Blu', icon: '🌊', preview: 'bg-blue-500 border-blue-600' },
+const THEMES: { id: Theme; label: string; icon: string; color: string; ring: string }[] = [
+  { id: 'giungla', label: 'Giungla', icon: '🌴', color: '#228B22', ring: '#50C878' },
+  { id: 'spazio',  label: 'Spazio',  icon: '🚀', color: '#0b0d17', ring: '#7c4dff' },
 ]
 
 function ThemeSwitcher() {
   const { theme, setTheme } = useTheme()
 
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center gap-2">
       {THEMES.map((t) => (
         <button
           key={t.id}
           onClick={() => setTheme(t.id)}
           title={t.label}
-          className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-sm transition-all active:scale-90 ${t.preview} ${
-            theme === t.id ? 'ring-2 ring-offset-1 ring-[var(--accent)] scale-110' : 'opacity-70 hover:opacity-100'
+          className={`h-9 px-3 rounded-full flex items-center gap-1.5 text-sm font-medium transition-all active:scale-95 ${
+            theme === t.id ? 'scale-105 shadow-md' : 'opacity-60 hover:opacity-100'
           }`}
+          style={{
+            backgroundColor: t.color,
+            color: '#fff',
+            border: theme === t.id ? `2px solid ${t.ring}` : '2px solid transparent',
+            boxShadow: theme === t.id ? `0 0 8px ${t.ring}50` : undefined,
+          }}
         >
-          {t.icon}
+          <span>{t.icon}</span>
+          <span className="hidden sm:inline">{t.label}</span>
         </button>
       ))}
     </div>

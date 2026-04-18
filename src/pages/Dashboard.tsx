@@ -230,7 +230,7 @@ function Dashboard() {
       <button
         onClick={() => setShowForm(true)}
         className="fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-lg active:scale-95 transition flex items-center justify-center text-2xl z-40"
-        style={{ backgroundColor: 'var(--accent)', color: '#fff' }}
+        style={{ backgroundColor: 'var(--fab-bg)', color: 'var(--fab-text)' }}
         aria-label="Aggiungi movimento"
       >
         +

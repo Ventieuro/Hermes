@@ -1,80 +1,56 @@
 @import "tailwindcss";
 
-/* ========== TEMA: Light (default) ========== */
+/* ========== TEMA: Giungla (default) ========== */
 :root,
-[data-theme="light"] {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f9fafb;
-  --bg-card: #ffffff;
-  --text-primary: #111827;
-  --text-secondary: #6b7280;
-  --text-muted: #9ca3af;
-  --border: #e5e7eb;
-  --accent: #6366f1;
-  --accent-hover: #4f46e5;
-  --accent-light: #eef2ff;
-  --nav-bg: #ffffff;
-  --btn-bg: #f3f4f6;
-  --btn-text: #374151;
-  --input-bg: #ffffff;
-  --input-border: #d1d5db;
+[data-theme="giungla"] {
+  --bg-primary: #f5f0e1;           /* sabbia chiara */
+  --bg-secondary: #D2B48C;         /* beige/sabbia */
+  --bg-card: #faf6ec;              /* pergamena */
+  --text-primary: #1A1A1A;         /* nero profondo */
+  --text-secondary: #5D4037;       /* marrone corteccia */
+  --text-muted: #8B4513;           /* marrone chiaro */
+  --border: #c4a97d;               /* sabbia scura */
+  --accent: #228B22;               /* verde foresta */
+  --accent-hover: #1B4D3E;         /* verde scuro */
+  --accent-light: #d4edda;         /* verde chiaro sfondo */
+  --nav-bg: #1B4D3E;               /* verde foresta scuro */
+  --nav-text: #f5f0e1;             /* sabbia chiara */
+  --btn-bg: #D2B48C;               /* beige */
+  --btn-text: #1A1A1A;             /* nero */
+  --input-bg: #faf6ec;             /* pergamena */
+  --input-border: #c4a97d;         /* sabbia scura */
+  --highlight: #9ACD32;            /* verde lime */
+  --gold: #DAA520;                 /* giallo dorato */
+  --water: #20B2AA;                /* turchese acqua */
+  --tropical: #FF8C00;             /* arancione tropicale */
+  --fab-bg: #50C878;               /* verde smeraldo */
+  --fab-text: #ffffff;
 }
 
-/* ========== TEMA: Dark ========== */
-[data-theme="dark"] {
-  --bg-primary: #0f172a;
-  --bg-secondary: #1e293b;
-  --bg-card: #1e293b;
-  --text-primary: #f1f5f9;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --border: #334155;
-  --accent: #818cf8;
-  --accent-hover: #6366f1;
-  --accent-light: #1e1b4b;
-  --nav-bg: #1e293b;
-  --btn-bg: #334155;
-  --btn-text: #e2e8f0;
-  --input-bg: #1e293b;
-  --input-border: #475569;
-}
-
-/* ========== TEMA: Green ========== */
-[data-theme="green"] {
-  --bg-primary: #f0fdf4;
-  --bg-secondary: #dcfce7;
-  --bg-card: #ffffff;
-  --text-primary: #14532d;
-  --text-secondary: #166534;
-  --text-muted: #4ade80;
-  --border: #bbf7d0;
-  --accent: #16a34a;
-  --accent-hover: #15803d;
-  --accent-light: #dcfce7;
-  --nav-bg: #166534;
-  --btn-bg: #dcfce7;
-  --btn-text: #14532d;
-  --input-bg: #ffffff;
-  --input-border: #86efac;
-}
-
-/* ========== TEMA: Blue ========== */
-[data-theme="blue"] {
-  --bg-primary: #eff6ff;
-  --bg-secondary: #dbeafe;
-  --bg-card: #ffffff;
-  --text-primary: #1e3a5f;
-  --text-secondary: #1e40af;
-  --text-muted: #60a5fa;
-  --border: #bfdbfe;
-  --accent: #2563eb;
-  --accent-hover: #1d4ed8;
-  --accent-light: #dbeafe;
-  --nav-bg: #1e40af;
-  --btn-bg: #dbeafe;
-  --btn-text: #1e3a5f;
-  --input-bg: #ffffff;
-  --input-border: #93c5fd;
+/* ========== TEMA: Spazio ========== */
+[data-theme="spazio"] {
+  --bg-primary: #0b0d17;           /* buio cosmico */
+  --bg-secondary: #141829;         /* blu notte profonda */
+  --bg-card: #1a1f35;              /* pannello spaziale */
+  --text-primary: #e8eaf6;         /* bianco stellare */
+  --text-secondary: #9fa8da;       /* lavanda nebulosa */
+  --text-muted: #5c6bc0;           /* indaco sfumato */
+  --border: #283060;               /* bordo galattico */
+  --accent: #7c4dff;               /* viola warp */
+  --accent-hover: #651fff;         /* viola profondo */
+  --accent-light: #1a1040;         /* viola scuro sfondo */
+  --nav-bg: #0d1025;               /* barra di comando */
+  --nav-text: #e8eaf6;             /* bianco stellare */
+  --btn-bg: #1a1f35;               /* pannello */
+  --btn-text: #e8eaf6;             /* bianco stellare */
+  --input-bg: #141829;             /* campo input scuro */
+  --input-border: #3949ab;         /* indaco bordo */
+  --highlight: #00e5ff;            /* ciano neon */
+  --gold: #ffd740;                 /* giallo stella */
+  --water: #18ffff;                /* turchese cosmico */
+  --tropical: #ff6e40;             /* arancione marte */
+  --fab-bg: #7c4dff;               /* viola warp */
+  --fab-text: #ffffff;
 }
 
 /* ========== Stili globali basati su variabili ========== */

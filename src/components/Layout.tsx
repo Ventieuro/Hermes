@@ -6,9 +6,9 @@ function Layout() {
     <div className="flex flex-col min-h-screen transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
       <header
         className="px-4 py-3 md:px-8 flex items-center gap-4 md:gap-8 transition-colors duration-300"
-        style={{ backgroundColor: 'var(--nav-bg)', borderBottom: '1px solid var(--border)', color: 'var(--text-primary)' }}
+        style={{ backgroundColor: 'var(--nav-bg)', borderBottom: '1px solid var(--border)', color: 'var(--nav-text)' }}
       >
-        <Link to="/" className="text-lg md:text-xl font-bold no-underline" style={{ color: 'var(--text-primary)' }}>
+        <Link to="/" className="text-lg md:text-xl font-bold no-underline" style={{ color: 'var(--nav-text)' }}>
           💰 Gestione Soldi
         </Link>
         <div className="flex-1" />
