@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+/* ========== TEMA: Light (default) ========== */
+:root,
+[data-theme="light"] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9fafb;
+  --bg-card: #ffffff;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  --border: #e5e7eb;
+  --accent: #6366f1;
+  --accent-hover: #4f46e5;
+  --accent-light: #eef2ff;
+  --nav-bg: #ffffff;
+  --btn-bg: #f3f4f6;
+  --btn-text: #374151;
+  --input-bg: #ffffff;
+  --input-border: #d1d5db;
+}
+
+/* ========== TEMA: Dark ========== */
+[data-theme="dark"] {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-card: #1e293b;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --border: #334155;
+  --accent: #818cf8;
+  --accent-hover: #6366f1;
+  --accent-light: #1e1b4b;
+  --nav-bg: #1e293b;
+  --btn-bg: #334155;
+  --btn-text: #e2e8f0;
+  --input-bg: #1e293b;
+  --input-border: #475569;
+}
+
+/* ========== TEMA: Green ========== */
+[data-theme="green"] {
+  --bg-primary: #f0fdf4;
+  --bg-secondary: #dcfce7;
+  --bg-card: #ffffff;
+  --text-primary: #14532d;
+  --text-secondary: #166534;
+  --text-muted: #4ade80;
+  --border: #bbf7d0;
+  --accent: #16a34a;
+  --accent-hover: #15803d;
+  --accent-light: #dcfce7;
+  --nav-bg: #166534;
+  --btn-bg: #dcfce7;
+  --btn-text: #14532d;
+  --input-bg: #ffffff;
+  --input-border: #86efac;
+}
+
+/* ========== TEMA: Blue ========== */
+[data-theme="blue"] {
+  --bg-primary: #eff6ff;
+  --bg-secondary: #dbeafe;
+  --bg-card: #ffffff;
+  --text-primary: #1e3a5f;
+  --text-secondary: #1e40af;
+  --text-muted: #60a5fa;
+  --border: #bfdbfe;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-light: #dbeafe;
+  --nav-bg: #1e40af;
+  --btn-bg: #dbeafe;
+  --btn-text: #1e3a5f;
+  --input-bg: #ffffff;
+  --input-border: #93c5fd;
+}
+
+/* ========== Stili globali basati su variabili ========== */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.2s, color 0.2s;
+}
