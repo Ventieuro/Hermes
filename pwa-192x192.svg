@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0b0d17"/>
+      <stop offset="100%" style="stop-color:#1a1f35"/>
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" rx="32" fill="url(#bg)"/>
+  <!-- Stars -->
+  <circle cx="30" cy="25" r="2" fill="#e8eaf6" opacity="0.6"/>
+  <circle cx="160" cy="40" r="1.5" fill="#e8eaf6" opacity="0.5"/>
+  <circle cx="45" cy="155" r="1.8" fill="#e8eaf6" opacity="0.4"/>
+  <circle cx="150" cy="150" r="2" fill="#e8eaf6" opacity="0.6"/>
+  <circle cx="80" cy="20" r="1" fill="#e8eaf6" opacity="0.3"/>
+  <circle cx="120" cy="170" r="1.5" fill="#e8eaf6" opacity="0.5"/>
+  <!-- Coin circle -->
+  <circle cx="96" cy="96" r="60" fill="#7c4dff" opacity="0.15"/>
+  <circle cx="96" cy="96" r="55" fill="none" stroke="#7c4dff" stroke-width="3"/>
+  <!-- Euro symbol -->
+  <text x="96" y="115" text-anchor="middle" font-family="Arial, sans-serif" font-size="70" font-weight="bold" fill="#e8eaf6">€</text>
+  <!-- Rocket -->
+  <text x="145" y="50" font-size="32">🚀</text>
+</svg>
