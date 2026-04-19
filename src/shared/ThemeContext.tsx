@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import type { ReactNode } from 'react'
 
-export type Theme = 'spazio'
+export type Theme = 'spazio' | 'nasa'
 
 const THEME_KEY = 'astrocoin-theme'
 
@@ -19,7 +19,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
     try {
       const saved = localStorage.getItem(THEME_KEY) as Theme
-      return saved === 'spazio' ? saved : 'spazio'
+      return saved === 'spazio' || saved === 'nasa' ? saved : 'spazio'
     } catch {
       return 'spazio'
     }

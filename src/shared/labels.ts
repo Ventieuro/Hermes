@@ -179,6 +179,34 @@ const STRINGS = {
       (nome: string) => `¿Eliminar la categoría "${nome}"?`,
     ),
     tornaIndietro:    t('← Dashboard',                '← Dashboard',                '← Panel'),
+    nuovaCategoria:   t('Nuova Categoria',             'New Category',                'Nueva Categoría'),
+    placeholderNome:  t('Nome categoria',              'Category name',               'Nombre categoría'),
+    aggiungi:         t('Aggiungi',                    'Add',                         'Añadir'),
+    scegliIcona:      t('Scegli icona',                'Choose icon',                 'Elegir icono'),
+    rinomina:         t('Rinomina',                    'Rename',                      'Renombrar'),
+    salva:            t('Salva',                       'Save',                        'Guardar'),
+    annulla:          t('Annulla',                     'Cancel',                      'Cancelar'),
+  },
+
+  // ── Settings ───────────────────────────────────────────
+  settings: {
+    tema:              t('Tema',                         'Theme',                       'Tema'),
+    darkMode:          t('Spazio',                       'Space',                       'Espacio'),
+    lightMode:         t('NASA',                         'NASA',                        'NASA'),
+    notifiche:         t('Notifiche',                    'Notifications',               'Notificaciones'),
+    promemoria:        t('Promemoria giornaliero',       'Daily reminder',              'Recordatorio diario'),
+    orarioPromemoria:  t('A che ora?',                   'At what time?',               '¿A qué hora?'),
+    gestioneCategorie: t('Gestione Categorie',           'Manage Categories',           'Gestión de Categorías'),
+    permessoNegato:    t('Permesso notifiche negato',    'Notification permission denied','Permiso de notificaciones denegado'),
+  },
+
+  // ── Notifiche ──────────────────────────────────────────
+  notifiche: {
+    messaggioPromemoria: t(
+      'Heila astronauta! 🚀 Hai inserito le tue spese di oggi?',
+      'Hey astronaut! 🚀 Have you logged today\'s expenses?',
+      '¡Oye astronauta! 🚀 ¿Has registrado tus gastos de hoy?',
+    ),
   },
 }
 
@@ -257,3 +285,5 @@ export const NOT_FOUND: Labels['notFound']  = localize(STRINGS.notFound)
 export const HOME:      Labels['home']      = localize(STRINGS.home)
 export const PIN:       Labels['pin']       = localize(STRINGS.pin)
 export const GESTIONE_CATEGORIE: Labels['gestioneCategorie'] = localize(STRINGS.gestioneCategorie)
+export const SETTINGS:  Labels['settings']  = localize(STRINGS.settings)
+export const NOTIFICHE: Labels['notifiche'] = localize(STRINGS.notifiche)

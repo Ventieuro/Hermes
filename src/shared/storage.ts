@@ -119,3 +119,75 @@ export function deleteCustomCategory(type: 'entrata' | 'uscita', name: string) {
   cats[type] = cats[type].filter((c) => c !== name)
   saveCustomCategories(cats)
 }
+
+export function renameCustomCategory(type: 'entrata' | 'uscita', oldName: string, newName: string) {
+  const trimmed = newName.trim()
+  if (!trimmed || oldName === trimmed) return
+  const cats = loadCustomCategories()
+  const idx = cats[type].indexOf(oldName)
+  if (idx === -1) return
+  cats[type][idx] = trimmed
+  saveCustomCategories(cats)
+  // Update icon
+  const icons = loadCustomIcons()
+  if (icons[oldName]) {
+    icons[trimmed] = icons[oldName]
+    delete icons[oldName]
+    localStorage.setItem(CUSTOM_ICONS_KEY, JSON.stringify(icons))
+  }
+  // Update transactions
+  const txs = loadTransactions()
+  let changed = false
+  for (const tx of txs) {
+    if (tx.category === oldName) {
+      tx.category = trimmed
+      changed = true
+    }
+  }
+  if (changed) saveTransactions(txs)
+}
+
+// ─── Custom Category Icons ──────────────────────────────
+const CUSTOM_ICONS_KEY = 'astrocoin-custom-icons'
+
+export function loadCustomIcons(): Record<string, string> {
+  try {
+    const raw = localStorage.getItem(CUSTOM_ICONS_KEY)
+    return raw ? JSON.parse(raw) : {}
+  } catch {
+    return {}
+  }
+}
+
+export function saveCustomIcon(categoryName: string, icon: string) {
+  const icons = loadCustomIcons()
+  icons[categoryName] = icon
+  localStorage.setItem(CUSTOM_ICONS_KEY, JSON.stringify(icons))
+}
+
+export function deleteCustomIcon(categoryName: string) {
+  const icons = loadCustomIcons()
+  delete icons[categoryName]
+  localStorage.setItem(CUSTOM_ICONS_KEY, JSON.stringify(icons))
+}
+
+// ─── Notification Settings ──────────────────────────────
+const NOTIFICATIONS_KEY = 'astrocoin-notifications'
+
+export interface NotificationSettings {
+  enabled: boolean
+  time: string // HH:MM
+}
+
+export function loadNotificationSettings(): NotificationSettings {
+  try {
+    const raw = localStorage.getItem(NOTIFICATIONS_KEY)
+    return raw ? JSON.parse(raw) : { enabled: false, time: '21:30' }
+  } catch {
+    return { enabled: false, time: '21:30' }
+  }
+}
+
+export function saveNotificationSettings(settings: NotificationSettings) {
+  localStorage.setItem(NOTIFICATIONS_KEY, JSON.stringify(settings))
+}

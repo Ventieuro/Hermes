@@ -150,31 +150,30 @@ function Dashboard() {
 
       {/* Riepilogo */}
       <div className="grid grid-cols-3 gap-3">
-        <div className="bg-green-50 border border-green-200 rounded-2xl p-3 text-center">
-          <p className="text-[10px] font-semibold text-green-600 uppercase tracking-wide">{DASHBOARD.entrate}</p>
-          <p className="mt-1 text-base md:text-xl font-bold text-green-700">
+        <div className="rounded-2xl p-3 text-center" style={{ backgroundColor: 'var(--tx-income-bg)', border: '1px solid var(--tx-income-border)' }}>
+          <p className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: 'var(--tx-income-label)' }}>{DASHBOARD.entrate}</p>
+          <p className="mt-1 text-base md:text-xl font-bold" style={{ color: 'var(--tx-income-text)' }}>
             {formatEuro(entrate)}
           </p>
         </div>
 
-        <div className="bg-red-50 border border-red-200 rounded-2xl p-3 text-center">
-          <p className="text-[10px] font-semibold text-red-600 uppercase tracking-wide">{DASHBOARD.uscite}</p>
-          <p className="mt-1 text-base md:text-xl font-bold text-red-700">
+        <div className="rounded-2xl p-3 text-center" style={{ backgroundColor: 'var(--tx-expense-bg)', border: '1px solid var(--tx-expense-border)' }}>
+          <p className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: 'var(--tx-expense-label)' }}>{DASHBOARD.uscite}</p>
+          <p className="mt-1 text-base md:text-xl font-bold" style={{ color: 'var(--tx-expense-text)' }}>
             {formatEuro(uscite)}
           </p>
         </div>
 
-        <div className={`rounded-2xl p-3 text-center border ${
-          saldo >= 0
-            ? 'bg-indigo-50 border-indigo-200'
-            : 'bg-orange-50 border-orange-200'
-        }`}>
-          <p className={`text-[10px] font-semibold uppercase tracking-wide ${
-            saldo >= 0 ? 'text-indigo-600' : 'text-orange-600'
-          }`}>{DASHBOARD.risparmi}</p>
-          <p className={`mt-1 text-base md:text-xl font-bold ${
-            saldo >= 0 ? 'text-indigo-700' : 'text-orange-700'
-          }`}>
+        <div className="rounded-2xl p-3 text-center" style={{
+          backgroundColor: saldo >= 0 ? 'var(--tx-balance-pos-bg)' : 'var(--tx-balance-neg-bg)',
+          border: `1px solid ${saldo >= 0 ? 'var(--tx-balance-pos-border)' : 'var(--tx-balance-neg-border)'}`,
+        }}>
+          <p className="text-[10px] font-semibold uppercase tracking-wide" style={{
+            color: saldo >= 0 ? 'var(--tx-balance-pos-label)' : 'var(--tx-balance-neg-label)',
+          }}>{DASHBOARD.risparmi}</p>
+          <p className="mt-1 text-base md:text-xl font-bold" style={{
+            color: saldo >= 0 ? 'var(--tx-balance-pos-text)' : 'var(--tx-balance-neg-text)',
+          }}>
             {formatEuro(saldo)}
           </p>
         </div>
@@ -199,30 +198,31 @@ function Dashboard() {
             {sortedTx.map((tx) => (
               <div
                 key={tx.id}
-                className={`flex items-center gap-3 p-3 rounded-xl border ${
-                  tx.type === 'entrata'
-                    ? 'bg-green-50/50 border-green-100'
-                    : 'bg-red-50/50 border-red-100'
-                }`}
+                className="flex items-center gap-3 p-3 rounded-xl transition-colors duration-300"
+                style={{
+                  backgroundColor: tx.type === 'entrata' ? 'var(--tx-income-bg)' : 'var(--tx-expense-bg)',
+                  border: `1px solid ${tx.type === 'entrata' ? 'var(--tx-income-border)' : 'var(--tx-expense-border)'}`,
+                }}
               >
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>
                     <span className="mr-1">{getCategoryIcon(tx.category)}</span>
                     {tx.description}
-                    {tx.recurring && <span className="ml-1 text-amber-500">🔄</span>}
+                    {tx.recurring && <span className="ml-1">🔄</span>}
                   </p>
                   <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
                     {tx.category} · {formatDay(tx.date)}
                   </p>
                 </div>
-                <p className={`text-sm font-bold whitespace-nowrap ${
-                  tx.type === 'entrata' ? 'text-green-700' : 'text-red-600'
-                }`}>
+                <p className="text-sm font-bold whitespace-nowrap" style={{
+                  color: tx.type === 'entrata' ? 'var(--tx-income-text)' : 'var(--tx-expense-text)',
+                }}>
                   {tx.type === 'entrata' ? '+' : '-'}{formatEuro(tx.amount)}
                 </p>
                 <button
                   onClick={() => handleDelete(tx)}
-                  className="w-7 h-7 flex items-center justify-center rounded-full text-gray-300 hover:text-red-500 hover:bg-red-50 transition text-xs"
+                  className="w-7 h-7 flex items-center justify-center rounded-full transition text-xs"
+                  style={{ color: 'var(--text-muted)' }}
                   aria-label={DASHBOARD.eliminaLabel}
                 >
                   🗑

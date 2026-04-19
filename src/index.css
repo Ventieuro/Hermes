@@ -25,6 +25,66 @@
   --tropical: #ff6e40;             /* arancione marte */
   --fab-bg: #7c4dff;               /* viola warp */
   --fab-text: #ffffff;
+  /* Transaction colors — NASA-inspired dark */
+  --tx-income-bg: #0a2e1a;
+  --tx-income-border: #15572f;
+  --tx-income-text: #00E676;
+  --tx-income-label: #66BB6A;
+  --tx-expense-bg: #2e0a0a;
+  --tx-expense-border: #571515;
+  --tx-expense-text: #FC3D21;
+  --tx-expense-label: #ef5350;
+  --tx-balance-pos-bg: #1a1040;
+  --tx-balance-pos-border: #2a1d5e;
+  --tx-balance-pos-text: #b388ff;
+  --tx-balance-pos-label: #9575cd;
+  --tx-balance-neg-bg: #2e1a0a;
+  --tx-balance-neg-border: #573515;
+  --tx-balance-neg-text: #FF6633;
+  --tx-balance-neg-label: #FF8A65;
+}
+
+/* ========== TEMA: NASA Light ========== */
+[data-theme="nasa"] {
+  --bg-primary: #f5f5f5;
+  --bg-secondary: #e8e8e8;
+  --bg-card: #ffffff;
+  --text-primary: #1a1a1a;
+  --text-secondary: #4a4a4a;
+  --text-muted: #8a8a8a;
+  --border: #d0d0d0;
+  --accent: #FC3D21;               /* NASA arancione-rosso */
+  --accent-hover: #e0321a;
+  --accent-light: #fff0ed;
+  --nav-bg: #0b1026;               /* NASA nero profondo */
+  --nav-text: #ffffff;
+  --btn-bg: #ffffff;
+  --btn-text: #1a1a1a;
+  --input-bg: #ffffff;
+  --input-border: #d0d0d0;
+  --highlight: #FC3D21;
+  --gold: #FF6633;
+  --water: #0B3D91;                /* NASA blu */
+  --tropical: #FC3D21;
+  --fab-bg: #FC3D21;
+  --fab-text: #ffffff;
+  /* Transaction colors — NASA light */
+  --tx-income-bg: #e8f5e9;
+  --tx-income-border: #c8e6c9;
+  --tx-income-text: #2e7d32;
+  --tx-income-label: #388e3c;
+  --tx-expense-bg: #ffebee;
+  --tx-expense-border: #ffcdd2;
+  --tx-expense-text: #c62828;
+  --tx-expense-label: #d32f2f;
+  --tx-balance-pos-bg: #e8eaf6;
+  --tx-balance-pos-border: #c5cae9;
+  --tx-balance-pos-text: #3949ab;
+  --tx-balance-pos-label: #5c6bc0;
+  --tx-balance-neg-bg: #fff3e0;
+  --tx-balance-neg-border: #ffe0b2;
+  --tx-balance-neg-text: #e65100;
+  --tx-balance-neg-label: #ef6c00;
 }
 
 /* ========== Stili globali basati su variabili ========== */

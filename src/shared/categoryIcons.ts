@@ -1,5 +1,7 @@
 // ─── Mappa Categoria → Emoji (tutte le lingue) ───────────
 
+import { loadCustomIcons } from './storage'
+
 const ICON_MAP: Record<string, string> = {
   // Entrate
   Stipendio: '💰', Salary: '💰', Salario: '💰',
@@ -26,5 +28,7 @@ const ICON_MAP: Record<string, string> = {
 }
 
 export function getCategoryIcon(category: string): string {
+  const customIcons = loadCustomIcons()
+  if (customIcons[category]) return customIcons[category]
   return ICON_MAP[category] ?? '🌌'
 }
