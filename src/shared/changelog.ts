@@ -12,6 +12,30 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.8.0',
+    date: '2026-04-20',
+    changes: {
+      it: [
+        '✏️ Ora puoi modificare le spese e le entrate già inserite',
+        '🔒 PIN protetto con hash SHA-256 e confronto sicuro',
+        '🛡️ Validazione dati su ogni caricamento dal localStorage',
+        '🧩 Nuovi componenti UI riusabili (Card, Button, Input, Modal…)',
+      ],
+      en: [
+        '✏️ You can now edit existing transactions',
+        '🔒 PIN protected with SHA-256 hash and secure comparison',
+        '🛡️ Data validation on every localStorage load',
+        '🧩 New reusable UI components (Card, Button, Input, Modal…)',
+      ],
+      es: [
+        '✏️ Ahora puedes editar transacciones existentes',
+        '🔒 PIN protegido con hash SHA-256 y comparación segura',
+        '🛡️ Validación de datos en cada carga del localStorage',
+        '🧩 Nuevos componentes UI reutilizables (Card, Button, Input, Modal…)',
+      ],
+    },
+  },
+  {
     version: '1.7.0',
     date: '2026-04-19',
     changes: {

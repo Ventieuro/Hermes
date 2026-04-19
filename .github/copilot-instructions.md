@@ -13,6 +13,7 @@
 ```
 src/
 ├── components/       → Componenti riusabili (Layout, Mascot, ThemeSwitcher, AddTransactionForm)
+│   └── ui/           → Componenti UI primitivi riusabili (Card, Button, Input, Modal, ...)
 ├── pages/            → Pagine collegate alle route (Dashboard, Home, NotFound)
 ├── shared/           → Logica condivisa
 │   ├── labels.ts     → TUTTE le stringhe dell'app (i18n)
@@ -181,6 +182,30 @@ StrictMode → BrowserRouter → ThemeProvider → App
 - **Responsive**: mobile-first, breakpoint `sm:` e `md:`
 - **Transizioni**: `transition-colors duration-300` su elementi che cambiano colore col tema
 - **Commenti**: sezioni con `// ─── Nome Sezione ───`
+
+## Componenti UI Riusabili (`src/components/ui/`)
+
+**⚠️ REGOLA: Prima di creare un elemento UI, controllare se esiste già un componente in `ui/`.**
+
+Importare da barrel export:
+```tsx
+import { Card, Button, Input, IconButton, SectionHeader, Modal, FAB } from '../components/ui'
+```
+
+| Componente | Uso | Props principali |
+|------------|-----|-------------------|
+| `<Card>` | Contenitore con bordo e sfondo tema | `padding="sm\|md\|lg"` |
+| `<Button>` | Bottone azione | `variant="primary\|secondary\|danger\|ghost"`, `selected`, `disabled`, `fullWidth` |
+| `<Input>` | Campo input con stile tema | `type`, `size="sm\|md\|lg"`, `placeholder` |
+| `<IconButton>` | Bottone icona piccolo | `size="sm\|md\|lg"`, `shape="circle\|square"` |
+| `<SectionHeader>` | Titolo sezione uppercase | `children` (stringa) |
+| `<Modal>` | Overlay modale | `onClose`, `position="center\|bottom"` |
+| `<FAB>` | Floating Action Button | `onClick`, `ariaLabel` |
+
+**Quando creare un nuovo componente UI:**
+- Se un pattern si ripete 3+ volte nei file
+- Aggiungere in `src/components/ui/` + esportare da `index.ts`
+- Documentare nella tabella qui sopra
 
 ## Comandi
 
