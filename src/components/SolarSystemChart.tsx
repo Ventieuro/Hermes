@@ -150,15 +150,16 @@ function drawPlanet(
   planetR: number, color: string,
   icon: string, percent: number,
   time: number,
+  direction: number,
 ) {
   const px = cx + orbitR * Math.cos(angle)
   const py = cy + orbitR * Math.sin(angle)
   const { r, g, b } = hexToRgb(color)
 
-  // Trail
+  // Trail — always behind the planet
   const trailLen = 12
   for (let t = 1; t <= trailLen; t++) {
-    const ta = angle - t * 0.035
+    const ta = angle - t * 0.035 * direction
     const tx = cx + orbitR * Math.cos(ta)
     const ty = cy + orbitR * Math.sin(ta)
     const alpha = 0.18 * (1 - t / trailLen)
@@ -191,13 +192,13 @@ function drawPlanet(
   ctx.fillStyle = bodyGrad
   ctx.fill()
 
-  // Crescent shadow
+  // Crescent shadow — flip based on direction
   ctx.save()
   ctx.beginPath()
   ctx.arc(px, py, planetR, 0, Math.PI * 2)
   ctx.clip()
   ctx.beginPath()
-  ctx.arc(px + planetR * 0.35, py + planetR * 0.2, planetR * 0.9, 0, Math.PI * 2)
+  ctx.arc(px + planetR * 0.35 * direction, py + planetR * 0.2, planetR * 0.9, 0, Math.PI * 2)
   ctx.fillStyle = 'rgba(0,0,0,0.3)'
   ctx.fill()
   ctx.restore()
@@ -252,11 +253,11 @@ function SolarSystemChart({ transactions }: SolarSystemChartProps) {
 
     const cx = W / 2
     const cy = H / 2
-    const sunR = 32
+    const sunR = 30
 
-    // Orbits: from 60px to 140px
-    const minOrbit = 60
-    const maxOrbit = 140
+    // Orbits: spaced from sun, inside canvas
+    const minOrbit = 72
+    const maxOrbit = 138
     const orbitStep = planets.length > 1 ? (maxOrbit - minOrbit) / (planets.length - 1) : 0
     const orbitRadii = planets.map((_, i) => minOrbit + i * orbitStep)
 
@@ -300,7 +301,8 @@ function SolarSystemChart({ transactions }: SolarSystemChartProps) {
       planets.forEach((planet, i) => {
         const baseAngle = (i * goldenAngle * Math.PI) / 180
         const angle = baseAngle + elapsed * speeds[i]
-        drawPlanet(c, cx, cy, orbitRadii[i], angle, planetRadius(planet.percent), planet.color, planet.icon, planet.percent, elapsed)
+        const dir = speeds[i] >= 0 ? 1 : -1
+        drawPlanet(c, cx, cy, orbitRadii[i], angle, planetRadius(planet.percent), planet.color, planet.icon, planet.percent, elapsed, dir)
       })
 
       animRef.current = requestAnimationFrame(frame)

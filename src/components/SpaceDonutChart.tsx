@@ -272,13 +272,13 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses }: SpaceDonutChart
 
     const cx = W / 2
     const cy = H / 2
-    const outerR = 115
-    const innerR = 66
+    const outerR = 100
+    const innerR = 58
 
     // Planet orbit config — keep planets inside canvas
-    const maxPlanetR = 12
-    const orbitBase = outerR + 14
-    const maxOrbitR = W / 2 - maxPlanetR - 4
+    const maxPlanetR = 10
+    const orbitBase = outerR + 16
+    const maxOrbitR = W / 2 - maxPlanetR - 6
     const orbitRange = maxOrbitR - orbitBase
     const orbitStep = slices.length > 1 ? orbitRange / (slices.length - 1) : 0
     const orbitRadii = slices.map((_, i) => orbitBase + i * orbitStep)
@@ -286,8 +286,8 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses }: SpaceDonutChart
     const maxPercent = Math.max(...slices.map((s) => s.percent))
     const minPercent = Math.min(...slices.map((s) => s.percent))
     const planetRadius = (pct: number) => {
-      if (maxPercent === minPercent) return 8
-      return 5 + ((pct - minPercent) / (maxPercent - minPercent)) * 7
+      if (maxPercent === minPercent) return 7
+      return 4 + ((pct - minPercent) / (maxPercent - minPercent)) * 6
     }
 
     const c = ctx // narrowed non-null reference
