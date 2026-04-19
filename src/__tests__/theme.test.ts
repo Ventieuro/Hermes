@@ -6,12 +6,12 @@ describe('ThemeContext', () => {
   })
 
   it('defaults to spazio theme in localStorage', () => {
-    expect(localStorage.getItem('astrocoin-theme')).toBeNull()
+    expect(localStorage.getItem('hermes-theme')).toBeNull()
   })
 
   it('stores and reads spazio theme', () => {
-    localStorage.setItem('astrocoin-theme', 'spazio')
-    expect(localStorage.getItem('astrocoin-theme')).toBe('spazio')
+    localStorage.setItem('hermes-theme', 'spazio')
+    expect(localStorage.getItem('hermes-theme')).toBe('spazio')
   })
 
   it('data-theme attribute defaults correctly', () => {

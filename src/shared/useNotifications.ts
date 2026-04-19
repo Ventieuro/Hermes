@@ -2,20 +2,20 @@ import { useEffect } from 'react'
 import { loadNotificationSettings } from './storage'
 import { NOTIFICHE } from './labels'
 
-const LAST_NOTIF_KEY = 'astrocoin-last-notification'
+const LAST_NOTIF_KEY = 'hermes-last-notification'
 
 function showNotification(body: string) {
   // Try SW notification first (works even when tab is in background on mobile)
   if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
     navigator.serviceWorker.ready.then((reg) => {
-      reg.showNotification('🚀 AstroCoin', {
+      reg.showNotification('🚀 Hermes', {
         body,
-        icon: '/AstroCoin/pwa-192x192.svg',
-        badge: '/AstroCoin/pwa-192x192.svg',
+        icon: '/Hermes/pwa-192x192.svg',
+        badge: '/Hermes/pwa-192x192.svg',
       })
     })
   } else {
-    new Notification('🚀 AstroCoin', { body })
+    new Notification('🚀 Hermes', { body })
   }
 }
 

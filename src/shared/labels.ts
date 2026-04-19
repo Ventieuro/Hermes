@@ -40,8 +40,8 @@ const STRINGS = {
 
   // ── Layout ─────────────────────────────────────────────
   layout: {
-    appName:    t('🚀 AstroCoin',  '🚀 AstroCoin',     '🚀 AstroCoin'),
-    footerText: t('AstroCoin',     'AstroCoin',        'AstroCoin'),
+    appName:    t('🚀 Hermes',  '🚀 Hermes',     '🚀 Hermes'),
+    footerText: t('Hermes',     'Hermes',        'Hermes'),
   },
 
   // ── Temi ───────────────────────────────────────────────
@@ -162,8 +162,8 @@ const STRINGS = {
 
   // ── Home ───────────────────────────────────────────────
   home: {
-    altMascotte:  t('Astronauta mascotte di AstroCoin',                 'Astronaut mascot of AstroCoin',          'Astronauta mascota de AstroCoin'),
-    titolo:       t('AstroCoin',                                         'AstroCoin',                              'AstroCoin'),
+    altMascotte:  t('Astronauta mascotte di Hermes',                   'Astronaut mascot of Hermes',             'Astronauta mascota de Hermes'),
+    titolo:       t('Hermes',                                            'Hermes',                                 'Hermes'),
     sottotitolo:  t('Tieni sotto controllo entrate, uscite e risparmi', 'Keep track of income, expenses and savings', 'Controla tus ingresos, gastos y ahorros'),
     vaiDashboard: t('Vai alla Dashboard',                               'Go to Dashboard',                        'Ir al Panel'),
   },
@@ -214,7 +214,7 @@ const STRINGS = {
 
   // ── PWA Install ────────────────────────────────────────
   pwa: {
-    installTitle:   t('Installa AstroCoin',                             'Install AstroCoin',                      'Instalar AstroCoin'),
+    installTitle:   t('Installa Hermes',                                'Install Hermes',                         'Instalar Hermes'),
     installMessage: t('Aggiungi alla schermata home per accesso rapido', 'Add to home screen for quick access',    'Añade a la pantalla de inicio para acceso rápido'),
     installButton:  t('Installa',                                       'Install',                                'Instalar'),
     chiudi:         t('Non ora',                                        'Not now',                                'Ahora no'),
@@ -234,7 +234,7 @@ type Resolve<S> = { [K in keyof S]: S[K] extends I18n<infer V> ? V : Resolve<S[K
 export type Labels = Resolve<typeof STRINGS>
 
 // ─── Lingua attiva ───────────────────────────────────────
-const LANG_KEY = 'astrocoin-lang'
+const LANG_KEY = 'hermes-lang'
 
 function getStoredLocale(): Locale {
   try {

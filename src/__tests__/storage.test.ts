@@ -109,7 +109,7 @@ describe('storage.ts', () => {
 
   describe('handles corrupt data gracefully', () => {
     it('returns empty array on invalid JSON', () => {
-      localStorage.setItem('astrocoin-transactions', 'not json')
+      localStorage.setItem('hermes-transactions', 'not json')
       expect(loadTransactions()).toEqual([])
     })
   })

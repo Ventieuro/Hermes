@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 
 export type Theme = 'spazio' | 'nasa'
 
-const THEME_KEY = 'astrocoin-theme'
+const THEME_KEY = 'hermes-theme'
 
 interface ThemeContextValue {
   theme: Theme

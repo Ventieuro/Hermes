@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { CHANGELOG, CURRENT_VERSION } from '../shared/changelog'
 import { getLocale } from '../shared/labels'
 
-const SEEN_VERSION_KEY = 'astrocoin-seen-version'
+const SEEN_VERSION_KEY = 'hermes-seen-version'
 
 function getUnseenChanges() {
   try {

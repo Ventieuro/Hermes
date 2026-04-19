@@ -16,22 +16,22 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: '2026-04-19',
     changes: {
       it: [
-        '📱 AstroCoin è ora una PWA! Installabile sul telefono',
+        '📱 Hermes è ora una PWA! Installabile sul telefono',
         '🔔 Notifiche push anche con app in background',
         '💾 Funziona offline grazie al Service Worker',
-        '⬇️ Banner "Installa AstroCoin" sulla home screen',
+        '⬇️ Banner "Installa Hermes" sulla home screen',
       ],
       en: [
-        '📱 AstroCoin is now a PWA! Installable on your phone',
+        '📱 Hermes is now a PWA! Installable on your phone',
         '🔔 Push notifications even with app in background',
         '💾 Works offline thanks to Service Worker',
-        '⬇️ "Install AstroCoin" banner on home screen',
+        '⬇️ "Install Hermes" banner on home screen',
       ],
       es: [
-        '📱 ¡AstroCoin es ahora una PWA! Instalable en tu teléfono',
+        '📱 ¡Hermes es ahora una PWA! Instalable en tu teléfono',
         '🔔 Notificaciones push incluso con la app en segundo plano',
         '💾 Funciona sin conexión gracias al Service Worker',
-        '⬇️ Banner "Instalar AstroCoin" en la pantalla de inicio',
+        '⬇️ Banner "Instalar Hermes" en la pantalla de inicio',
       ],
     },
   },

@@ -5,7 +5,7 @@ import { qrcode } from 'vite-plugin-qrcode'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
-  base: '/AstroCoin/',
+  base: '/Hermes/',
   plugins: [
     react(),
     tailwindcss(),
@@ -14,14 +14,14 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['mascot.svg', 'vite.svg', 'pwa-192x192.svg', 'pwa-512x512.svg'],
       manifest: {
-        name: 'AstroCoin',
-        short_name: 'AstroCoin',
+        name: 'Hermes',
+        short_name: 'Hermes',
         description: 'Gestisci entrate, uscite e risparmi come un astronauta 🚀',
         theme_color: '#0b0d17',
         background_color: '#0b0d17',
         display: 'standalone',
-        scope: '/AstroCoin/',
-        start_url: '/AstroCoin/',
+        scope: '/Hermes/',
+        start_url: '/Hermes/',
         icons: [
           {
             src: 'pwa-192x192.svg',

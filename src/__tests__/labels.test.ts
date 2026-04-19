@@ -25,12 +25,12 @@ describe('labels.ts', () => {
 
   describe('LAYOUT labels', () => {
     it('returns Italian by default', () => {
-      expect(LAYOUT.appName).toContain('AstroCoin')
+      expect(LAYOUT.appName).toContain('Hermes')
     })
 
     it('returns English when locale is en', () => {
       setLocale('en')
-      expect(LAYOUT.appName).toContain('AstroCoin')
+      expect(LAYOUT.appName).toContain('Hermes')
     })
   })
 

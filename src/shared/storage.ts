@@ -1,7 +1,7 @@
 import type { Transaction, AppSettings } from './types'
 
-const STORAGE_KEY = 'astrocoin-transactions'
-const SETTINGS_KEY = 'astrocoin-settings'
+const STORAGE_KEY = 'hermes-transactions'
+const SETTINGS_KEY = 'hermes-settings'
 
 export function loadTransactions(): Transaction[] {
   try {
@@ -58,8 +58,8 @@ export function generateId(): string {
 }
 
 // ─── PIN Lock ────────────────────────────────────────────
-const PIN_KEY = 'astrocoin-pin'
-const PIN_SESSION_KEY = 'astrocoin-unlocked'
+const PIN_KEY = 'hermes-pin'
+const PIN_SESSION_KEY = 'hermes-unlocked'
 
 export function loadPin(): string | null {
   try {
@@ -86,7 +86,7 @@ export function setUnlocked() {
 }
 
 // ─── Categorie Custom ────────────────────────────────────
-const CUSTOM_CAT_KEY = 'astrocoin-custom-categories'
+const CUSTOM_CAT_KEY = 'hermes-custom-categories'
 
 export interface CustomCategories {
   entrata: string[]
@@ -148,7 +148,7 @@ export function renameCustomCategory(type: 'entrata' | 'uscita', oldName: string
 }
 
 // ─── Custom Category Icons ──────────────────────────────
-const CUSTOM_ICONS_KEY = 'astrocoin-custom-icons'
+const CUSTOM_ICONS_KEY = 'hermes-custom-icons'
 
 export function loadCustomIcons(): Record<string, string> {
   try {
@@ -172,7 +172,7 @@ export function deleteCustomIcon(categoryName: string) {
 }
 
 // ─── Notification Settings ──────────────────────────────
-const NOTIFICATIONS_KEY = 'astrocoin-notifications'
+const NOTIFICATIONS_KEY = 'hermes-notifications'
 
 export interface NotificationSettings {
   enabled: boolean
