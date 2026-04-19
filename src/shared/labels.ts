@@ -40,13 +40,12 @@ const STRINGS = {
 
   // ── Layout ─────────────────────────────────────────────
   layout: {
-    appName:    t('🪙 AstroCoin',  '🪙 AstroCoin',     '🪙 AstroCoin'),
+    appName:    t('🚀 AstroCoin',  '🚀 AstroCoin',     '🚀 AstroCoin'),
     footerText: t('AstroCoin',     'AstroCoin',        'AstroCoin'),
   },
 
   // ── Temi ───────────────────────────────────────────────
   temi: {
-    giungla: t('Giungla', 'Jungle', 'Jungla'),
     spazio:  t('Spazio',  'Space',  'Espacio'),
   },
 
@@ -54,13 +53,13 @@ const STRINGS = {
   dashboard: {
     periodoPrecedente:            t('Periodo precedente',                             'Previous period',                        'Período anterior'),
     periodoSuccessivo:            t('Periodo successivo',                              'Next period',                            'Período siguiente'),
-    stipendioIl:                  t('📅 Stipendio il:',                                '📅 Pay day:',                             '📅 Día de pago:'),
-    oggi:                         t('📍 Oggi',                                         '📍 Today',                                '📍 Hoy'),
+    stipendioIl:                  t('�️ Stipendio il:',                                '🛰️ Pay day:',                             '🛰️ Día de pago:'),
+    oggi:                         t('🌍 Oggi',                                         '🌍 Today',                                '🌍 Hoy'),
     entrate:                      t('Entrate',                                         'Income',                                 'Ingresos'),
     uscite:                       t('Uscite',                                          'Expenses',                               'Gastos'),
     risparmi:                     t('Risparmi',                                        'Savings',                                'Ahorros'),
     movimenti:                    t('Movimenti',                                       'Transactions',                           'Movimientos'),
-    nessunoMovimentoEmoji:        t('📭',                                              '📭',                                      '📭'),
+    nessunoMovimentoEmoji:        t('🪐',                                              '🪐',                                      '🪐'),
     nessunoMovimento:             t('Nessun movimento in questo periodo.',              'No transactions in this period.',         'No hay movimientos en este período.'),
     nessunoMovimentoSuggerimento: t('Premi il bottone qui sotto per aggiungerne uno!', 'Tap the button below to add one!',       '¡Pulsa el botón de abajo para añadir uno!'),
     eliminaLabel:                 t('Elimina',                                         'Delete',                                 'Eliminar'),
@@ -77,26 +76,26 @@ const STRINGS = {
 
   // ── Mascotte ───────────────────────────────────────────
   mascotte: {
-    ariaLabel: t('mascotte', 'mascot', 'mascota'),
+    ariaLabel: t('astronauta', 'astronaut', 'astronauta'),
     messaggi: {
-      vuoto:  t('Nessun movimento ancora! Inizia aggiungendo la tua prima entrata o uscita 😊',
-                'No transactions yet! Start by adding your first income or expense 😊',
-                '¡Aún no hay movimientos! Empieza añadiendo tu primer ingreso o gasto 😊'),
-      ottimo: t('Wow, stai risparmiando un bel po\'! Continua così! 🚀',
-                'Wow, you\'re saving a lot! Keep it up! 🚀',
-                '¡Vaya, estás ahorrando mucho! ¡Sigue así! 🚀'),
+      vuoto:  t('Houston, nessun movimento rilevato! Lancia la tua prima transazione 🛸',
+                'Houston, no transactions detected! Launch your first one 🛸',
+                '¡Houston, sin movimientos! Lanza tu primera transacción 🛸'),
+      ottimo: t('Missione risparmio: successo totale! Continua così, astronauta! 🌟',
+                'Savings mission: total success! Keep it up, astronaut! 🌟',
+                '¡Misión ahorro: éxito total! ¡Sigue así, astronauta! 🌟'),
       bene: tf(
-        (saldo: string) => `Bene! Hai messo da parte ${saldo} questo mese 👍`,
-        (saldo: string) => `Nice! You saved ${saldo} this month 👍`,
-        (saldo: string) => `¡Bien! Ahorraste ${saldo} este mes 👍`,
+        (saldo: string) => `Ottimo pilota! Hai messo in orbita ${saldo} questo mese 🪐`,
+        (saldo: string) => `Great pilot! You put ${saldo} into orbit this month 🪐`,
+        (saldo: string) => `¡Gran piloto! Pusiste ${saldo} en órbita este mes 🪐`,
       ),
-      pari:   t('Sei in pari questo mese. Proviamo a risparmiare qualcosina?',
-                'You broke even this month. Shall we try to save a little?',
-                'Este mes quedaste en cero. ¿Intentamos ahorrar un poco?'),
+      pari:   t('Stazione spaziale in equilibrio. Proviamo a spingere verso le stelle? ⭐',
+                'Space station balanced. Shall we push toward the stars? ⭐',
+                'Estación espacial en equilibrio. ¿Intentamos llegar a las estrellas? ⭐'),
       rosso: tf(
-        (importo: string) => `Attenzione, sei in rosso di ${importo}... Rivediamo le spese?`,
-        (importo: string) => `Watch out, you're ${importo} in the red... Let's review expenses?`,
-        (importo: string) => `Cuidado, estás en rojo por ${importo}... ¿Revisamos los gastos?`,
+        (importo: string) => `Allerta! Sei in rosso di ${importo}... Rientro d'emergenza! 🆘`,
+        (importo: string) => `Alert! You're ${importo} in the red... Emergency landing! 🆘`,
+        (importo: string) => `¡Alerta! Estás en rojo por ${importo}... ¡Aterrizaje de emergencia! 🆘`,
       ),
     },
   },
@@ -114,7 +113,7 @@ const STRINGS = {
     placeholderDescrizione: t('es. Spesa al supermercato',           'e.g. Grocery shopping',          'ej. Compra en el supermercado'),
     labelCategoria:         t('Categoria',                           'Category',                       'Categoría'),
     labelQuando:            t('Quando?',                             'When?',                          '¿Cuándo?'),
-    labelRicorrente:        t('Si ripete ogni mese? 🔄',             'Repeats every month? 🔄',        '¿Se repite cada mes? 🔄'),
+    labelRicorrente:        t('Si ripete ogni mese? 🌀',             'Repeats every month? 🌀',        '¿Se repite cada mes? 🌀'),
     messaggioRicorrente:    t('Per quanti mesi vuoi che si ripeta?', 'For how many months?',           '¿Durante cuántos meses?'),
     unitaMesi:              t('mesi',                                'months',                         'meses'),
     submitEntrata:          t('✅ Aggiungi entrata',                  '✅ Add income',                   '✅ Añadir ingreso'),
@@ -141,9 +140,21 @@ const STRINGS = {
     tornaHome: t('Torna alla Home',     'Back to Home',     'Volver al inicio'),
   },
 
+  // ── PIN Lock ────────────────────────────────────────────
+  pin: {
+    titolo:          t('Accesso protetto',              'Protected access',              'Acceso protegido'),
+    inserisciPin:    t('Inserisci il PIN',               'Enter your PIN',                'Introduce el PIN'),
+    creaPin:         t('Crea un PIN di 4 cifre',         'Create a 4-digit PIN',          'Crea un PIN de 4 dígitos'),
+    confermaPin:     t('Conferma il PIN',                'Confirm your PIN',              'Confirma el PIN'),
+    pinErrato:       t('PIN errato, riprova.',           'Wrong PIN, try again.',         'PIN incorrecto, inténtalo de nuevo.'),
+    pinNonCoincide:  t('I PIN non coincidono, riprova.', 'PINs don\'t match, try again.', 'Los PIN no coinciden, inténtalo de nuevo.'),
+    sblocca:         t('Sblocca',                        'Unlock',                        'Desbloquear'),
+    conferma:        t('Conferma',                       'Confirm',                       'Confirmar'),
+  },
+
   // ── Home ───────────────────────────────────────────────
   home: {
-    altMascotte:  t('Scimmia mascotte con denari',                      'Monkey mascot with coins',               'Mono mascota con monedas'),
+    altMascotte:  t('Astronauta mascotte di AstroCoin',                 'Astronaut mascot of AstroCoin',          'Astronauta mascota de AstroCoin'),
     titolo:       t('AstroCoin',                                         'AstroCoin',                              'AstroCoin'),
     sottotitolo:  t('Tieni sotto controllo entrate, uscite e risparmi', 'Keep track of income, expenses and savings', 'Controla tus ingresos, gastos y ahorros'),
     vaiDashboard: t('Vai alla Dashboard',                               'Go to Dashboard',                        'Ir al Panel'),
@@ -223,3 +234,4 @@ export const FORM:      Labels['form']      = localize(STRINGS.form)
 export const CATEGORIE: Labels['categorie'] = localize(STRINGS.categorie)
 export const NOT_FOUND: Labels['notFound']  = localize(STRINGS.notFound)
 export const HOME:      Labels['home']      = localize(STRINGS.home)
+export const PIN:       Labels['pin']       = localize(STRINGS.pin)

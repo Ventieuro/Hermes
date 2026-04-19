@@ -1,33 +1,7 @@
 @import "tailwindcss";
 
-/* ========== TEMA: Giungla (default) ========== */
-:root,
-[data-theme="giungla"] {
-  --bg-primary: #f5f0e1;           /* sabbia chiara */
-  --bg-secondary: #D2B48C;         /* beige/sabbia */
-  --bg-card: #faf6ec;              /* pergamena */
-  --text-primary: #1A1A1A;         /* nero profondo */
-  --text-secondary: #5D4037;       /* marrone corteccia */
-  --text-muted: #8B4513;           /* marrone chiaro */
-  --border: #c4a97d;               /* sabbia scura */
-  --accent: #228B22;               /* verde foresta */
-  --accent-hover: #1B4D3E;         /* verde scuro */
-  --accent-light: #d4edda;         /* verde chiaro sfondo */
-  --nav-bg: #1B4D3E;               /* verde foresta scuro */
-  --nav-text: #f5f0e1;             /* sabbia chiara */
-  --btn-bg: #D2B48C;               /* beige */
-  --btn-text: #1A1A1A;             /* nero */
-  --input-bg: #faf6ec;             /* pergamena */
-  --input-border: #c4a97d;         /* sabbia scura */
-  --highlight: #9ACD32;            /* verde lime */
-  --gold: #DAA520;                 /* giallo dorato */
-  --water: #20B2AA;                /* turchese acqua */
-  --tropical: #FF8C00;             /* arancione tropicale */
-  --fab-bg: #50C878;               /* verde smeraldo */
-  --fab-text: #ffffff;
-}
-
 /* ========== TEMA: Spazio ========== */
+:root,
 [data-theme="spazio"] {
   --bg-primary: #0b0d17;           /* buio cosmico */
   --bg-secondary: #141829;         /* blu notte profonda */

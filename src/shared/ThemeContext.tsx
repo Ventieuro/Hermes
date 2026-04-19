@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import type { ReactNode } from 'react'
 
-export type Theme = 'giungla' | 'spazio'
+export type Theme = 'spazio'
 
 const THEME_KEY = 'astrocoin-theme'
 
@@ -11,7 +11,7 @@ interface ThemeContextValue {
 }
 
 const ThemeContext = createContext<ThemeContextValue>({
-  theme: 'giungla',
+  theme: 'spazio',
   setTheme: () => {},
 })
 
@@ -19,9 +19,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
     try {
       const saved = localStorage.getItem(THEME_KEY) as Theme
-      return saved === 'giungla' || saved === 'spazio' ? saved : 'giungla'
+      return saved === 'spazio' ? saved : 'spazio'
     } catch {
-      return 'giungla'
+      return 'spazio'
     }
   })
 

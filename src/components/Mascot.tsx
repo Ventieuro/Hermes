@@ -7,10 +7,10 @@ interface MascotProps {
 }
 
 const EMOJIS: Record<MascotProps['mood'], string> = {
-  happy: '🐵',
-  sad: '🙈',
-  neutral: '🐒',
-  excited: '🤑',
+  happy: '🧑‍🚀',
+  sad: '😵‍💫',
+  neutral: '🛸',
+  excited: '🚀',
 }
 
 const SIZES: Record<NonNullable<MascotProps['size']>, string> = {
@@ -25,7 +25,14 @@ function Mascot({ mood, message, size = 'md' }: MascotProps) {
       <span className={SIZES[size]} role="img" aria-label={MASCOTTE_LABELS.ariaLabel}>
         {EMOJIS[mood]}
       </span>
-      <div className="bg-amber-50 border border-amber-200 rounded-2xl rounded-bl-none px-4 py-2 text-sm text-amber-900 max-w-xs">
+      <div
+        className="rounded-2xl rounded-bl-none px-4 py-2 text-sm max-w-xs"
+        style={{
+          backgroundColor: 'var(--bg-card)',
+          border: '1px solid var(--border)',
+          color: 'var(--text-primary)',
+        }}
+      >
         {message}
       </div>
     </div>

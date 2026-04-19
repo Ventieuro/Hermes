@@ -56,3 +56,31 @@ export function saveSettings(settings: AppSettings) {
 export function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7)
 }
+
+// ─── PIN Lock ────────────────────────────────────────────
+const PIN_KEY = 'astrocoin-pin'
+const PIN_SESSION_KEY = 'astrocoin-unlocked'
+
+export function loadPin(): string | null {
+  try {
+    return localStorage.getItem(PIN_KEY)
+  } catch {
+    return null
+  }
+}
+
+export function savePin(pin: string) {
+  localStorage.setItem(PIN_KEY, pin)
+}
+
+export function isUnlocked(): boolean {
+  try {
+    return sessionStorage.getItem(PIN_SESSION_KEY) === 'true'
+  } catch {
+    return false
+  }
+}
+
+export function setUnlocked() {
+  sessionStorage.setItem(PIN_SESSION_KEY, 'true')
+}
