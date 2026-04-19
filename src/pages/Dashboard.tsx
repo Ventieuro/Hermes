@@ -5,6 +5,7 @@ import { loadTransactions, getTransactionsInPeriod, deleteTransaction, loadSetti
 import type { Transaction } from '../shared/types'
 import ExpensePieChart from '../components/ExpensePieChart'
 import { DASHBOARD, MASCOTTE } from '../shared/labels'
+import { getCategoryIcon } from '../shared/categoryIcons'
 
 function getPeriod(payDay: number, offset: number) {
   const today = new Date()
@@ -206,6 +207,7 @@ function Dashboard() {
               >
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>
+                    <span className="mr-1">{getCategoryIcon(tx.category)}</span>
                     {tx.description}
                     {tx.recurring && <span className="ml-1 text-amber-500">🔄</span>}
                   </p>

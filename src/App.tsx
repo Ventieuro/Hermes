@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
 import PinLock from './components/PinLock'
 import Dashboard from './pages/Dashboard'
+import Categories from './pages/Categories'
 import NotFound from './pages/NotFound'
 import { isUnlocked } from './shared/storage'
 
@@ -17,6 +18,7 @@ function App() {
     <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<Dashboard />} />
+        <Route path="/categories" element={<Categories />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

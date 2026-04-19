@@ -1,6 +1,6 @@
 import { Outlet, Link } from 'react-router-dom'
 import ThemeSwitcher from './ThemeSwitcher'
-import { LAYOUT } from '../shared/labels'
+import { LAYOUT, GESTIONE_CATEGORIE } from '../shared/labels'
 
 function Layout() {
   return (
@@ -11,6 +11,9 @@ function Layout() {
       >
         <Link to="/" className="text-lg md:text-xl font-bold no-underline" style={{ color: 'var(--nav-text)' }}>
           {LAYOUT.appName}
+        </Link>
+        <Link to="/categories" className="text-xs md:text-sm font-medium no-underline opacity-70 hover:opacity-100 transition" style={{ color: 'var(--nav-text)' }}>
+          🏷️ {GESTIONE_CATEGORIE.titolo}
         </Link>
         <div className="flex-1" />
         <ThemeSwitcher />

@@ -25,10 +25,12 @@ AstroCoin/
 │   │   └── ThemeSwitcher.tsx      → Selettore tema
 │   ├── features/                  → (vuota — riservata per feature modules)
 │   ├── pages/
+│   │   ├── Categories.tsx         → Gestione categorie custom
 │   │   ├── Dashboard.tsx          → Pagina principale con saldo e movimenti
 │   │   ├── Home.tsx               → Pagina home/benvenuto
 │   │   └── NotFound.tsx           → Pagina 404
 │   └── shared/
+│       ├── categoryIcons.ts       → Mappa categoria → emoji
 │       ├── labels.ts              → Tutte le stringhe UI (IT/EN/ES)
 │       ├── storage.ts             → CRUD localStorage
 │       ├── ThemeContext.tsx        → Provider e hook tema
@@ -51,12 +53,14 @@ AstroCoin/
 | Path | Pagina | Descrizione |
 |------|--------|-------------|
 | `/` | Dashboard | Saldo, movimenti, grafico |
+| `/categories` | Categories | Gestione categorie custom |
 | `*` | NotFound | Pagina 404 |
 
 ## Componenti Principali
 
 | Componente | Posizione | Ruolo |
 |------------|-----------|-------|
+| Categories | `pages/Categories.tsx` | Gestione categorie personalizzate |
 | Layout | `components/Layout.tsx` | Wrapper con header e navbar |
 | AddTransactionForm | `components/AddTransactionForm.tsx` | Form per nuove transazioni |
 | ExpensePieChart | `components/ExpensePieChart.tsx` | Grafico distribuzione spese |
@@ -68,6 +72,7 @@ AstroCoin/
 
 | File | Ruolo |
 |------|-------|
+| `categoryIcons.ts` | Mappa categoria → emoji |
 | `labels.ts` | Stringhe localizzate (IT/EN/ES) |
 | `storage.ts` | Persistenza localStorage |
 | `ThemeContext.tsx` | Context + hook per tema |

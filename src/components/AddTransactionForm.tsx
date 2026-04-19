@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import type { TransactionType, Transaction } from '../shared/types'
-import { generateId, addTransaction } from '../shared/storage'
+import { generateId, addTransaction, loadCustomCategories, addCustomCategory } from '../shared/storage'
 import Mascot from './Mascot'
 import { FORM, CATEGORIE } from '../shared/labels'
+import { getCategoryIcon } from '../shared/categoryIcons'
 
 interface AddTransactionProps {
   onClose: () => void
@@ -20,9 +21,13 @@ function AddTransactionForm({ onClose, onSaved, defaultDate }: AddTransactionPro
   const [category, setCategory] = useState('')
   const [recurring, setRecurring] = useState(false)
   const [recurringMonths, setRecurringMonths] = useState(1)
+  const [showNewCat, setShowNewCat] = useState(false)
+  const [newCatName, setNewCatName] = useState('')
+  const [saveForFuture, setSaveForFuture] = useState(false)
 
-  const categories = CATEGORIE[type]
-  const isValid = description.trim() && Number(amount) > 0 && category
+  const customCats = loadCustomCategories()
+  const categories = [...CATEGORIE[type], ...customCats[type]]
+  const isValid = Number(amount) > 0 && category
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -31,7 +36,7 @@ function AddTransactionForm({ onClose, onSaved, defaultDate }: AddTransactionPro
     const tx: Transaction = {
       id: generateId(),
       type,
-      description: description.trim(),
+      description: description.trim() || category,
       amount: Number(amount),
       date,
       category,
@@ -124,19 +129,6 @@ function AddTransactionForm({ onClose, onSaved, defaultDate }: AddTransactionPro
             </div>
           </div>
 
-          {/* Descrizione */}
-          <div>
-            <label className="block text-xs mb-1" style={{ color: 'var(--text-muted)' }}>{FORM.labelPerCosa}</label>
-            <input
-              type="text"
-              placeholder={FORM.placeholderDescrizione}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2"
-              style={{ backgroundColor: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)', '--tw-ring-color': 'var(--accent)' } as React.CSSProperties}
-            />
-          </div>
-
           {/* Categoria */}
           <div>
             <label className="block text-xs mb-1" style={{ color: 'var(--text-muted)' }}>{FORM.labelCategoria}</label>
@@ -155,10 +147,71 @@ function AddTransactionForm({ onClose, onSaved, defaultDate }: AddTransactionPro
                   }`}
                   style={category !== cat ? { backgroundColor: 'var(--bg-secondary)', color: 'var(--text-secondary)' } : undefined}
                 >
-                  {cat}
+                  {getCategoryIcon(cat)} {cat}
                 </button>
               ))}
+              <button
+                type="button"
+                onClick={() => setShowNewCat(!showNewCat)}
+                className="px-3 py-1.5 rounded-full text-xs font-medium transition"
+                style={{ backgroundColor: 'var(--accent-light)', color: 'var(--accent)' }}
+              >
+                {FORM.nuovaCategoria}
+              </button>
             </div>
+
+            {showNewCat && (
+              <div className="mt-2 space-y-2">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder={FORM.placeholderNuovaCat}
+                    value={newCatName}
+                    onChange={(e) => setNewCatName(e.target.value)}
+                    className="flex-1 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2"
+                    style={{ backgroundColor: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)', '--tw-ring-color': 'var(--accent)' } as React.CSSProperties}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const trimmed = newCatName.trim()
+                      if (!trimmed) return
+                      if (saveForFuture) addCustomCategory(type, trimmed)
+                      setCategory(trimmed)
+                      setNewCatName('')
+                      setShowNewCat(false)
+                      setSaveForFuture(false)
+                    }}
+                    className="px-3 py-2 rounded-xl text-xs font-bold text-white transition active:scale-95"
+                    style={{ backgroundColor: 'var(--accent)' }}
+                  >
+                    {FORM.aggiungiCategoria}
+                  </button>
+                </div>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={saveForFuture}
+                    onChange={(e) => setSaveForFuture(e.target.checked)}
+                    className="w-4 h-4 rounded accent-purple-500"
+                  />
+                  <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{FORM.salvaPerFuturo}</span>
+                </label>
+              </div>
+            )}
+          </div>
+
+          {/* Descrizione (opzionale) */}
+          <div>
+            <label className="block text-xs mb-1" style={{ color: 'var(--text-muted)' }}>{FORM.labelPerCosaOpzionale}</label>
+            <input
+              type="text"
+              placeholder={FORM.placeholderDescrizione}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2"
+              style={{ backgroundColor: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)', '--tw-ring-color': 'var(--accent)' } as React.CSSProperties}
+            />
           </div>
 
           {/* Data */}

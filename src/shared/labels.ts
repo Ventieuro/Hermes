@@ -118,6 +118,11 @@ const STRINGS = {
     unitaMesi:              t('mesi',                                'months',                         'meses'),
     submitEntrata:          t('✅ Aggiungi entrata',                  '✅ Add income',                   '✅ Añadir ingreso'),
     submitUscita:           t('✅ Aggiungi uscita',                   '✅ Add expense',                  '✅ Añadir gasto'),
+    nuovaCategoria:         t('+ Nuova categoria',                   '+ New category',                 '+ Nueva categoría'),
+    placeholderNuovaCat:    t('Nome categoria',                      'Category name',                  'Nombre categoría'),
+    aggiungiCategoria:      t('Aggiungi',                             'Add',                            'Añadir'),
+    salvaPerFuturo:         t('Salva per il futuro',                  'Save for future',                'Guardar para el futuro'),
+    labelPerCosaOpzionale:  t('Per cosa? (opzionale)',                'What for? (optional)',            '¿Para qué? (opcional)'),
   },
 
   // ── Categorie ──────────────────────────────────────────
@@ -128,9 +133,9 @@ const STRINGS = {
       ['Salario',   'Freelance', 'Regalo', 'Reembolso','Otro'],
     ),
     uscita: ta(
-      ['Affitto', 'Bollette', 'Spesa',     'Trasporti', 'Svago',         'Salute', 'Abbonamenti',   'Altro'],
-      ['Rent',    'Bills',    'Groceries', 'Transport', 'Entertainment', 'Health', 'Subscriptions', 'Other'],
-      ['Alquiler','Facturas', 'Compras',   'Transporte','Ocio',          'Salud',  'Suscripciones', 'Otro'],
+      ['Cibo', 'Quotidiano', 'Trasporti', 'Sociale', 'Residenza', 'Regalo', 'Comunicazioni', 'Abbigliamento', 'Svago', 'Bellezza', 'Medico', 'Hobby', 'Bollette', 'Altro'],
+      ['Food', 'Daily',      'Transport', 'Social',  'Housing',   'Gift',   'Communications','Clothing',      'Entertainment','Beauty','Medical','Hobby','Bills',   'Other'],
+      ['Comida','Diario',    'Transporte','Social',  'Vivienda',  'Regalo', 'Comunicaciones','Ropa',          'Ocio',         'Belleza','Médico','Hobby','Facturas','Otro'],
     ),
   },
 
@@ -158,6 +163,22 @@ const STRINGS = {
     titolo:       t('AstroCoin',                                         'AstroCoin',                              'AstroCoin'),
     sottotitolo:  t('Tieni sotto controllo entrate, uscite e risparmi', 'Keep track of income, expenses and savings', 'Controla tus ingresos, gastos y ahorros'),
     vaiDashboard: t('Vai alla Dashboard',                               'Go to Dashboard',                        'Ir al Panel'),
+  },
+
+  // ── Gestione Categorie ─────────────────────────────────
+  gestioneCategorie: {
+    titolo:           t('Gestione Categorie',         'Manage Categories',           'Gestión de Categorías'),
+    categorieEntrata: t('Categorie Entrata',          'Income Categories',           'Categorías de Ingreso'),
+    categorieUscita:  t('Categorie Uscita',           'Expense Categories',          'Categorías de Gasto'),
+    predefinite:      t('Predefinite',                'Default',                     'Predeterminadas'),
+    personalizzate:   t('Personalizzate',             'Custom',                      'Personalizadas'),
+    nessuna:          t('Nessuna categoria custom.',  'No custom categories.',       'Sin categorías personalizadas.'),
+    confermaElimina: tf(
+      (nome: string) => `Eliminare la categoria "${nome}"?`,
+      (nome: string) => `Delete category "${nome}"?`,
+      (nome: string) => `¿Eliminar la categoría "${nome}"?`,
+    ),
+    tornaIndietro:    t('← Dashboard',                '← Dashboard',                '← Panel'),
   },
 }
 
@@ -235,3 +256,4 @@ export const CATEGORIE: Labels['categorie'] = localize(STRINGS.categorie)
 export const NOT_FOUND: Labels['notFound']  = localize(STRINGS.notFound)
 export const HOME:      Labels['home']      = localize(STRINGS.home)
 export const PIN:       Labels['pin']       = localize(STRINGS.pin)
+export const GESTIONE_CATEGORIE: Labels['gestioneCategorie'] = localize(STRINGS.gestioneCategorie)

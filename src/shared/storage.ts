@@ -84,3 +84,38 @@ export function isUnlocked(): boolean {
 export function setUnlocked() {
   sessionStorage.setItem(PIN_SESSION_KEY, 'true')
 }
+
+// ─── Categorie Custom ────────────────────────────────────
+const CUSTOM_CAT_KEY = 'astrocoin-custom-categories'
+
+export interface CustomCategories {
+  entrata: string[]
+  uscita: string[]
+}
+
+export function loadCustomCategories(): CustomCategories {
+  try {
+    const raw = localStorage.getItem(CUSTOM_CAT_KEY)
+    return raw ? JSON.parse(raw) : { entrata: [], uscita: [] }
+  } catch {
+    return { entrata: [], uscita: [] }
+  }
+}
+
+export function saveCustomCategories(cats: CustomCategories) {
+  localStorage.setItem(CUSTOM_CAT_KEY, JSON.stringify(cats))
+}
+
+export function addCustomCategory(type: 'entrata' | 'uscita', name: string) {
+  const cats = loadCustomCategories()
+  const trimmed = name.trim()
+  if (!trimmed || cats[type].includes(trimmed)) return
+  cats[type].push(trimmed)
+  saveCustomCategories(cats)
+}
+
+export function deleteCustomCategory(type: 'entrata' | 'uscita', name: string) {
+  const cats = loadCustomCategories()
+  cats[type] = cats[type].filter((c) => c !== name)
+  saveCustomCategories(cats)
+}
