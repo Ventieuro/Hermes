@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { TransactionType, Transaction } from '../shared/types'
-import { generateId, addTransaction, loadCustomCategories, addCustomCategory } from '../shared/storage'
+import { generateId, addTransaction, updateTransaction, loadCustomCategories, addCustomCategory } from '../shared/storage'
 import Mascot from './Mascot'
 import { FORM, CATEGORIE } from '../shared/labels'
 import { getCategoryIcon } from '../shared/categoryIcons'
@@ -9,18 +9,20 @@ interface AddTransactionProps {
   onClose: () => void
   onSaved: () => void
   defaultDate?: string
+  editTransaction?: Transaction
 }
 
-function AddTransactionForm({ onClose, onSaved, defaultDate }: AddTransactionProps) {
+function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: AddTransactionProps) {
   const today = defaultDate ?? new Date().toISOString().slice(0, 10)
+  const isEdit = !!editTransaction
 
-  const [type, setType] = useState<TransactionType>('uscita')
-  const [description, setDescription] = useState('')
-  const [amount, setAmount] = useState('')
-  const [date, setDate] = useState(today)
-  const [category, setCategory] = useState('')
-  const [recurring, setRecurring] = useState(false)
-  const [recurringMonths, setRecurringMonths] = useState(1)
+  const [type, setType] = useState<TransactionType>(editTransaction?.type ?? 'uscita')
+  const [description, setDescription] = useState(editTransaction?.description ?? '')
+  const [amount, setAmount] = useState(editTransaction ? String(editTransaction.amount) : '')
+  const [date, setDate] = useState(editTransaction?.date ?? today)
+  const [category, setCategory] = useState(editTransaction?.category ?? '')
+  const [recurring, setRecurring] = useState(editTransaction?.recurring ?? false)
+  const [recurringMonths, setRecurringMonths] = useState(editTransaction?.recurringMonths ?? 1)
   const [showNewCat, setShowNewCat] = useState(false)
   const [newCatName, setNewCatName] = useState('')
   const [saveForFuture, setSaveForFuture] = useState(false)
@@ -32,6 +34,22 @@ function AddTransactionForm({ onClose, onSaved, defaultDate }: AddTransactionPro
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!isValid) return
+
+    if (isEdit && editTransaction) {
+      updateTransaction({
+        ...editTransaction,
+        type,
+        description: description.trim() || category,
+        amount: Number(amount),
+        date,
+        category,
+        recurring,
+        recurringMonths: recurring ? recurringMonths : 0,
+      })
+      onSaved()
+      onClose()
+      return
+    }
 
     const tx: Transaction = {
       id: generateId(),
@@ -70,7 +88,9 @@ function AddTransactionForm({ onClose, onSaved, defaultDate }: AddTransactionPro
         {/* Header */}
         <div className="flex items-center justify-between p-4" style={{ borderBottom: '1px solid var(--border)' }}>
           <h2 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
-            {type === 'entrata' ? FORM.titoloEntrata : FORM.titoloUscita}
+            {isEdit
+              ? (type === 'entrata' ? FORM.titoloModificaEntrata : FORM.titoloModificaUscita)
+              : (type === 'entrata' ? FORM.titoloEntrata : FORM.titoloUscita)}
           </h2>
           <button
             onClick={onClose}
@@ -275,7 +295,9 @@ function AddTransactionForm({ onClose, onSaved, defaultDate }: AddTransactionPro
             }`}
             style={!isValid ? { backgroundColor: 'var(--text-muted)' } : undefined}
           >
-            {type === 'entrata' ? FORM.submitEntrata : FORM.submitUscita}
+            {isEdit
+              ? (type === 'entrata' ? FORM.modificaEntrata : FORM.modificaUscita)
+              : (type === 'entrata' ? FORM.submitEntrata : FORM.submitUscita)}
           </button>
         </form>
       </div>

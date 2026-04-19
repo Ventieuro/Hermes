@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { PIN } from '../shared/labels'
-import { loadPin, savePin, setUnlocked } from '../shared/storage'
+import { loadPin, savePin, verifyPin, setUnlocked } from '../shared/storage'
 
 interface PinLockProps {
   onUnlocked: () => void
@@ -54,7 +54,7 @@ function PinLock({ onUnlocked }: PinLockProps) {
     }
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
     const code = pin.join('')
     if (code.length < 4) return
 
@@ -72,11 +72,12 @@ function PinLock({ onUnlocked }: PinLockProps) {
         setTimeout(() => confirmInputsRef.current[0]?.focus(), 50)
         return
       }
-      savePin(code)
+      await savePin(code)
       setUnlocked()
       onUnlocked()
     } else {
-      if (code === storedPin) {
+      const ok = await verifyPin(code)
+      if (ok) {
         setUnlocked()
         onUnlocked()
       } else {

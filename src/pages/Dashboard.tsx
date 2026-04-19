@@ -48,6 +48,7 @@ function Dashboard() {
   const [payDay, setPayDay] = useState(settings.payDay)
   const [monthOffset, setMonthOffset] = useState(0)
   const [showForm, setShowForm] = useState(false)
+  const [editingTx, setEditingTx] = useState<Transaction | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
 
   const refresh = useCallback(() => setRefreshKey((k) => k + 1), [])
@@ -220,6 +221,14 @@ function Dashboard() {
                   {tx.type === 'entrata' ? '+' : '-'}{formatEuro(tx.amount)}
                 </p>
                 <button
+                  onClick={() => setEditingTx(tx)}
+                  className="w-7 h-7 flex items-center justify-center rounded-full transition text-xs"
+                  style={{ color: 'var(--text-muted)' }}
+                  aria-label="Modifica"
+                >
+                  ✏️
+                </button>
+                <button
                   onClick={() => handleDelete(tx)}
                   className="w-7 h-7 flex items-center justify-center rounded-full transition text-xs"
                   style={{ color: 'var(--text-muted)' }}
@@ -243,11 +252,18 @@ function Dashboard() {
         +
       </button>
 
-      {/* Modale inserimento */}
+      {/* Modale inserimento / modifica */}
       {showForm && (
         <AddTransactionForm
           onClose={() => setShowForm(false)}
           onSaved={refresh}
+        />
+      )}
+      {editingTx && (
+        <AddTransactionForm
+          onClose={() => setEditingTx(null)}
+          onSaved={refresh}
+          editTransaction={editingTx}
         />
       )}
     </div>

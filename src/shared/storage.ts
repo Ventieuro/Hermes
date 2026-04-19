@@ -6,10 +6,28 @@ const SETTINGS_KEY = 'hermes-settings'
 export function loadTransactions(): Transaction[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    return raw ? JSON.parse(raw) : []
+    if (!raw) return []
+    const parsed = JSON.parse(raw)
+    if (!Array.isArray(parsed)) return []
+    return parsed.filter(isValidTransaction)
   } catch {
     return []
   }
+}
+
+function isValidTransaction(data: unknown): data is Transaction {
+  if (typeof data !== 'object' || data === null) return false
+  const t = data as Record<string, unknown>
+  return (
+    typeof t.id === 'string' &&
+    (t.type === 'entrata' || t.type === 'uscita') &&
+    typeof t.description === 'string' &&
+    typeof t.amount === 'number' && t.amount > 0 &&
+    typeof t.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(t.date) &&
+    typeof t.recurring === 'boolean' &&
+    typeof t.recurringMonths === 'number' &&
+    typeof t.category === 'string'
+  )
 }
 
 export function saveTransactions(transactions: Transaction[]) {
@@ -24,6 +42,11 @@ export function addTransaction(tx: Transaction) {
 
 export function deleteTransaction(id: string) {
   const all = loadTransactions().filter((t) => t.id !== id)
+  saveTransactions(all)
+}
+
+export function updateTransaction(updated: Transaction) {
+  const all = loadTransactions().map((t) => t.id === updated.id ? updated : t)
   saveTransactions(all)
 }
 
@@ -54,12 +77,21 @@ export function saveSettings(settings: AppSettings) {
 }
 
 export function generateId(): string {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7)
+  const bytes = new Uint8Array(8)
+  crypto.getRandomValues(bytes)
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('')
 }
 
 // ─── PIN Lock ────────────────────────────────────────────
 const PIN_KEY = 'hermes-pin'
 const PIN_SESSION_KEY = 'hermes-unlocked'
+const SESSION_TIMEOUT_MS = 30 * 60 * 1000 // 30 minutes
+
+async function sha256(text: string): Promise<string> {
+  const data = new TextEncoder().encode(text)
+  const hash = await crypto.subtle.digest('SHA-256', data)
+  return Array.from(new Uint8Array(hash), (b) => b.toString(16).padStart(2, '0')).join('')
+}
 
 export function loadPin(): string | null {
   try {
@@ -69,20 +101,40 @@ export function loadPin(): string | null {
   }
 }
 
-export function savePin(pin: string) {
-  localStorage.setItem(PIN_KEY, pin)
+export async function savePin(pin: string) {
+  const hash = await sha256(pin)
+  localStorage.setItem(PIN_KEY, hash)
+}
+
+export async function verifyPin(pin: string): Promise<boolean> {
+  const stored = loadPin()
+  if (!stored) return false
+  const hash = await sha256(pin)
+  // Constant-time comparison
+  if (hash.length !== stored.length) return false
+  let result = 0
+  for (let i = 0; i < hash.length; i++) {
+    result |= hash.charCodeAt(i) ^ stored.charCodeAt(i)
+  }
+  return result === 0
 }
 
 export function isUnlocked(): boolean {
   try {
-    return sessionStorage.getItem(PIN_SESSION_KEY) === 'true'
+    const ts = sessionStorage.getItem(PIN_SESSION_KEY)
+    if (!ts) return false
+    if (Date.now() - Number(ts) > SESSION_TIMEOUT_MS) {
+      sessionStorage.removeItem(PIN_SESSION_KEY)
+      return false
+    }
+    return true
   } catch {
     return false
   }
 }
 
 export function setUnlocked() {
-  sessionStorage.setItem(PIN_SESSION_KEY, 'true')
+  sessionStorage.setItem(PIN_SESSION_KEY, Date.now().toString())
 }
 
 // ─── Categorie Custom ────────────────────────────────────

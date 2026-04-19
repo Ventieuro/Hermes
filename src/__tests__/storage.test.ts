@@ -3,6 +3,7 @@ import {
   loadTransactions,
   addTransaction,
   deleteTransaction,
+  updateTransaction,
   getTransactionsInPeriod,
   generateId,
 } from '../shared/storage'
@@ -111,6 +112,41 @@ describe('storage.ts', () => {
     it('returns empty array on invalid JSON', () => {
       localStorage.setItem('hermes-transactions', 'not json')
       expect(loadTransactions()).toEqual([])
+    })
+
+    it('filters out invalid transactions', () => {
+      localStorage.setItem('hermes-transactions', JSON.stringify([
+        makeTx({ description: 'Valid' }),
+        { id: '123', type: 'entrata', description: 'Missing fields' },
+        { broken: true },
+      ]))
+      const loaded = loadTransactions()
+      expect(loaded).toHaveLength(1)
+      expect(loaded[0].description).toBe('Valid')
+    })
+  })
+
+  describe('updateTransaction', () => {
+    it('updates a transaction by id', () => {
+      const tx = makeTx({ description: 'Originale', amount: 10 })
+      addTransaction(tx)
+      updateTransaction({ ...tx, description: 'Modificata', amount: 99 })
+      const loaded = loadTransactions()
+      expect(loaded).toHaveLength(1)
+      expect(loaded[0].description).toBe('Modificata')
+      expect(loaded[0].amount).toBe(99)
+    })
+
+    it('does not change other transactions', () => {
+      const tx1 = makeTx({ description: 'A' })
+      const tx2 = makeTx({ description: 'B' })
+      addTransaction(tx1)
+      addTransaction(tx2)
+      updateTransaction({ ...tx1, description: 'A2' })
+      const loaded = loadTransactions()
+      expect(loaded).toHaveLength(2)
+      expect(loaded.find((t) => t.id === tx1.id)?.description).toBe('A2')
+      expect(loaded.find((t) => t.id === tx2.id)?.description).toBe('B')
     })
   })
 })
