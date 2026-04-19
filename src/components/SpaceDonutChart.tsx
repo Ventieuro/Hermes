@@ -1,5 +1,6 @@
 import { useRef, useEffect, useCallback } from 'react'
 import { DASHBOARD } from '../shared/labels'
+import MiniPlanet from './MiniPlanet'
 
 // ─── Types ───────────────────────────────────────────────
 interface SliceData {
@@ -128,6 +129,7 @@ function drawPlanet(
   angle: number,
   planetR: number,
   color: string,
+  direction: number,
 ) {
   const px = cx + orbitR * Math.cos(angle)
   const py = cy + orbitR * Math.sin(angle)
@@ -158,18 +160,18 @@ function drawPlanet(
   ctx.fillStyle = bodyGrad
   ctx.fill()
 
-  // Crescent shadow
+  // Crescent shadow — flip X offset based on direction
   ctx.beginPath()
-  ctx.arc(px + planetR * 0.25, py + planetR * 0.15, planetR * 0.85, 0, Math.PI * 2)
+  ctx.arc(px + planetR * 0.25 * direction, py + planetR * 0.15, planetR * 0.85, 0, Math.PI * 2)
   ctx.fillStyle = 'rgba(0,0,0,0.3)'
   ctx.globalCompositeOperation = 'source-atop'
   ctx.fill()
   ctx.globalCompositeOperation = 'source-over'
 
-  // Trail (lunetta)
+  // Trail — always behind the planet
   const trailLen = 8
   for (let t = 1; t <= trailLen; t++) {
-    const ta = angle - t * 0.04
+    const ta = angle - t * 0.04 * direction
     const tx = cx + orbitR * Math.cos(ta)
     const ty = cy + orbitR * Math.sin(ta)
     const alpha = 0.15 * (1 - t / trailLen)
@@ -270,12 +272,15 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses }: SpaceDonutChart
 
     const cx = W / 2
     const cy = H / 2
-    const outerR = 130
-    const innerR = 75
+    const outerR = 115
+    const innerR = 66
 
-    // Planet orbit config
-    const orbitBase = outerR + 18
-    const orbitStep = slices.length > 1 ? 20 / (slices.length - 1) : 0
+    // Planet orbit config — keep planets inside canvas
+    const maxPlanetR = 12
+    const orbitBase = outerR + 14
+    const maxOrbitR = W / 2 - maxPlanetR - 4
+    const orbitRange = maxOrbitR - orbitBase
+    const orbitStep = slices.length > 1 ? orbitRange / (slices.length - 1) : 0
     const orbitRadii = slices.map((_, i) => orbitBase + i * orbitStep)
     const planetSpeeds = slices.map((_, i) => (i % 2 === 0 ? 1 : -1) * (0.3 + i * 0.15))
     const maxPercent = Math.max(...slices.map((s) => s.percent))
@@ -311,7 +316,8 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses }: SpaceDonutChart
       slices.forEach((slice, i) => {
         const baseAngle = -Math.PI / 2 + (i * Math.PI * 2) / slices.length
         const angle = baseAngle + elapsed * planetSpeeds[i]
-        drawPlanet(c, cx, cy, orbitRadii[i], angle, planetRadius(slice.percent), slice.color)
+        const dir = planetSpeeds[i] >= 0 ? 1 : -1
+        drawPlanet(c, cx, cy, orbitRadii[i], angle, planetRadius(slice.percent), slice.color, dir)
       })
 
       // Center text
@@ -355,10 +361,7 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses }: SpaceDonutChart
             className="flex items-center gap-3 py-1.5"
             style={{ borderBottom: '1px solid var(--border)' }}
           >
-            <span
-              className="w-3 h-3 rounded-full flex-shrink-0"
-              style={{ backgroundColor: s.color, boxShadow: `0 0 6px ${s.color}60` }}
-            />
+            <MiniPlanet color={s.color} size={20} />
             <div className="flex-1 min-w-0">
               <span className="block text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>
                 {s.category}

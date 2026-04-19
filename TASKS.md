@@ -32,6 +32,20 @@
 
 ## Completati
 
+### ✅ TASK-016 — Legenda grafici con pianeti animati su canvas (19/04/2026)
+- [x] Creato componente MiniPlanet: mini canvas animato con glow pulsante, gradiente, crescent shadow
+- [x] Integrato in SpaceDonutChart e SolarSystemChart (sostituisce pallino HTML)
+- [x] Changelog v1.7.0 aggiornato con rename + grafici + iOS
+- [x] Build check passato
+
+### ✅ TASK-015 — Rinomina app da AstroCoin a Hermes (19/04/2026)
+- [x] Rinominati tutti i riferimenti in src/ (labels, storage keys, changelog, notifications, PWA)
+- [x] Aggiornati vite.config.ts (base, manifest, scope, start_url → /Hermes/)
+- [x] Aggiornati index.html, package.json
+- [x] Aggiornati test (labels, storage, theme)
+- [x] 28 test passati + build check OK
+- [x] Nota: serve rinominare repo GitHub da AstroCoin a Hermes
+
 ### ✅ TASK-014 — Solar System chart animato su canvas (19/04/2026)
 - [x] Riscritto SolarSystemChart: da SVG/HTML statico a canvas con requestAnimationFrame
 - [x] Sfondo cosmico (#080b18) con 80 stelle scintillanti

@@ -12,6 +12,30 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.7.0',
+    date: '2026-04-19',
+    changes: {
+      it: [
+        '🪐 Nuovo nome: Hermes!',
+        '🎨 Grafico a ciambella spaziale animato su canvas',
+        '🌍 Sistema solare animato: pianeti orbitanti con scie luminose',
+        '📱 Supporto installazione PWA su iPhone/iPad',
+      ],
+      en: [
+        '🪐 New name: Hermes!',
+        '🎨 Animated space donut chart on canvas',
+        '🌍 Animated solar system: orbiting planets with light trails',
+        '📱 PWA install support on iPhone/iPad',
+      ],
+      es: [
+        '🪐 ¡Nuevo nombre: Hermes!',
+        '🎨 Gráfico de dona espacial animado en canvas',
+        '🌍 Sistema solar animado: planetas orbitando con estelas de luz',
+        '📱 Soporte de instalación PWA en iPhone/iPad',
+      ],
+    },
+  },
+  {
     version: '1.6.0',
     date: '2026-04-19',
     changes: {

@@ -2,6 +2,7 @@ import { useRef, useEffect, useCallback, useMemo } from 'react'
 import type { Transaction } from '../shared/types'
 import { DASHBOARD } from '../shared/labels'
 import { getCategoryIcon } from '../shared/categoryIcons'
+import MiniPlanet from './MiniPlanet'
 
 // ─── Colori pianeti ──────────────────────────────────────
 const PLANET_COLORS = [
@@ -341,10 +342,7 @@ function SolarSystemChart({ transactions }: SolarSystemChartProps) {
             className="flex items-center gap-3 py-1.5"
             style={{ borderBottom: '1px solid var(--border)' }}
           >
-            <span
-              className="w-3 h-3 rounded-full flex-shrink-0"
-              style={{ backgroundColor: p.color, boxShadow: `0 0 6px ${p.color}60` }}
-            />
+            <MiniPlanet color={p.color} size={20} />
             <div className="flex-1 min-w-0">
               <span className="block text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>
                 {p.icon} {p.category}
