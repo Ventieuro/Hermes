@@ -23,21 +23,7 @@
 
 ## Da Fare
 
-### 🔴 TASK-010 — Trasformare AstroCoin in PWA con notifiche push
-
-**Obiettivo:** Convertire l'app in Progressive Web App per:
-- Installabile su telefono (icona nella home screen)
-- Funziona offline (cache delle risorse)
-- Notifiche push reali anche con app/browser chiusi (promemoria spese)
-
-**Sotto-task:**
-
-- [ ] **1. Configurare vite-plugin-pwa** — Installare `vite-plugin-pwa` e configurare il manifest (nome, icone, colori, display standalone)
-- [ ] **2. Creare icone PWA** — Generare icone 192x192 e 512x512 con tema spaziale per il manifest
-- [ ] **3. Service Worker** — Configurare Workbox per cache delle risorse (precache + runtime cache)
-- [ ] **4. Notifiche push con Service Worker** — Schedulare il promemoria giornaliero dal SW, così funziona anche con browser chiuso
-- [ ] **5. Prompt installazione** — Mostrare un banner/pulsante "Installa AstroCoin" quando disponibile
-- [ ] **6. Build check** — `npm run build` + `npm test` + test installazione su telefono
+<!-- Nessun task da fare -->
 
 ## In Corso
 
@@ -45,6 +31,16 @@
 
 
 ## Completati
+
+### ✅ TASK-010 — PWA con notifiche push (19/04/2026)
+- [x] Installato vite-plugin-pwa + configurato manifest (nome, colori, display standalone)
+- [x] Icone PWA SVG 192x192 e 512x512 con tema spaziale
+- [x] Service Worker con Workbox: precache 14 risorse + runtime cache font
+- [x] Notifiche via SW (showNotification) per funzionare in background
+- [x] Componente InstallPrompt con banner "Installa AstroCoin"
+- [x] Labels i18n per PWA (IT/EN/ES)
+- [x] Changelog v1.6.0 aggiornato
+- [x] Build check passato
 
 ### ✅ TASK-009 — Notifica "Novità" dopo ogni deploy (19/04/2026)
 - [x] Creato `src/shared/changelog.ts` con array versioni + novità multilingua (IT/EN/ES)

@@ -4,6 +4,21 @@ import { NOTIFICHE } from './labels'
 
 const LAST_NOTIF_KEY = 'astrocoin-last-notification'
 
+function showNotification(body: string) {
+  // Try SW notification first (works even when tab is in background on mobile)
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    navigator.serviceWorker.ready.then((reg) => {
+      reg.showNotification('🚀 AstroCoin', {
+        body,
+        icon: '/AstroCoin/pwa-192x192.svg',
+        badge: '/AstroCoin/pwa-192x192.svg',
+      })
+    })
+  } else {
+    new Notification('🚀 AstroCoin', { body })
+  }
+}
+
 export function useNotificationScheduler() {
   useEffect(() => {
     const interval = window.setInterval(() => {
@@ -23,9 +38,7 @@ export function useNotificationScheduler() {
           localStorage.setItem(LAST_NOTIF_KEY, today)
         } catch { return }
 
-        new Notification('🚀 AstroCoin', {
-          body: NOTIFICHE.messaggioPromemoria,
-        })
+        showNotification(NOTIFICHE.messaggioPromemoria)
       }
     }, 30_000)
 

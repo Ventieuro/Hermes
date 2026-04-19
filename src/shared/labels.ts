@@ -208,6 +208,17 @@ const STRINGS = {
       '¡Oye astronauta! 🚀 ¿Has registrado tus gastos de hoy?',
     ),
   },
+
+  // ── PWA Install ────────────────────────────────────────
+  pwa: {
+    installTitle:   t('Installa AstroCoin',                             'Install AstroCoin',                      'Instalar AstroCoin'),
+    installMessage: t('Aggiungi alla schermata home per accesso rapido', 'Add to home screen for quick access',    'Añade a la pantalla de inicio para acceso rápido'),
+    installButton:  t('Installa',                                       'Install',                                'Instalar'),
+    chiudi:         t('Non ora',                                        'Not now',                                'Ahora no'),
+    iosMessage:     t('Per installare: tocca ⬆️ poi "Aggiungi alla schermata Home"',
+                      'To install: tap ⬆️ then "Add to Home Screen"',
+                      'Para instalar: toca ⬆️ y luego "Añadir a pantalla de inicio"'),
+  },
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -287,3 +298,4 @@ export const PIN:       Labels['pin']       = localize(STRINGS.pin)
 export const GESTIONE_CATEGORIE: Labels['gestioneCategorie'] = localize(STRINGS.gestioneCategorie)
 export const SETTINGS:  Labels['settings']  = localize(STRINGS.settings)
 export const NOTIFICHE: Labels['notifiche'] = localize(STRINGS.notifiche)
+export const PWA:       Labels['pwa']       = localize(STRINGS.pwa)

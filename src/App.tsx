@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
 import PinLock from './components/PinLock'
 import WhatsNew from './components/WhatsNew'
+import InstallPrompt from './components/InstallPrompt'
 import Dashboard from './pages/Dashboard'
 import Categories from './pages/Categories'
 import NotFound from './pages/NotFound'
@@ -20,6 +21,7 @@ function App() {
   return (
     <>
       <WhatsNew />
+      <InstallPrompt />
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Dashboard />} />
