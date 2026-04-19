@@ -1,5 +1,8 @@
+import { useState } from 'react'
 import type { Transaction } from '../shared/types'
 import { DASHBOARD } from '../shared/labels'
+import SolarSystemChart from './SolarSystemChart'
+import SpaceDonutChart from './SpaceDonutChart'
 
 // ─── Colori per le categorie di uscita ───────────────────
 const EXPENSE_COLORS = [
@@ -62,87 +65,63 @@ function buildSlices(transactions: Transaction[]): Slice[] {
   return slices
 }
 
-function buildConicGradient(slices: Slice[]): string {
-  const parts: string[] = []
-  let cumulative = 0
-  for (const s of slices) {
-    const start = cumulative
-    cumulative += s.percent
-    parts.push(`${s.color} ${start}% ${cumulative}%`)
-  }
-  return `conic-gradient(${parts.join(', ')})`
-}
-
-function formatEuro(amount: number) {
-  return amount.toLocaleString('it-IT', { style: 'currency', currency: 'EUR' })
-}
-
 function ExpensePieChart({ transactions }: ExpensePieChartProps) {
   const slices = buildSlices(transactions)
   const totalIncome = transactions.filter((t) => t.type === 'entrata').reduce((s, t) => s + t.amount, 0)
   const totalExpenses = transactions.filter((t) => t.type === 'uscita').reduce((s, t) => s + t.amount, 0)
+  const [view, setView] = useState<'pie' | 'solar'>('pie')
 
   return (
     <div
       className="rounded-2xl p-4 transition-colors duration-300"
       style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border)' }}
     >
-      <h2
-        className="text-sm font-semibold uppercase tracking-wide mb-4"
-        style={{ color: 'var(--text-muted)' }}
-      >
-        {DASHBOARD.graficoSpese}
-      </h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2
+          className="text-sm font-semibold uppercase tracking-wide"
+          style={{ color: 'var(--text-muted)' }}
+        >
+          {DASHBOARD.graficoSpese}
+        </h2>
+
+        {/* Toggle Torta / Sistema Solare */}
+        {slices.length > 0 && (
+          <div
+            className="flex rounded-lg p-0.5 text-xs"
+            style={{ backgroundColor: 'var(--input-bg)', border: '1px solid var(--input-border)' }}
+          >
+            <button
+              onClick={() => setView('pie')}
+              className="px-2.5 py-1 rounded-md transition-all font-medium"
+              style={{
+                backgroundColor: view === 'pie' ? 'var(--accent)' : 'transparent',
+                color: view === 'pie' ? '#fff' : 'var(--text-muted)',
+              }}
+            >
+              🥧 {DASHBOARD.vistaTorta}
+            </button>
+            <button
+              onClick={() => setView('solar')}
+              className="px-2.5 py-1 rounded-md transition-all font-medium"
+              style={{
+                backgroundColor: view === 'solar' ? 'var(--accent)' : 'transparent',
+                color: view === 'solar' ? '#fff' : 'var(--text-muted)',
+              }}
+            >
+              🪐 {DASHBOARD.vistaSolare}
+            </button>
+          </div>
+        )}
+      </div>
 
       {slices.length === 0 ? (
         <p className="text-sm text-center py-4" style={{ color: 'var(--text-muted)' }}>
           {DASHBOARD.nessunGrafico}
         </p>
+      ) : view === 'solar' ? (
+        <SolarSystemChart transactions={transactions} />
       ) : (
-        <div className="flex flex-col sm:flex-row items-center gap-4">
-          {/* Donut */}
-          <div className="relative w-44 h-44 flex-shrink-0">
-            <div
-              className="w-full h-full rounded-full"
-              style={{ background: buildConicGradient(slices) }}
-            />
-            {/* Buco centrale */}
-            <div
-              className="absolute inset-0 m-auto w-24 h-24 rounded-full flex flex-col items-center justify-center"
-              style={{ backgroundColor: 'var(--bg-card)' }}
-            >
-              <span className="text-[10px] font-semibold text-green-500">{DASHBOARD.entrate}</span>
-              <span className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>
-                {formatEuro(totalIncome)}
-              </span>
-              <span className="text-[10px] font-semibold text-red-500 mt-0.5">{DASHBOARD.uscite}</span>
-              <span className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>
-                {formatEuro(totalExpenses)}
-              </span>
-            </div>
-          </div>
-
-          {/* Legenda */}
-          <div className="flex-1 space-y-1.5 w-full">
-            {slices.map((s) => (
-              <div key={s.category} className="flex items-center gap-2 text-sm">
-                <span
-                  className="w-3 h-3 rounded-sm flex-shrink-0"
-                  style={{ backgroundColor: s.color }}
-                />
-                <span className="flex-1 truncate" style={{ color: 'var(--text-primary)' }}>
-                  {s.category}
-                </span>
-                <span className="font-medium tabular-nums" style={{ color: 'var(--text-secondary)' }}>
-                  {s.percent}%
-                </span>
-                <span className="text-xs tabular-nums" style={{ color: 'var(--text-muted)' }}>
-                  {formatEuro(s.amount)}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
+        <SpaceDonutChart slices={slices} totalIncome={totalIncome} totalExpenses={totalExpenses} />
       )}
     </div>
   )

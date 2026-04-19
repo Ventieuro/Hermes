@@ -32,6 +32,44 @@
 
 ## Completati
 
+### ✅ TASK-014 — Solar System chart animato su canvas (19/04/2026)
+- [x] Riscritto SolarSystemChart: da SVG/HTML statico a canvas con requestAnimationFrame
+- [x] Sfondo cosmico (#080b18) con 80 stelle scintillanti
+- [x] Sole centrale con gradiente radiale, glow pulsante e testo totale
+- [x] Pianeti orbitanti: gradiente, alone di luce, ombra crescent, trail di scia
+- [x] Orbite tratteggiate con opacità animata
+- [x] Emoji categoria + percentuale su ogni pianeta
+- [x] Legenda laterale con pallino glow, stile coerente con SpaceDonutChart
+- [x] Build check passato + deployato
+
+### ✅ TASK-013 — Donut chart spaziale animato su canvas (19/04/2026)
+- [x] Componente SpaceDonutChart: canvas con requestAnimationFrame
+- [x] Sfondo scuro con 80 stelle scintillanti animate
+- [x] Fette donut con bordo luminoso pulsante + gap lines
+- [x] Pianeti orbitanti per ogni fetta: gradiente, alone di luce, lunetta trail, velocità diverse
+- [x] Anelli orbitali tratteggiati
+- [x] Centro con etichette Entrate/Uscite + importi
+- [x] Legenda laterale con pallino glow, nome, importo, percentuale colorata
+- [x] Integrato in ExpensePieChart come vista "Torta" (sostituisce vecchio CSS donut)
+- [x] Build check passato + deployato
+
+### ✅ TASK-012 — Grafico Sistema Solare + toggle vista (19/04/2026)
+- [x] Creato componente SolarSystemChart: categorie come pianeti orbitanti, sole = totale spese
+- [x] Dimensione pianeta proporzionale alla percentuale, emoji + % su ogni pianeta
+- [x] Orbite tratteggiate, sfondo stellato, animazione glow
+- [x] Legenda laterale con icone, importi e percentuali
+- [x] Toggle 🥧 Torta / 🪐 Sistema solare in ExpensePieChart
+- [x] Labels i18n (vistaTorta, vistaSolare, categorieLabel)
+- [x] Build check passato + deployato
+
+### ✅ TASK-011 — Supporto installazione PWA su iOS (19/04/2026)
+- [x] Rilevamento iOS (iPad/iPhone/iPod) in InstallPrompt
+- [x] Banner istruzioni "tocca ⬆️ poi Aggiungi alla schermata Home" su Safari iOS
+- [x] Nasconde pulsante Installa su iOS (non supportato), mostra solo istruzioni
+- [x] Controllo standalone mode: banner non appare se già installata
+- [x] Label i18n iosMessage (IT/EN/ES)
+- [x] Build check passato + deployato
+
 ### ✅ TASK-010 — PWA con notifiche push (19/04/2026)
 - [x] Installato vite-plugin-pwa + configurato manifest (nome, colori, display standalone)
 - [x] Icone PWA SVG 192x192 e 512x512 con tema spaziale

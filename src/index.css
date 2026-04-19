@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+/* ─── Animazione pianeti ─── */
+@keyframes orbit-glow {
+  0% { filter: brightness(1); }
+  100% { filter: brightness(1.25); }
+}
+
 /* ========== TEMA: Spazio ========== */
 :root,
 [data-theme="spazio"] {
