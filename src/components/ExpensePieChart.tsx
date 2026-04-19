@@ -3,6 +3,7 @@ import type { Transaction } from '../shared/types'
 import { DASHBOARD } from '../shared/labels'
 import SolarSystemChart from './SolarSystemChart'
 import SpaceDonutChart from './SpaceDonutChart'
+import CometChart from './CometChart'
 
 // ─── Colori per le categorie di uscita ───────────────────
 const EXPENSE_COLORS = [
@@ -69,7 +70,7 @@ function ExpensePieChart({ transactions }: ExpensePieChartProps) {
   const slices = buildSlices(transactions)
   const totalIncome = transactions.filter((t) => t.type === 'entrata').reduce((s, t) => s + t.amount, 0)
   const totalExpenses = transactions.filter((t) => t.type === 'uscita').reduce((s, t) => s + t.amount, 0)
-  const [view, setView] = useState<'pie' | 'solar'>('pie')
+  const [view, setView] = useState<'pie' | 'solar' | 'comet'>('pie')
 
   return (
     <div
@@ -110,6 +111,16 @@ function ExpensePieChart({ transactions }: ExpensePieChartProps) {
             >
               🪐 {DASHBOARD.vistaSolare}
             </button>
+            <button
+              onClick={() => setView('comet')}
+              className="px-2.5 py-1 rounded-md transition-all font-medium"
+              style={{
+                backgroundColor: view === 'comet' ? 'var(--accent)' : 'transparent',
+                color: view === 'comet' ? '#fff' : 'var(--text-muted)',
+              }}
+            >
+              ☄️ {DASHBOARD.vistaCometa}
+            </button>
           </div>
         )}
       </div>
@@ -118,6 +129,8 @@ function ExpensePieChart({ transactions }: ExpensePieChartProps) {
         <p className="text-sm text-center py-4" style={{ color: 'var(--text-muted)' }}>
           {DASHBOARD.nessunGrafico}
         </p>
+      ) : view === 'comet' ? (
+        <CometChart />
       ) : view === 'solar' ? (
         <SolarSystemChart transactions={transactions} />
       ) : (

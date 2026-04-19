@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useTheme } from '../shared/ThemeContext'
 import { loadNotificationSettings, saveNotificationSettings } from '../shared/storage'
-import { SETTINGS } from '../shared/labels'
+import { SETTINGS, NOTIFICHE } from '../shared/labels'
 
 function Settings() {
   const [isOpen, setIsOpen] = useState(false)
@@ -134,6 +134,29 @@ function Settings() {
 
             {notifSettings.enabled && (
               <div className="mt-3 space-y-2">
+                <button
+                  onClick={() => {
+                    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                      navigator.serviceWorker.ready.then((reg) => {
+                        reg.showNotification('🚀 Hermes', {
+                          body: NOTIFICHE.messaggioPromemoria,
+                          icon: '/Hermes/pwa-192x192.svg',
+                          badge: '/Hermes/pwa-192x192.svg',
+                        })
+                      })
+                    } else if ('Notification' in window && Notification.permission === 'granted') {
+                      new Notification('🚀 Hermes', { body: NOTIFICHE.messaggioPromemoria })
+                    }
+                  }}
+                  className="w-full py-2 rounded-xl text-xs font-medium transition active:scale-95"
+                  style={{
+                    backgroundColor: 'var(--bg-secondary)',
+                    color: 'var(--text-secondary)',
+                    border: '1px solid var(--border)',
+                  }}
+                >
+                  {SETTINGS.testNotifica}
+                </button>
                 <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
                   {SETTINGS.orarioPromemoria}
                 </p>

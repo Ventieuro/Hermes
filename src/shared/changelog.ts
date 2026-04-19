@@ -12,6 +12,27 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.9.0',
+    date: '2026-04-20',
+    changes: {
+      it: [
+        '☄️ Nuovo grafico Cometa: spese annuali animate su canvas',
+        '🔔 Fix notifiche: ora arrivano anche se apri l\'app dopo l\'orario',
+        '📊 Tab rinominate: Riepilogo, Spese, Annuale',
+      ],
+      en: [
+        '☄️ New Comet chart: animated yearly expenses on canvas',
+        '🔔 Fix notifications: now arrive even if you open the app late',
+        '📊 Renamed tabs: Overview, Expenses, Yearly',
+      ],
+      es: [
+        '☄️ Nuevo gráfico Cometa: gastos anuales animados en canvas',
+        '🔔 Fix notificaciones: ahora llegan aunque abras la app tarde',
+        '📊 Pestañas renombradas: Resumen, Gastos, Anual',
+      ],
+    },
+  },
+  {
     version: '1.8.0',
     date: '2026-04-20',
     changes: {

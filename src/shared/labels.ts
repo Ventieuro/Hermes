@@ -73,8 +73,9 @@ const STRINGS = {
     nessunGrafico:                t('Nessuna uscita in questo periodo.',               'No expenses in this period.',            'No hay gastos en este período.'),
     risparmiLabel:                t('Risparmi',                                        'Savings',                                'Ahorros'),
     categorieLabel:               t('Categorie',                                       'Categories',                             'Categorías'),
-    vistaTorta:                   t('Torta',                                           'Pie',                                    'Pastel'),
-    vistaSolare:                  t('Sistema solare',                                  'Solar system',                           'Sistema solar'),
+    vistaTorta:                   t('Riepilogo',                                       'Overview',                               'Resumen'),
+    vistaSolare:                  t('Spese',                                           'Expenses',                               'Gastos'),
+    vistaCometa:                  t('Annuale',                                         'Yearly',                                 'Anual'),
   },
 
   // ── Mascotte ───────────────────────────────────────────
@@ -205,6 +206,7 @@ const STRINGS = {
     orarioPromemoria:  t('A che ora?',                   'At what time?',               '¿A qué hora?'),
     gestioneCategorie: t('Gestione Categorie',           'Manage Categories',           'Gestión de Categorías'),
     permessoNegato:    t('Permesso notifiche negato',    'Notification permission denied','Permiso de notificaciones denegado'),
+    testNotifica:      t('🔔 Invia notifica di test',      '🔔 Send test notification',     '🔔 Enviar notificación de prueba'),
   },
 
   // ── Notifiche ──────────────────────────────────────────

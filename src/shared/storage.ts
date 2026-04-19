@@ -95,7 +95,13 @@ async function sha256(text: string): Promise<string> {
 
 export function loadPin(): string | null {
   try {
-    return localStorage.getItem(PIN_KEY)
+    const pin = localStorage.getItem(PIN_KEY)
+    // Migration: old plain-text PINs are not 64-char hex (SHA-256) → force reset
+    if (pin && !/^[0-9a-f]{64}$/.test(pin)) {
+      localStorage.removeItem(PIN_KEY)
+      return null
+    }
+    return pin
   } catch {
     return null
   }
