@@ -15,4 +15,9 @@ export const FEATURES = {
    * Disabilitare quando si vuole sostituire con un altro sistema di sync.
    */
   exportImportJson: true,
+
+  /**
+   * Trasferimento dati PC -> telefono tramite QR chunked.
+   */
+  qrTransfer: true,
 } as const

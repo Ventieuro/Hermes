@@ -2,6 +2,24 @@ import type { Transaction, AppSettings } from './types'
 
 const STORAGE_KEY = 'hermes-transactions'
 const SETTINGS_KEY = 'hermes-settings'
+const QR_TRANSFER_PREFIX = 'hermes-xfer-session-'
+const QR_TRANSFER_READY_KEY = 'hermes-xfer-ready-payload'
+
+function isIsoDateTime(value: unknown): value is string {
+  return typeof value === 'string' && !Number.isNaN(Date.parse(value))
+}
+
+function normalizeTransaction(tx: Transaction): Transaction {
+  const fallbackTs = `${tx.date}T00:00:00.000Z`
+  const createdAt = isIsoDateTime(tx.createdAt) ? tx.createdAt : fallbackTs
+  const updatedAt = isIsoDateTime(tx.updatedAt) ? tx.updatedAt : createdAt
+  return {
+    ...tx,
+    syncId: typeof tx.syncId === 'string' && tx.syncId ? tx.syncId : tx.id,
+    createdAt,
+    updatedAt,
+  }
+}
 
 export function loadTransactions(): Transaction[] {
   try {
@@ -9,7 +27,7 @@ export function loadTransactions(): Transaction[] {
     if (!raw) return []
     const parsed = JSON.parse(raw)
     if (!Array.isArray(parsed)) return []
-    return parsed.filter(isValidTransaction)
+    return parsed.filter(isValidTransaction).map(normalizeTransaction)
   } catch {
     return []
   }
@@ -20,6 +38,9 @@ function isValidTransaction(data: unknown): data is Transaction {
   const t = data as Record<string, unknown>
   return (
     typeof t.id === 'string' &&
+    (t.syncId === undefined || typeof t.syncId === 'string') &&
+    (t.createdAt === undefined || isIsoDateTime(t.createdAt)) &&
+    (t.updatedAt === undefined || isIsoDateTime(t.updatedAt)) &&
     (t.type === 'entrata' || t.type === 'uscita') &&
     typeof t.description === 'string' &&
     typeof t.amount === 'number' && t.amount > 0 &&
@@ -31,12 +52,15 @@ function isValidTransaction(data: unknown): data is Transaction {
 }
 
 export function saveTransactions(transactions: Transaction[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions))
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions.map(normalizeTransaction)))
 }
 
 export function addTransaction(tx: Transaction) {
   const all = loadTransactions()
-  all.push(tx)
+  all.push(normalizeTransaction({
+    ...tx,
+    updatedAt: new Date().toISOString(),
+  }))
   saveTransactions(all)
 }
 
@@ -46,7 +70,15 @@ export function deleteTransaction(id: string) {
 }
 
 export function updateTransaction(updated: Transaction) {
-  const all = loadTransactions().map((t) => t.id === updated.id ? updated : t)
+  const all = loadTransactions().map((t) => {
+    if (t.id !== updated.id) return t
+    return normalizeTransaction({
+      ...updated,
+      syncId: t.syncId ?? updated.syncId ?? updated.id,
+      createdAt: t.createdAt ?? updated.createdAt,
+      updatedAt: new Date().toISOString(),
+    })
+  })
   saveTransactions(all)
 }
 
@@ -271,12 +303,35 @@ interface EncryptedBackup {
   data: string  // base64 AES-GCM ciphertext
 }
 
+interface QrTransferSession {
+  total: number
+  chunks: Record<number, string>
+}
+
+interface ImportOptions {
+  mode?: 'replace' | 'merge'
+}
+
 function bufToBase64(buf: ArrayBuffer): string {
   return btoa(String.fromCharCode(...new Uint8Array(buf)))
 }
 
 function base64ToBuf(b64: string): Uint8Array {
   return Uint8Array.from(atob(b64), (c) => c.charCodeAt(0))
+}
+
+function toBase64Url(text: string): string {
+  const bytes = new TextEncoder().encode(text)
+  let binary = ''
+  for (const b of bytes) binary += String.fromCharCode(b)
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '')
+}
+
+function fromBase64Url(base64Url: string): string {
+  const padded = base64Url.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(base64Url.length / 4) * 4, '=')
+  const binary = atob(padded)
+  const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0))
+  return new TextDecoder().decode(bytes)
 }
 
 async function deriveKey(password: string, salt: Uint8Array): Promise<CryptoKey> {
@@ -320,22 +375,73 @@ async function decryptJson(payload: EncryptedBackup, password: string): Promise<
 
 // ─── Apply backup ─────────────────────────────────────────
 
-function applyBackup(data: Partial<AppBackup>): 'ok' | 'invalid' {
+function mergeTransactions(existing: Transaction[], incoming: Transaction[]): Transaction[] {
+  const merged = new Map<string, Transaction>()
+  for (const tx of existing.map(normalizeTransaction)) {
+    merged.set(tx.syncId ?? tx.id, tx)
+  }
+
+  for (const tx of incoming.map(normalizeTransaction)) {
+    const key = tx.syncId ?? tx.id
+    const current = merged.get(key)
+    if (!current) {
+      merged.set(key, tx)
+      continue
+    }
+    const currentUpdated = Date.parse(current.updatedAt ?? current.createdAt ?? `${current.date}T00:00:00.000Z`)
+    const nextUpdated = Date.parse(tx.updatedAt ?? tx.createdAt ?? `${tx.date}T00:00:00.000Z`)
+    if (nextUpdated >= currentUpdated) {
+      merged.set(key, tx)
+    }
+  }
+
+  return Array.from(merged.values())
+}
+
+function applyBackup(data: Partial<AppBackup>, options: ImportOptions = {}): 'ok' | 'invalid' {
   if (data.version !== 1) return 'invalid'
   if (!Array.isArray(data.transactions)) return 'invalid'
-  saveTransactions(data.transactions.filter(isValidTransaction))
+  const incomingTransactions = data.transactions.filter(isValidTransaction)
+  if (options.mode === 'merge') {
+    saveTransactions(mergeTransactions(loadTransactions(), incomingTransactions))
+  } else {
+    saveTransactions(incomingTransactions)
+  }
+
   if (data.settings && typeof data.settings === 'object') {
-    saveSettings(data.settings as AppSettings)
+    if (options.mode !== 'merge') {
+      saveSettings(data.settings as AppSettings)
+    }
   }
+
   if (data.customCategories && typeof data.customCategories === 'object') {
-    saveCustomCategories(data.customCategories as CustomCategories)
+    if (options.mode === 'merge') {
+      const local = loadCustomCategories()
+      const next = data.customCategories as CustomCategories
+      saveCustomCategories({
+        entrata: Array.from(new Set([...local.entrata, ...next.entrata])),
+        uscita: Array.from(new Set([...local.uscita, ...next.uscita])),
+      })
+    } else {
+      saveCustomCategories(data.customCategories as CustomCategories)
+    }
   }
+
   if (data.customIcons && typeof data.customIcons === 'object') {
-    localStorage.setItem(CUSTOM_ICONS_KEY, JSON.stringify(data.customIcons))
+    if (options.mode === 'merge') {
+      const local = loadCustomIcons()
+      localStorage.setItem(CUSTOM_ICONS_KEY, JSON.stringify({ ...local, ...(data.customIcons as Record<string, string>) }))
+    } else {
+      localStorage.setItem(CUSTOM_ICONS_KEY, JSON.stringify(data.customIcons))
+    }
   }
+
   if (data.notificationSettings && typeof data.notificationSettings === 'object') {
-    saveNotificationSettings(data.notificationSettings as NotificationSettings)
+    if (options.mode !== 'merge') {
+      saveNotificationSettings(data.notificationSettings as NotificationSettings)
+    }
   }
+
   return 'ok'
 }
 
@@ -367,6 +473,7 @@ export async function exportAllData(password: string): Promise<void> {
 export async function importAllData(
   jsonString: string,
   password?: string,
+  options: ImportOptions = {},
 ): Promise<'ok' | 'invalid' | 'needs-password' | 'wrong-password'> {
   try {
     const raw = JSON.parse(jsonString) as Record<string, unknown>
@@ -376,12 +483,110 @@ export async function importAllData(
       if (!password) return 'needs-password'
       const decrypted = await decryptJson(raw as unknown as EncryptedBackup, password)
       if (decrypted === null) return 'wrong-password'
-      return applyBackup(JSON.parse(decrypted) as Partial<AppBackup>)
+      return applyBackup(JSON.parse(decrypted) as Partial<AppBackup>, options)
     }
 
     // Plain legacy format
-    return applyBackup(raw as Partial<AppBackup>)
+    return applyBackup(raw as Partial<AppBackup>, options)
   } catch {
     return 'invalid'
+  }
+}
+
+// ─── QR Transfer (PC -> telefono) ───────────────────────
+
+export async function buildQrTransferLinks(password: string): Promise<string[]> {
+  const backup: AppBackup = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    transactions: loadTransactions(),
+    settings: loadSettings(),
+    customCategories: loadCustomCategories(),
+    customIcons: loadCustomIcons(),
+    notificationSettings: loadNotificationSettings(),
+  }
+
+  const encrypted = await encryptJson(JSON.stringify(backup), password)
+  const payload = toBase64Url(JSON.stringify(encrypted))
+
+  const sessionId = generateId()
+  const chunkSize = 700
+  const chunks: string[] = []
+  for (let i = 0; i < payload.length; i += chunkSize) {
+    chunks.push(payload.slice(i, i + chunkSize))
+  }
+
+  const total = chunks.length
+  const baseUrl = `${window.location.origin}${window.location.pathname}`
+  return chunks.map((chunk, i) => `${baseUrl}#xfer=1.${sessionId}.${i + 1}.${total}.${chunk}`)
+}
+
+export function ingestQrTransferHash(hash: string): 'ignored' | 'partial' | 'ready' | 'invalid' {
+  if (!hash.startsWith('#xfer=')) return 'ignored'
+
+  const raw = hash.slice(6)
+  const parts = raw.split('.')
+  if (parts.length < 5) return 'invalid'
+
+  const [version, sessionId, indexRaw, totalRaw, ...chunkParts] = parts
+  const index = Number(indexRaw)
+  const total = Number(totalRaw)
+  const chunk = chunkParts.join('.')
+
+  if (version !== '1' || !sessionId || !Number.isInteger(index) || !Number.isInteger(total) || !chunk) {
+    return 'invalid'
+  }
+
+  const key = `${QR_TRANSFER_PREFIX}${sessionId}`
+  let session: QrTransferSession = { total, chunks: {} }
+
+  try {
+    const stored = localStorage.getItem(key)
+    if (stored) {
+      const parsed = JSON.parse(stored) as QrTransferSession
+      if (parsed.total === total && parsed.chunks && typeof parsed.chunks === 'object') {
+        session = parsed
+      }
+    }
+  } catch {
+    return 'invalid'
+  }
+
+  session.chunks[index] = chunk
+  localStorage.setItem(key, JSON.stringify(session))
+
+  const collected = Object.keys(session.chunks).length
+  if (collected < total) return 'partial'
+
+  let joined = ''
+  for (let i = 1; i <= total; i++) {
+    const part = session.chunks[i]
+    if (!part) return 'partial'
+    joined += part
+  }
+
+  try {
+    const payload = fromBase64Url(joined)
+    localStorage.setItem(QR_TRANSFER_READY_KEY, payload)
+    localStorage.removeItem(key)
+    return 'ready'
+  } catch {
+    return 'invalid'
+  }
+}
+
+export function getPendingQrTransferPayload(): string | null {
+  try {
+    return localStorage.getItem(QR_TRANSFER_READY_KEY)
+  } catch {
+    return null
+  }
+}
+
+export function clearPendingQrTransferPayload() {
+  try {
+    localStorage.removeItem(QR_TRANSFER_READY_KEY)
+  } catch {
+    // noop
   }
 }

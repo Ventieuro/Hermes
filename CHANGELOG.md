@@ -6,6 +6,20 @@
 
 ## [22/04/2026] — Sessione 3
 
+### TASK-025: Import PC -> telefono via QR con merge
+**File modificati:** `src/shared/types.ts`, `src/shared/storage.ts`, `src/shared/labels.ts`, `src/components/Settings.tsx`, `src/App.tsx`, `src/app/features.ts`, `package.json`
+
+- Aggiunti metadati di sync alle transazioni (`syncId`, `createdAt`, `updatedAt`) con normalizzazione automatica in storage
+- `importAllData()` ora supporta modalità `merge`: unisce movimenti senza sostituire tutto, risolve conflitti su `updatedAt`
+- Merge esteso a categorie custom e icone custom; impostazioni dispositivo restano locali in modalità merge
+- Nuovo flusso QR PC -> telefono: payload cifrato AES-GCM spezzato in chunk multipli (`#xfer=...`) per evitare QR troppo grandi
+- Nuova UI in Settings per generare QR chunked e navigarli (precedente/successivo)
+- In `App.tsx` ingestione hash QR, ricostruzione payload, prompt password e import merge automatico
+- Dipendenze aggiunte: `qrcode` + `@types/qrcode`
+- **Build check:** ✅ Passato
+
+---
+
 ### TASK-024: Cambio lingua nei Settings
 **File modificati:** `src/shared/labels.ts`, `src/components/Settings.tsx`
 

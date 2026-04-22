@@ -2,6 +2,9 @@ export type TransactionType = 'entrata' | 'uscita'
 
 export interface Transaction {
   id: string
+  syncId?: string
+  createdAt?: string // ISO timestamp
+  updatedAt?: string // ISO timestamp
   type: TransactionType
   description: string
   amount: number

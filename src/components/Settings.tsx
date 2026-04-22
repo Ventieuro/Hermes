@@ -1,7 +1,14 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useTheme } from '../shared/ThemeContext'
-import { loadNotificationSettings, saveNotificationSettings, exportAllData, importAllData } from '../shared/storage'
+import QRCode from 'qrcode'
+import {
+  loadNotificationSettings,
+  saveNotificationSettings,
+  exportAllData,
+  importAllData,
+  buildQrTransferLinks,
+} from '../shared/storage'
 import { SETTINGS, NOTIFICHE, getLocale, setLocale, type Locale } from '../shared/labels'
 import { FEATURES } from '../app/features'
 
@@ -11,6 +18,10 @@ function Settings() {
   const panelRef = useRef<HTMLDivElement>(null)
   const [notifSettings, setNotifSettings] = useState(loadNotificationSettings)
   const [importStatus, setImportStatus] = useState<'idle' | 'ok' | 'invalid' | 'wrong-password'>('idle')
+  const [qrLinks, setQrLinks] = useState<string[]>([])
+  const [qrIndex, setQrIndex] = useState(0)
+  const [qrImage, setQrImage] = useState('')
+  const [isGeneratingQr, setIsGeneratingQr] = useState(false)
 
   // Close on click outside
   useEffect(() => {
@@ -56,11 +67,11 @@ function Settings() {
     reader.onload = async (ev) => {
       const content = ev.target?.result as string
       // First try without password to detect format
-      const probe = await importAllData(content)
+      const probe = await importAllData(content, undefined, { mode: 'merge' })
       if (probe === 'needs-password') {
         const pwd = window.prompt(SETTINGS.passwordImporta)
         if (!pwd) return
-        const result = await importAllData(content, pwd)
+        const result = await importAllData(content, pwd, { mode: 'merge' })
         setImportStatus(result === 'needs-password' ? 'invalid' : result)
       } else {
         setImportStatus(probe)
@@ -69,6 +80,45 @@ function Settings() {
     }
     reader.readAsText(file)
     e.target.value = ''
+  }
+
+  useEffect(() => {
+    if (!qrLinks.length) {
+      setQrImage('')
+      return
+    }
+
+    let disposed = false
+    QRCode.toDataURL(qrLinks[qrIndex], {
+      width: 260,
+      margin: 1,
+      errorCorrectionLevel: 'M',
+    }).then((url: string) => {
+      if (!disposed) setQrImage(url)
+    }).catch(() => {
+      if (!disposed) setQrImage('')
+    })
+
+    return () => { disposed = true }
+  }, [qrLinks, qrIndex])
+
+  function cycleQr(delta: -1 | 1) {
+    if (!qrLinks.length) return
+    const next = (qrIndex + delta + qrLinks.length) % qrLinks.length
+    setQrIndex(next)
+  }
+
+  async function handleGenerateQr() {
+    const pwd = window.prompt(SETTINGS.passwordEsporta)
+    if (!pwd) return
+    try {
+      setIsGeneratingQr(true)
+      const links = await buildQrTransferLinks(pwd)
+      setQrLinks(links)
+      setQrIndex(0)
+    } finally {
+      setIsGeneratingQr(false)
+    }
   }
 
   return (
@@ -308,6 +358,76 @@ function Settings() {
                     className="hidden"
                   />
                 </label>
+
+                {FEATURES.qrTransfer && (
+                  <button
+                    onClick={handleGenerateQr}
+                    disabled={isGeneratingQr}
+                    className="w-full py-2 rounded-xl text-sm font-medium transition active:scale-95 disabled:opacity-60"
+                    style={{
+                      backgroundColor: 'var(--bg-secondary)',
+                      color: 'var(--text-primary)',
+                      border: '1px solid var(--border)',
+                    }}
+                  >
+                    {isGeneratingQr ? '...' : SETTINGS.qrGenera}
+                  </button>
+                )}
+
+                {FEATURES.qrTransfer && qrLinks.length > 0 && (
+                  <div
+                    className="rounded-xl p-3"
+                    style={{
+                      backgroundColor: 'var(--bg-secondary)',
+                      border: '1px solid var(--border)',
+                    }}
+                  >
+                    <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>
+                      {SETTINGS.qrTransfer}
+                    </p>
+                    <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>
+                      {SETTINGS.qrScansiona}
+                    </p>
+
+                    <div className="flex justify-center mb-3">
+                      {qrImage ? (
+                        <img src={qrImage} alt={SETTINGS.qrTransfer} className="w-52 h-52 rounded-lg" />
+                      ) : (
+                        <div className="w-52 h-52 rounded-lg flex items-center justify-center text-xs" style={{ color: 'var(--text-muted)', border: '1px solid var(--border)' }}>
+                          {SETTINGS.qrCaricamento}
+                        </div>
+                      )}
+                    </div>
+
+                    <p className="text-center text-xs mb-2" style={{ color: 'var(--text-muted)' }}>
+                      {SETTINGS.qrBlocco(qrIndex + 1, qrLinks.length)}
+                    </p>
+
+                    <div className="grid grid-cols-3 gap-2">
+                      <button
+                        onClick={() => cycleQr(-1)}
+                        className="py-1.5 rounded-lg text-xs"
+                        style={{ backgroundColor: 'var(--bg-card)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}
+                      >
+                        {SETTINGS.qrPrecedente}
+                      </button>
+                      <button
+                        onClick={() => setQrLinks([])}
+                        className="py-1.5 rounded-lg text-xs"
+                        style={{ backgroundColor: 'var(--bg-card)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}
+                      >
+                        {SETTINGS.qrChiudi}
+                      </button>
+                      <button
+                        onClick={() => cycleQr(1)}
+                        className="py-1.5 rounded-lg text-xs"
+                        style={{ backgroundColor: 'var(--bg-card)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}
+                      >
+                        {SETTINGS.qrSuccessivo}
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}

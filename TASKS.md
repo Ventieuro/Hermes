@@ -32,6 +32,14 @@
 
 ## Completati
 
+### ✅ TASK-025 — Import PC → telefono via QR con merge dati (22/04/2026)
+- [x] Strategia sync transazioni con metadati (`syncId`, `createdAt`, `updatedAt`)
+- [x] Merge sicuro su import (`mode: 'merge'`) senza sostituzione completa
+- [x] Flusso QR chunked (`#xfer=...`) per superare il limite di payload del singolo QR
+- [x] UI Settings: generazione QR, navigazione chunk, import merge lato telefono
+- [x] Cifratura mantenuta (AES-GCM + password) anche nel trasferimento QR
+- [x] Aggiornati `TASKS.md`, `CHANGELOG.md` e build check
+
 ### ✅ TASK-024 — Cambio lingua nei Settings (22/04/2026)
 - [x] `labels.ts` — label `lingua` nella sezione settings (IT/EN/ES)
 - [x] `Settings.tsx` — sezione lingua con 3 bottoni (🇮🇹 🇬🇧 🇪🇸), reload su cambio
