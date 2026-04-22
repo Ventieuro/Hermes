@@ -1,23 +1,66 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#0b0d17"/>
-      <stop offset="100%" style="stop-color:#1a1f35"/>
+    <!-- Dark space background -->
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#070913"/>
+      <stop offset="100%" stop-color="#0e1528"/>
     </linearGradient>
+    <!-- Gold coin radial gradient (bright highlight top-left) -->
+    <radialGradient id="coin" cx="36%" cy="30%" r="68%">
+      <stop offset="0%" stop-color="#fff4a0"/>
+      <stop offset="18%" stop-color="#ffd14d"/>
+      <stop offset="48%" stop-color="#e8920a"/>
+      <stop offset="80%" stop-color="#b56200"/>
+      <stop offset="100%" stop-color="#7a3f00"/>
+    </radialGradient>
+    <!-- Warm glow around coin -->
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#f5a623" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#f5a623" stop-opacity="0"/>
+    </radialGradient>
   </defs>
-  <rect width="192" height="192" rx="32" fill="url(#bg)"/>
+
+  <!-- Background -->
+  <rect width="192" height="192" rx="34" fill="url(#bg)"/>
+
   <!-- Stars -->
-  <circle cx="30" cy="25" r="2" fill="#e8eaf6" opacity="0.6"/>
-  <circle cx="160" cy="40" r="1.5" fill="#e8eaf6" opacity="0.5"/>
-  <circle cx="45" cy="155" r="1.8" fill="#e8eaf6" opacity="0.4"/>
-  <circle cx="150" cy="150" r="2" fill="#e8eaf6" opacity="0.6"/>
-  <circle cx="80" cy="20" r="1" fill="#e8eaf6" opacity="0.3"/>
-  <circle cx="120" cy="170" r="1.5" fill="#e8eaf6" opacity="0.5"/>
-  <!-- Coin circle -->
-  <circle cx="96" cy="96" r="60" fill="#7c4dff" opacity="0.15"/>
-  <circle cx="96" cy="96" r="55" fill="none" stroke="#7c4dff" stroke-width="3"/>
-  <!-- Euro symbol -->
-  <text x="96" y="115" text-anchor="middle" font-family="Arial, sans-serif" font-size="70" font-weight="bold" fill="#e8eaf6">€</text>
-  <!-- Rocket -->
-  <text x="145" y="50" font-size="32">🚀</text>
+  <circle cx="22" cy="20" r="1.2" fill="white" opacity="0.65"/>
+  <circle cx="168" cy="30" r="1.0" fill="white" opacity="0.50"/>
+  <circle cx="38" cy="160" r="1.4" fill="white" opacity="0.45"/>
+  <circle cx="158" cy="155" r="1.2" fill="white" opacity="0.60"/>
+  <circle cx="75" cy="15" r="0.9" fill="white" opacity="0.40"/>
+  <circle cx="138" cy="174" r="1.0" fill="white" opacity="0.50"/>
+  <circle cx="176" cy="112" r="0.9" fill="white" opacity="0.35"/>
+  <circle cx="15" cy="88" r="1.0" fill="white" opacity="0.40"/>
+  <circle cx="54" cy="44" r="0.8" fill="white" opacity="0.30"/>
+  <circle cx="150" cy="52" r="0.8" fill="white" opacity="0.30"/>
+  <circle cx="105" cy="178" r="0.7" fill="white" opacity="0.30"/>
+  <circle cx="178" cy="68" r="0.8" fill="white" opacity="0.25"/>
+
+  <!-- Orbit ellipse: center (96,96), rx=68, ry=18, rotate -12° -->
+  <ellipse cx="96" cy="96" rx="68" ry="18"
+    transform="rotate(-12 96 96)"
+    fill="none" stroke="white" stroke-width="1"
+    stroke-dasharray="3 5" opacity="0.22"/>
+
+  <!-- Coin ambient glow -->
+  <circle cx="96" cy="96" r="68" fill="url(#glow)"/>
+
+  <!-- Main gold coin -->
+  <circle cx="96" cy="96" r="50" fill="url(#coin)"/>
+  <!-- Outer rim -->
+  <circle cx="96" cy="96" r="50" fill="none" stroke="#7a3f00" stroke-width="2.5" opacity="0.55"/>
+  <!-- Inner ridge ring -->
+  <circle cx="96" cy="96" r="44" fill="none" stroke="#ffd14d" stroke-width="0.9" opacity="0.28"/>
+  <!-- Shine highlight ellipse -->
+  <ellipse cx="76" cy="74" rx="14" ry="8" fill="white" opacity="0.20"
+    transform="rotate(-28 76 74)"/>
+
+  <!-- Blue planet on orbit (~angle 150° rotated -12°): (40, 117) -->
+  <circle cx="40" cy="117" r="7" fill="#2e6fd4"/>
+  <circle cx="38" cy="115" r="2.4" fill="#7ab3f5" opacity="0.70"/>
+
+  <!-- Orange-red planet on orbit (~angle 330° rotated -12°): (152, 75) -->
+  <circle cx="152" cy="75" r="5.5" fill="#d94a1e"/>
+  <circle cx="150" cy="73" r="1.8" fill="#f5896a" opacity="0.70"/>
 </svg>
