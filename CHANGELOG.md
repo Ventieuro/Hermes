@@ -6,6 +6,21 @@
 
 ## [22/04/2026] — Sessione 3
 
+### TASK-028: Modalità Locale/Drive (sostituisce transfer code)
+**File creati:** `src/shared/driveSync.ts`
+**File modificati:** `src/components/Settings.tsx`, `src/shared/labels.ts`, `src/app/features.ts`, `src/App.tsx`, `src/vite-env.d.ts`, `TASKS.md`
+
+- Sostituito il metodo vecchio (transfer code) con scelta esplicita della strategia dati
+- Modalità `Solo locale` (default) per utenti che non vogliono cloud/database
+- Modalità `Sync Drive` opzionale: connessione a Google Drive e sync del file cifrato (merge + upload)
+- Nuove azioni in Settings: "Connetti Google Drive", "Sync ora", "Disconnetti Drive"
+- Rimosso il flow di ingest QR da `App.tsx` per allineare il nuovo metodo
+- Nessun DB richiesto: persistenza remota su file Drive in `appDataFolder`
+- Richiesta configurazione `VITE_GOOGLE_CLIENT_ID` lato ambiente
+- **Build check:** ✅ Passato
+
+---
+
 ### TASK-027: Trasferimento con codice (Applica/Ricevi)
 **File modificati:** `src/shared/storage.ts`, `src/components/Settings.tsx`, `src/shared/labels.ts`, `src/app/features.ts`, `package.json`, `TASKS.md`
 

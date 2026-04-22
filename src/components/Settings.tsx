@@ -6,9 +6,16 @@ import {
   saveNotificationSettings,
   exportAllData,
   importAllData,
-  buildTransferCode,
-  importTransferCode,
 } from '../shared/storage'
+import {
+  connectDrive,
+  loadSyncSettings,
+  pullDriveToLocal,
+  saveSyncSettings,
+  syncDriveNow,
+  useLocalMode,
+  type DriveSyncResult,
+} from '../shared/driveSync'
 import { SETTINGS, NOTIFICHE, getLocale, setLocale, type Locale } from '../shared/labels'
 import { FEATURES } from '../app/features'
 
@@ -18,10 +25,9 @@ function Settings() {
   const panelRef = useRef<HTMLDivElement>(null)
   const [notifSettings, setNotifSettings] = useState(loadNotificationSettings)
   const [importStatus, setImportStatus] = useState<'idle' | 'ok' | 'invalid' | 'wrong-password'>('idle')
-  const [codeStatus, setCodeStatus] = useState<'idle' | 'ok' | 'invalid' | 'wrong-password' | 'copied'>('idle')
-  const [transferCode, setTransferCode] = useState('')
-  const [incomingCode, setIncomingCode] = useState('')
-  const [isGeneratingCode, setIsGeneratingCode] = useState(false)
+  const [syncSettings, setSyncSettings] = useState(loadSyncSettings)
+  const [driveStatus, setDriveStatus] = useState<'idle' | DriveSyncResult>('idle')
+  const [isDriveSyncing, setIsDriveSyncing] = useState(false)
 
   // Close on click outside
   useEffect(() => {
@@ -82,49 +88,58 @@ function Settings() {
     e.target.value = ''
   }
 
-  async function handleGenerateCode() {
-    const pwd = window.prompt(SETTINGS.passwordEsporta)
-    if (!pwd) return
+  async function handleConnectDrive() {
+    setIsDriveSyncing(true)
     try {
-      setIsGeneratingCode(true)
-      const code = await buildTransferCode(pwd)
-      setTransferCode(code)
+      const result = await connectDrive()
+      setDriveStatus(result)
+      setSyncSettings(loadSyncSettings())
     } finally {
-      setIsGeneratingCode(false)
+      setIsDriveSyncing(false)
+      setTimeout(() => setDriveStatus('idle'), 3500)
     }
   }
 
-  async function handleCopyCode() {
-    if (!transferCode) return
+  function handleUseLocalMode() {
+    useLocalMode()
+    setSyncSettings(loadSyncSettings())
+    setDriveStatus('idle')
+  }
+
+  function handleUseDriveMode() {
+    const current = loadSyncSettings()
+    const next = { ...current, mode: 'drive' as const }
+    saveSyncSettings(next)
+    setSyncSettings(next)
+  }
+
+  async function handleSyncNow() {
+    const pwd = window.prompt(SETTINGS.passwordImporta)
+    if (!pwd) return
+
+    setIsDriveSyncing(true)
     try {
-      await navigator.clipboard.writeText(transferCode)
-      setCodeStatus('copied')
-      setTimeout(() => setCodeStatus('idle'), 2500)
-    } catch {
-      setCodeStatus('invalid')
-      setTimeout(() => setCodeStatus('idle'), 2500)
+      const pullResult = await pullDriveToLocal(pwd)
+      if (pullResult !== 'ok' && pullResult !== 'no-cloud-data') {
+        setDriveStatus(pullResult)
+        return
+      }
+
+      const pushResult = await syncDriveNow(pwd)
+      setDriveStatus(pushResult)
+      setSyncSettings(loadSyncSettings())
+    } finally {
+      setIsDriveSyncing(false)
+      setTimeout(() => setDriveStatus('idle'), 3500)
     }
   }
 
-  async function handleApplyCode() {
-    const code = incomingCode.trim()
-    if (!code) {
-      setCodeStatus('invalid')
-      setTimeout(() => setCodeStatus('idle'), 2500)
-      return
-    }
-
-    const probe = await importTransferCode(code, undefined, { mode: 'merge' })
-    if (probe === 'needs-password') {
-      const pwd = window.prompt(SETTINGS.codicePrompt)
-      if (!pwd) return
-      const result = await importTransferCode(code, pwd, { mode: 'merge' })
-      setCodeStatus(result === 'needs-password' ? 'invalid' : result)
-    } else {
-      setCodeStatus(probe)
-    }
-
-    setTimeout(() => setCodeStatus('idle'), 3000)
+  function getDriveStatusLabel() {
+    if (driveStatus === 'ok') return SETTINGS.driveStatoOk
+    if (driveStatus === 'no-cloud-data') return SETTINGS.driveStatoNoData
+    if (driveStatus === 'missing-client-id') return SETTINGS.driveStatoNoClient
+    if (driveStatus === 'needs-password' || driveStatus === 'wrong-password') return SETTINGS.passwordErrata
+    return SETTINGS.driveStatoAuth
   }
 
   return (
@@ -366,21 +381,6 @@ function Settings() {
                 </label>
 
                 {FEATURES.codeTransfer && (
-                  <button
-                    onClick={handleGenerateCode}
-                    disabled={isGeneratingCode}
-                    className="w-full py-2 rounded-xl text-sm font-medium transition active:scale-95 disabled:opacity-60"
-                    style={{
-                      backgroundColor: 'var(--bg-secondary)',
-                      color: 'var(--text-primary)',
-                      border: '1px solid var(--border)',
-                    }}
-                  >
-                    {isGeneratingCode ? '...' : SETTINGS.codiceGenera}
-                  </button>
-                )}
-
-                {FEATURES.codeTransfer && transferCode && (
                   <div
                     className="rounded-xl p-3"
                     style={{
@@ -389,93 +389,97 @@ function Settings() {
                     }}
                   >
                     <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>
-                      {SETTINGS.codiceTransfer}
+                      {SETTINGS.modalitaDati}
                     </p>
 
-                    <textarea
-                      value={transferCode}
-                      readOnly
-                      className="w-full h-24 rounded-lg p-2 text-[11px] leading-4"
-                      style={{
-                        backgroundColor: 'var(--bg-card)',
-                        color: 'var(--text-secondary)',
-                        border: '1px solid var(--border)',
-                      }}
-                    />
-
-                    <div className="mt-2 grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-2 gap-2">
                       <button
-                        onClick={handleCopyCode}
-                        className="py-1.5 rounded-lg text-xs"
-                        style={{ backgroundColor: 'var(--bg-card)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}
+                        onClick={handleUseLocalMode}
+                        className={`py-2 rounded-lg text-xs font-medium transition ${syncSettings.mode === 'local' ? 'ring-2' : ''}`}
+                        style={{
+                          backgroundColor: syncSettings.mode === 'local' ? 'var(--accent-light)' : 'var(--bg-card)',
+                          color: syncSettings.mode === 'local' ? 'var(--accent)' : 'var(--text-secondary)',
+                          border: '1px solid var(--border)',
+                          '--tw-ring-color': 'var(--accent)',
+                        } as React.CSSProperties}
                       >
-                        {SETTINGS.codiceCopia}
+                        {SETTINGS.soloLocale}
                       </button>
+
                       <button
-                        onClick={() => setTransferCode('')}
-                        className="py-1.5 rounded-lg text-xs"
-                        style={{ backgroundColor: 'var(--bg-card)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}
+                        onClick={handleUseDriveMode}
+                        className={`py-2 rounded-lg text-xs font-medium transition ${syncSettings.mode === 'drive' ? 'ring-2' : ''}`}
+                        style={{
+                          backgroundColor: syncSettings.mode === 'drive' ? 'var(--accent-light)' : 'var(--bg-card)',
+                          color: syncSettings.mode === 'drive' ? 'var(--accent)' : 'var(--text-secondary)',
+                          border: '1px solid var(--border)',
+                          '--tw-ring-color': 'var(--accent)',
+                        } as React.CSSProperties}
                       >
-                        {SETTINGS.qrChiudi}
+                        {SETTINGS.syncDrive}
                       </button>
                     </div>
 
-                    {codeStatus === 'copied' && (
-                      <p className="text-xs mt-2" style={{ color: 'var(--accent)' }}>
-                        {SETTINGS.codiceCopiato}
-                      </p>
+                    {syncSettings.mode === 'drive' && (
+                      <div className="mt-2 space-y-2">
+                        {!syncSettings.driveConnected ? (
+                          <button
+                            onClick={handleConnectDrive}
+                            disabled={isDriveSyncing}
+                            className="w-full py-2 rounded-lg text-sm font-medium disabled:opacity-60"
+                            style={{
+                              backgroundColor: 'var(--bg-card)',
+                              color: 'var(--text-primary)',
+                              border: '1px solid var(--border)',
+                            }}
+                          >
+                            {SETTINGS.driveConnetti}
+                          </button>
+                        ) : (
+                          <>
+                            <button
+                              onClick={handleSyncNow}
+                              disabled={isDriveSyncing}
+                              className="w-full py-2 rounded-lg text-sm font-medium disabled:opacity-60"
+                              style={{
+                                backgroundColor: 'var(--bg-card)',
+                                color: 'var(--text-primary)',
+                                border: '1px solid var(--border)',
+                              }}
+                            >
+                              {SETTINGS.driveSyncOra}
+                            </button>
+
+                            <button
+                              onClick={handleUseLocalMode}
+                              className="w-full py-2 rounded-lg text-sm"
+                              style={{
+                                backgroundColor: 'var(--bg-card)',
+                                color: 'var(--text-secondary)',
+                                border: '1px solid var(--border)',
+                              }}
+                            >
+                              {SETTINGS.driveDisconnetti}
+                            </button>
+                          </>
+                        )}
+                      </div>
                     )}
-                  </div>
-                )}
 
-                {FEATURES.codeTransfer && (
-                  <div
-                    className="rounded-xl p-3"
-                    style={{
-                      backgroundColor: 'var(--bg-secondary)',
-                      border: '1px solid var(--border)',
-                    }}
-                  >
-                    <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>
-                      {SETTINGS.codiceRicevi}
-                    </p>
-                    <textarea
-                      value={incomingCode}
-                      onChange={(e) => setIncomingCode(e.target.value)}
-                      placeholder={SETTINGS.codicePlaceholder}
-                      className="w-full h-24 rounded-lg p-2 text-[11px] leading-4"
-                      style={{
-                        backgroundColor: 'var(--bg-card)',
-                        color: 'var(--text-primary)',
-                        border: '1px solid var(--border)',
-                      }}
-                    />
-                    <button
-                      onClick={handleApplyCode}
-                      className="mt-2 w-full py-2 rounded-lg text-sm font-medium"
-                      style={{
-                        backgroundColor: 'var(--bg-card)',
-                        color: 'var(--text-primary)',
-                        border: '1px solid var(--border)',
-                      }}
-                    >
-                      {SETTINGS.codiceApplica}
-                    </button>
-
-                    {(codeStatus === 'ok' || codeStatus === 'invalid' || codeStatus === 'wrong-password') && (
+                    {driveStatus !== 'idle' && (
                       <p
                         className="text-xs mt-2"
                         style={{
-                          color: codeStatus === 'ok' ? 'var(--accent)' : '#ef4444',
+                          color: driveStatus === 'ok' || driveStatus === 'no-cloud-data' ? 'var(--accent)' : '#ef4444',
                         }}
                       >
-                        {codeStatus === 'ok'
-                          ? SETTINGS.importaOk
-                          : codeStatus === 'wrong-password'
-                          ? SETTINGS.passwordErrata
-                          : SETTINGS.importaErrore}
+                        {getDriveStatusLabel()}
                       </p>
                     )}
+
+                    <p className="text-[11px] mt-2" style={{ color: 'var(--text-muted)' }}>
+                      {syncSettings.lastSyncedAt ? new Date(syncSettings.lastSyncedAt).toLocaleString() : '-'}
+                    </p>
                   </div>
                 )}
               </div>

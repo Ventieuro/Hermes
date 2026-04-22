@@ -32,6 +32,14 @@
 
 ## Completati
 
+### ✅ TASK-028 — Modalità Locale/Drive (sostituisce transfer code) (23/04/2026)
+- [x] Strategia dati: locale di default, Drive opzionale
+- [x] Integrazione Google Drive file cifrato (no DB)
+- [x] Rimossa UI transfer code dalla sezione Sync
+- [x] Aggiunta UI "Connetti Drive", "Sync ora", "Disconnetti"
+- [x] Conservato merge automatico con i dati locali
+- [x] Aggiornati `TASKS.md`, `CHANGELOG.md` e build check
+
 ### ✅ TASK-027 — Trasferimento con codice (Applica/Ricevi) (23/04/2026)
 - [x] `storage.ts` — generazione codice cifrato e import da codice
 - [x] `Settings.tsx` — UI "Genera codice", "Ricevi" e "Applica"
