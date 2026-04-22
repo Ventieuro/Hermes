@@ -32,6 +32,25 @@
 
 ## Completati
 
+### ✅ TASK-021 — Nuova icona app (moneta + orbita) (22/04/2026)
+- [x] `public/pwa-192x192.svg` — icona 192×192 con moneta dorata + orbita
+- [x] `public/pwa-512x512.svg` — icona 512×512 scalata
+- [x] `index.html` — favicon aggiornato
+- [x] Build check
+
+
+## Completati
+
+### ✅ TASK-020 — Export/Import JSON + feature flag (22/04/2026)
+- [x] `src/app/features.ts` — configurazione globale feature flags
+- [x] `storage.ts` — `exportAllData()` e `importAllData()` 
+- [x] `labels.ts` — label sezione sincronizzazione (IT/EN/ES)
+- [x] `Settings.tsx` — sezione Export/Import JSON gated da `FEATURES.exportImportJson`
+- [x] Build check
+
+
+## Completati
+
 ### ✅ TASK-019 — Componenti UI riusabili + regola check (19/04/2026)
 - [x] Creata cartella `src/components/ui/` con barrel export
 - [x] Card: contenitore con bordo/sfondo tema (padding sm/md/lg)

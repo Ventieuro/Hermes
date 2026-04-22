@@ -249,3 +249,65 @@ export function loadNotificationSettings(): NotificationSettings {
 export function saveNotificationSettings(settings: NotificationSettings) {
   localStorage.setItem(NOTIFICATIONS_KEY, JSON.stringify(settings))
 }
+
+// ─── Export / Import JSON ────────────────────────────────
+
+export interface AppBackup {
+  version: 1
+  exportedAt: string  // ISO timestamp
+  transactions: Transaction[]
+  settings: AppSettings
+  customCategories: CustomCategories
+  customIcons: Record<string, string>
+  notificationSettings: NotificationSettings
+}
+
+/** Scarica tutti i dati come file .json */
+export function exportAllData(): void {
+  const backup: AppBackup = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    transactions: loadTransactions(),
+    settings: loadSettings(),
+    customCategories: loadCustomCategories(),
+    customIcons: loadCustomIcons(),
+    notificationSettings: loadNotificationSettings(),
+  }
+  const json = JSON.stringify(backup, null, 2)
+  const blob = new Blob([json], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `hermes-backup-${new Date().toISOString().slice(0, 10)}.json`
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
+/**
+ * Importa un backup da file .json.
+ * @returns 'ok' se importato con successo, 'invalid' se il file non è valido.
+ */
+export function importAllData(jsonString: string): 'ok' | 'invalid' {
+  try {
+    const data = JSON.parse(jsonString) as Partial<AppBackup>
+    if (data.version !== 1) return 'invalid'
+    if (!Array.isArray(data.transactions)) return 'invalid'
+    const validTxs = data.transactions.filter(isValidTransaction)
+    saveTransactions(validTxs)
+    if (data.settings && typeof data.settings === 'object') {
+      saveSettings(data.settings as AppSettings)
+    }
+    if (data.customCategories && typeof data.customCategories === 'object') {
+      saveCustomCategories(data.customCategories as CustomCategories)
+    }
+    if (data.customIcons && typeof data.customIcons === 'object') {
+      localStorage.setItem(CUSTOM_ICONS_KEY, JSON.stringify(data.customIcons))
+    }
+    if (data.notificationSettings && typeof data.notificationSettings === 'object') {
+      saveNotificationSettings(data.notificationSettings as NotificationSettings)
+    }
+    return 'ok'
+  } catch {
+    return 'invalid'
+  }
+}

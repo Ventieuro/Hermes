@@ -207,6 +207,12 @@ const STRINGS = {
     gestioneCategorie: t('Gestione Categorie',           'Manage Categories',           'Gestión de Categorías'),
     permessoNegato:    t('Permesso notifiche negato',    'Notification permission denied','Permiso de notificaciones denegado'),
     testNotifica:      t('🔔 Invia notifica di test',      '🔔 Send test notification',     '🔔 Enviar notificación de prueba'),
+    sincronizzazione:  t('Sincronizzazione',               'Sync',                          'Sincronización'),
+    esportaDati:       t('📤 Esporta dati',                '📤 Export data',                 '📤 Exportar datos'),
+    importaDati:       t('📥 Importa dati',                '📥 Import data',                 '📥 Importar datos'),
+    importaConferma:   t('Tutti i dati verranno sostituiti. Continuare?', 'All data will be replaced. Continue?', '¿Todos los datos serán reemplazados. ¿Continuar?'),
+    importaOk:         t('✅ Importazione completata',     '✅ Import complete',              '✅ Importación completada'),
+    importaErrore:     t('❌ File non valido',             '❌ Invalid file',                '❌ Archivo no válido'),
   },
 
   // ── Notifiche ──────────────────────────────────────────

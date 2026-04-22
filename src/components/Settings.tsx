@@ -1,14 +1,16 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useTheme } from '../shared/ThemeContext'
-import { loadNotificationSettings, saveNotificationSettings } from '../shared/storage'
+import { loadNotificationSettings, saveNotificationSettings, exportAllData, importAllData } from '../shared/storage'
 import { SETTINGS, NOTIFICHE } from '../shared/labels'
+import { FEATURES } from '../app/features'
 
 function Settings() {
   const [isOpen, setIsOpen] = useState(false)
   const { theme, setTheme } = useTheme()
   const panelRef = useRef<HTMLDivElement>(null)
   const [notifSettings, setNotifSettings] = useState(loadNotificationSettings)
+  const [importStatus, setImportStatus] = useState<'idle' | 'ok' | 'invalid'>('idle')
 
   // Close on click outside
   useEffect(() => {
@@ -41,6 +43,23 @@ function Settings() {
     const updated = { ...notifSettings, time }
     setNotifSettings(updated)
     saveNotificationSettings(updated)
+  }
+
+  function handleImport(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (!window.confirm(SETTINGS.importaConferma)) {
+      e.target.value = ''
+      return
+    }
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      const result = importAllData(ev.target?.result as string)
+      setImportStatus(result)
+      setTimeout(() => setImportStatus('idle'), 3000)
+    }
+    reader.readAsText(file)
+    e.target.value = ''
   }
 
   return (
@@ -195,6 +214,55 @@ function Settings() {
               </div>
             )}
           </div>
+
+          {/* ─── Sync Section ─── */}
+          {FEATURES.exportImportJson && (
+            <div className="p-4" style={{ borderBottom: '1px solid var(--border)' }}>
+              <h3
+                className="text-xs font-semibold uppercase tracking-wide mb-3"
+                style={{ color: 'var(--text-muted)' }}
+              >
+                {SETTINGS.sincronizzazione}
+              </h3>
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={exportAllData}
+                  className="w-full py-2 rounded-xl text-sm font-medium transition active:scale-95"
+                  style={{
+                    backgroundColor: 'var(--bg-secondary)',
+                    color: 'var(--text-primary)',
+                    border: '1px solid var(--border)',
+                  }}
+                >
+                  {SETTINGS.esportaDati}
+                </button>
+                <label
+                  className="w-full py-2 rounded-xl text-sm font-medium transition active:scale-95 text-center cursor-pointer"
+                  style={{
+                    backgroundColor: 'var(--bg-secondary)',
+                    color: importStatus === 'ok'
+                      ? 'var(--accent)'
+                      : importStatus === 'invalid'
+                      ? '#ef4444'
+                      : 'var(--text-primary)',
+                    border: '1px solid var(--border)',
+                  }}
+                >
+                  {importStatus === 'ok'
+                    ? SETTINGS.importaOk
+                    : importStatus === 'invalid'
+                    ? SETTINGS.importaErrore
+                    : SETTINGS.importaDati}
+                  <input
+                    type="file"
+                    accept=".json,application/json"
+                    onChange={handleImport}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+            </div>
+          )}
 
           {/* ─── Categories Section ─── */}
           <div className="p-4">
