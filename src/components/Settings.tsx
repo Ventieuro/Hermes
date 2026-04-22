@@ -13,7 +13,7 @@ import {
   pullDriveToLocal,
   saveSyncSettings,
   syncDriveNow,
-  useLocalMode,
+  setLocalMode,
   type DriveSyncResult,
 } from '../shared/driveSync'
 import { SETTINGS, NOTIFICHE, getLocale, setLocale, type Locale } from '../shared/labels'
@@ -101,7 +101,7 @@ function Settings() {
   }
 
   function handleUseLocalMode() {
-    useLocalMode()
+    setLocalMode()
     setSyncSettings(loadSyncSettings())
     setDriveStatus('idle')
   }

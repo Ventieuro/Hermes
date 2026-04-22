@@ -209,7 +209,7 @@ export async function connectDrive(): Promise<DriveSyncResult> {
   return 'ok'
 }
 
-export function useLocalMode() {
+export function setLocalMode() {
   const current = loadSyncSettings()
   saveSyncSettings({
     mode: 'local',
