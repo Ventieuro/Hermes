@@ -6,6 +6,16 @@
 
 ## [22/04/2026] — Sessione 3
 
+### TASK-029: Modalita 100% manuale (Drive predisposto)
+**File modificati:** `src/app/features.ts`, `TASKS.md`
+
+- Per ora forzata UX manuale: disattivata la sezione Locale/Drive nei Settings (`codeTransfer: false`)
+- Mantenuto tutto il codice Drive sync pronto per futura riattivazione senza refactor
+- Flusso attivo corrente: export/import file cifrato con merge
+- **Build check:** ✅ Passato
+
+---
+
 ### TASK-028: Modalità Locale/Drive (sostituisce transfer code)
 **File creati:** `src/shared/driveSync.ts`
 **File modificati:** `src/components/Settings.tsx`, `src/shared/labels.ts`, `src/app/features.ts`, `src/App.tsx`, `src/vite-env.d.ts`, `TASKS.md`

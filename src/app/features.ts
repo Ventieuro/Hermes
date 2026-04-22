@@ -22,7 +22,9 @@ export const FEATURES = {
   qrTransfer: false,
 
   /**
-   * Trasferimento dati con codice cifrato (copia/incolla) tra dispositivi.
+   * Sezione modalita dati (Locale/Drive) nei Settings.
+   * Tenere false per forzare sync 100% manuale via export/import file,
+   * lasciando comunque il codice Drive pronto per il futuro.
    */
-  codeTransfer: true,
+  codeTransfer: false,
 } as const

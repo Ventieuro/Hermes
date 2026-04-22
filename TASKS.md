@@ -32,6 +32,11 @@
 
 ## Completati
 
+### ✅ TASK-029 — Modalita 100% manuale (Drive predisposto) (23/04/2026)
+- [x] `features.ts` — disattivata sezione Locale/Drive in UI (`codeTransfer: false`)
+- [x] Conservata integrazione Drive nel codice per riattivazione futura
+- [x] Build check
+
 ### ✅ TASK-028 — Modalità Locale/Drive (sostituisce transfer code) (23/04/2026)
 - [x] Strategia dati: locale di default, Drive opzionale
 - [x] Integrazione Google Drive file cifrato (no DB)
