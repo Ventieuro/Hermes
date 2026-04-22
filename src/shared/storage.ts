@@ -262,8 +262,85 @@ export interface AppBackup {
   notificationSettings: NotificationSettings
 }
 
-/** Scarica tutti i dati come file .json */
-export function exportAllData(): void {
+// ─── Crypto helpers ──────────────────────────────────────
+
+interface EncryptedBackup {
+  enc: 1
+  salt: string  // base64
+  iv: string    // base64
+  data: string  // base64 AES-GCM ciphertext
+}
+
+function bufToBase64(buf: ArrayBuffer): string {
+  return btoa(String.fromCharCode(...new Uint8Array(buf)))
+}
+
+function base64ToBuf(b64: string): Uint8Array {
+  return Uint8Array.from(atob(b64), (c) => c.charCodeAt(0))
+}
+
+async function deriveKey(password: string, salt: Uint8Array): Promise<CryptoKey> {
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey'],
+  )
+  return crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt, iterations: 100_000, hash: 'SHA-256' },
+    keyMaterial,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['encrypt', 'decrypt'],
+  )
+}
+
+async function encryptJson(json: string, password: string): Promise<EncryptedBackup> {
+  const salt = crypto.getRandomValues(new Uint8Array(16))
+  const iv = crypto.getRandomValues(new Uint8Array(12))
+  const key = await deriveKey(password, salt)
+  const ciphertext = await crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv },
+    key,
+    new TextEncoder().encode(json),
+  )
+  return { enc: 1, salt: bufToBase64(salt), iv: bufToBase64(iv), data: bufToBase64(ciphertext) }
+}
+
+async function decryptJson(payload: EncryptedBackup, password: string): Promise<string | null> {
+  try {
+    const key = await deriveKey(password, base64ToBuf(payload.salt))
+    const plaintext = await crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv: base64ToBuf(payload.iv) },
+      key,
+      base64ToBuf(payload.data),
+    )
+    return new TextDecoder().decode(plaintext)
+  } catch {
+    return null
+  }
+}
+
+// ─── Apply backup ─────────────────────────────────────────
+
+function applyBackup(data: Partial<AppBackup>): 'ok' | 'invalid' {
+  if (data.version !== 1) return 'invalid'
+  if (!Array.isArray(data.transactions)) return 'invalid'
+  saveTransactions(data.transactions.filter(isValidTransaction))
+  if (data.settings && typeof data.settings === 'object') {
+    saveSettings(data.settings as AppSettings)
+  }
+  if (data.customCategories && typeof data.customCategories === 'object') {
+    saveCustomCategories(data.customCategories as CustomCategories)
+  }
+  if (data.customIcons && typeof data.customIcons === 'object') {
+    localStorage.setItem(CUSTOM_ICONS_KEY, JSON.stringify(data.customIcons))
+  }
+  if (data.notificationSettings && typeof data.notificationSettings === 'object') {
+    saveNotificationSettings(data.notificationSettings as NotificationSettings)
+  }
+  return 'ok'
+}
+
+/** Scarica tutti i dati come file .json cifrato con AES-256-GCM */
+export async function exportAllData(password: string): Promise<void> {
   const backup: AppBackup = {
     version: 1,
     exportedAt: new Date().toISOString(),
@@ -273,8 +350,8 @@ export function exportAllData(): void {
     customIcons: loadCustomIcons(),
     notificationSettings: loadNotificationSettings(),
   }
-  const json = JSON.stringify(backup, null, 2)
-  const blob = new Blob([json], { type: 'application/json' })
+  const encrypted = await encryptJson(JSON.stringify(backup), password)
+  const blob = new Blob([JSON.stringify(encrypted)], { type: 'application/json' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
@@ -284,29 +361,26 @@ export function exportAllData(): void {
 }
 
 /**
- * Importa un backup da file .json.
- * @returns 'ok' se importato con successo, 'invalid' se il file non è valido.
+ * Importa un backup da file .json (cifrato o plain legacy).
+ * @returns 'ok' | 'invalid' | 'needs-password' | 'wrong-password'
  */
-export function importAllData(jsonString: string): 'ok' | 'invalid' {
+export async function importAllData(
+  jsonString: string,
+  password?: string,
+): Promise<'ok' | 'invalid' | 'needs-password' | 'wrong-password'> {
   try {
-    const data = JSON.parse(jsonString) as Partial<AppBackup>
-    if (data.version !== 1) return 'invalid'
-    if (!Array.isArray(data.transactions)) return 'invalid'
-    const validTxs = data.transactions.filter(isValidTransaction)
-    saveTransactions(validTxs)
-    if (data.settings && typeof data.settings === 'object') {
-      saveSettings(data.settings as AppSettings)
+    const raw = JSON.parse(jsonString) as Record<string, unknown>
+
+    // Encrypted format
+    if (raw.enc === 1) {
+      if (!password) return 'needs-password'
+      const decrypted = await decryptJson(raw as unknown as EncryptedBackup, password)
+      if (decrypted === null) return 'wrong-password'
+      return applyBackup(JSON.parse(decrypted) as Partial<AppBackup>)
     }
-    if (data.customCategories && typeof data.customCategories === 'object') {
-      saveCustomCategories(data.customCategories as CustomCategories)
-    }
-    if (data.customIcons && typeof data.customIcons === 'object') {
-      localStorage.setItem(CUSTOM_ICONS_KEY, JSON.stringify(data.customIcons))
-    }
-    if (data.notificationSettings && typeof data.notificationSettings === 'object') {
-      saveNotificationSettings(data.notificationSettings as NotificationSettings)
-    }
-    return 'ok'
+
+    // Plain legacy format
+    return applyBackup(raw as Partial<AppBackup>)
   } catch {
     return 'invalid'
   }

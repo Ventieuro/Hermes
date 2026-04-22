@@ -32,6 +32,21 @@
 
 ## Completati
 
+### ✅ TASK-023 — Regola aggiornamento CHANGELOG (22/04/2026)
+- [x] `copilot-instructions.md` — sezione "Regole Obbligatorie a Fine Task"
+- [x] `CHANGELOG.md` — voci TASK-020 e TASK-021 aggiunte
+- [x] `CHANGELOG.md` — voce TASK-022 e TASK-023 aggiunte
+
+### ✅ TASK-022 — Cifratura AES-GCM backup export/import (22/04/2026)
+- [x] `storage.ts` — `exportAllData(password)` async con AES-GCM + PBKDF2
+- [x] `storage.ts` — `importAllData(json, password?)` async, gestisce formato cifrato e plain
+- [x] `labels.ts` — label password prompt (IT/EN/ES)
+- [x] `Settings.tsx` — handler async, prompt password, nuovo stato `wrong-password`
+- [x] Build check
+
+
+## Completati
+
 ### ✅ TASK-021 — Nuova icona app (moneta + orbita) (22/04/2026)
 - [x] `public/pwa-192x192.svg` — icona 192×192 con moneta dorata + orbita
 - [x] `public/pwa-512x512.svg` — icona 512×512 scalata

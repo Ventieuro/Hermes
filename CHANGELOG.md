@@ -4,7 +4,50 @@
 
 ---
 
-## [19/04/2026] — Sessione 2
+## [22/04/2026] — Sessione 3
+
+### TASK-023: Regola aggiornamento CHANGELOG
+**File modificati:** `.github/copilot-instructions.md`, `CHANGELOG.md`
+
+- Aggiunta sezione "Regole Obbligatorie a Fine Task" in `copilot-instructions.md` con obbligo esplicito di aggiornare `CHANGELOG.md` dopo ogni task
+
+---
+
+### TASK-022: Cifratura AES-GCM backup export/import
+**File modificati:** `src/shared/storage.ts`, `src/shared/labels.ts`, `src/components/Settings.tsx`
+
+- Export e import backup ora **cifrati con AES-256-GCM + PBKDF2** (100.000 iterazioni, SHA-256)
+- `exportAllData(password)` diventa async: chiede password, cifra il JSON, scarica il file
+- `importAllData(json, password?)` diventa async: rileva il formato (cifrato vs plain), decifra con la password fornita
+- Nuovi status di import: `'wrong-password'` in aggiunta a `'ok'` e `'invalid'`
+- Label aggiunte: `passwordEsporta`, `passwordImporta`, `passwordErrata` (IT/EN/ES)
+- **Build check:** ✅ Passato
+
+---
+
+### TASK-021: Nuova icona app (moneta + orbita)
+**File modificati:** `public/pwa-192x192.svg`, `public/pwa-512x512.svg`, `index.html`
+
+- Ridisegnata l'icona PWA con moneta dorata (gradiente radiale 3D con highlight), orbita ellittica tratteggiata inclinata, due pianetini (blu + arancione) posizionati sull'orbita
+- Sfondo spazio nero profondo con stelle sparse
+- Favicon in `index.html` aggiornato a `pwa-192x192.svg`
+- **Build check:** ✅ Passato
+
+---
+
+### TASK-020: Export/Import JSON + feature flags
+**File creati:** `src/app/features.ts`
+**File modificati:** `src/shared/storage.ts`, `src/shared/labels.ts`, `src/components/Settings.tsx`
+
+- Creato `src/app/features.ts` con `FEATURES` object per abilitare/disabilitare sezioni senza toccare codice applicativo
+- `exportAllData()` e `importAllData()` aggiunti a `storage.ts` con tipo `AppBackup` (version 1)
+- Sezione "Sincronizzazione" nei Settings gated da `FEATURES.exportImportJson`
+- Label `sincronizzazione`, `esportaDati`, `importaDati`, `importaConferma`, `importaOk`, `importaErrore` (IT/EN/ES)
+- **Build check:** ✅ Passato
+
+---
+
+
 
 ### TASK-004: Categorie custom + descrizione opzionale
 **File creati:** `src/pages/Categories.tsx`

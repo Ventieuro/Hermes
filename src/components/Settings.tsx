@@ -10,7 +10,7 @@ function Settings() {
   const { theme, setTheme } = useTheme()
   const panelRef = useRef<HTMLDivElement>(null)
   const [notifSettings, setNotifSettings] = useState(loadNotificationSettings)
-  const [importStatus, setImportStatus] = useState<'idle' | 'ok' | 'invalid'>('idle')
+  const [importStatus, setImportStatus] = useState<'idle' | 'ok' | 'invalid' | 'wrong-password'>('idle')
 
   // Close on click outside
   useEffect(() => {
@@ -53,9 +53,18 @@ function Settings() {
       return
     }
     const reader = new FileReader()
-    reader.onload = (ev) => {
-      const result = importAllData(ev.target?.result as string)
-      setImportStatus(result)
+    reader.onload = async (ev) => {
+      const content = ev.target?.result as string
+      // First try without password to detect format
+      const probe = await importAllData(content)
+      if (probe === 'needs-password') {
+        const pwd = window.prompt(SETTINGS.passwordImporta)
+        if (!pwd) return
+        const result = await importAllData(content, pwd)
+        setImportStatus(result === 'needs-password' ? 'invalid' : result)
+      } else {
+        setImportStatus(probe)
+      }
       setTimeout(() => setImportStatus('idle'), 3000)
     }
     reader.readAsText(file)
@@ -226,7 +235,11 @@ function Settings() {
               </h3>
               <div className="flex flex-col gap-2">
                 <button
-                  onClick={exportAllData}
+                  onClick={async () => {
+                    const pwd = window.prompt(SETTINGS.passwordEsporta)
+                    if (!pwd) return
+                    await exportAllData(pwd)
+                  }}
                   className="w-full py-2 rounded-xl text-sm font-medium transition active:scale-95"
                   style={{
                     backgroundColor: 'var(--bg-secondary)',
@@ -242,7 +255,7 @@ function Settings() {
                     backgroundColor: 'var(--bg-secondary)',
                     color: importStatus === 'ok'
                       ? 'var(--accent)'
-                      : importStatus === 'invalid'
+                      : importStatus === 'invalid' || importStatus === 'wrong-password'
                       ? '#ef4444'
                       : 'var(--text-primary)',
                     border: '1px solid var(--border)',
@@ -252,6 +265,8 @@ function Settings() {
                     ? SETTINGS.importaOk
                     : importStatus === 'invalid'
                     ? SETTINGS.importaErrore
+                    : importStatus === 'wrong-password'
+                    ? SETTINGS.passwordErrata
                     : SETTINGS.importaDati}
                   <input
                     type="file"

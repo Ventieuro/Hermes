@@ -213,6 +213,9 @@ const STRINGS = {
     importaConferma:   t('Tutti i dati verranno sostituiti. Continuare?', 'All data will be replaced. Continue?', '¿Todos los datos serán reemplazados. ¿Continuar?'),
     importaOk:         t('✅ Importazione completata',     '✅ Import complete',              '✅ Importación completada'),
     importaErrore:     t('❌ File non valido',             '❌ Invalid file',                '❌ Archivo no válido'),
+    passwordErrata:    t('❌ Password errata',             '❌ Wrong password',              '❌ Contraseña incorrecta'),
+    passwordEsporta:   t('Scegli una password per cifrare il backup:', 'Choose a password to encrypt the backup:', 'Elige una contraseña para cifrar el backup:'),
+    passwordImporta:   t('Inserisci la password del backup:', 'Enter the backup password:', 'Ingresa la contraseña del backup:'),
   },
 
   // ── Notifiche ──────────────────────────────────────────

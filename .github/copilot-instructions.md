@@ -217,3 +217,13 @@ npm run preview         # Preview build produzione
 ```
 
 **Importante:** Avviare SEMPRE il dev server con `--host` per renderlo accessibile in rete locale (test da telefono).
+
+## Regole Obbligatorie a Fine Task
+
+⚠️ **Dopo ogni task completato, aggiornare SEMPRE:**
+1. `TASKS.md` — spostare il task da "In Corso" a "Completati"
+2. `CHANGELOG.md` — aggiungere una voce nella sessione corrente con:
+   - Numero task e titolo
+   - File creati/modificati
+   - Descrizione sintetica delle modifiche
+3. Eseguire `npm run build` per verificare che tutto compili
