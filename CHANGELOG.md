@@ -6,6 +6,29 @@
 
 ## [22/04/2026] — Sessione 3
 
+### TASK-027: Trasferimento con codice (Applica/Ricevi)
+**File modificati:** `src/shared/storage.ts`, `src/components/Settings.tsx`, `src/shared/labels.ts`, `src/app/features.ts`, `package.json`, `TASKS.md`
+
+- Aggiunto flusso alternativo al multi-QR: codice cifrato copia/incolla tra dispositivi
+- Nuove API in storage: `buildTransferCode(password)` e `importTransferCode(code, password, { mode: 'merge' })`
+- In Settings: sezione "Genera codice trasferimento", pulsante copia e pannello "Ricevi codice" con azione "Applica codice"
+- `qrTransfer` disattivato di default e nuovo flag `codeTransfer` attivo
+- Merge mantenuto in import, con richiesta password e gestione esiti (`ok`, `invalid`, `wrong-password`)
+- Cleanup dipendenze: rimossi `qrcode` e `@types/qrcode` non più usati dalla UI
+- **Build check:** ✅ Passato
+
+---
+
+### TASK-026: Fix QR scan 404 + parser URL robusto
+**File modificati:** `src/shared/storage.ts`, `src/App.tsx`
+
+- I link QR ora usano query string (`?xfer=...`) invece di hash per maggiore compatibilità con scanner mobili
+- Parsing QR reso robusto: supporta token in hash, query e pathname (`/xfer/...`) 
+- Mantiene retrocompatibilità con i QR della versione precedente
+- Pulizia URL dopo ingest per evitare path non validi e ridurre il rischio di pagina 404
+
+---
+
 ### TASK-025: Import PC -> telefono via QR con merge
 **File modificati:** `src/shared/types.ts`, `src/shared/storage.ts`, `src/shared/labels.ts`, `src/components/Settings.tsx`, `src/App.tsx`, `src/app/features.ts`, `package.json`
 

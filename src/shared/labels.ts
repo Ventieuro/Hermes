@@ -230,6 +230,14 @@ const STRINGS = {
       (corrente: number, totale: number) => `QR ${corrente}/${totale}`,
     ),
     qrImportPrompt:    t('QR completo! Inserisci la password di trasferimento:', 'QR complete! Enter transfer password:', '¡QR completo! Ingresa la contraseña de transferencia:'),
+    codiceTransfer:    t('Trasferimento con codice',      'Code transfer',                 'Transferencia por codigo'),
+    codiceGenera:      t('📋 Genera codice trasferimento', '📋 Generate transfer code',     '📋 Generar codigo de transferencia'),
+    codiceRicevi:      t('📥 Ricevi codice',               '📥 Receive code',                '📥 Recibir codigo'),
+    codiceApplica:     t('Applica codice',                'Apply code',                    'Aplicar codigo'),
+    codicePlaceholder: t('Incolla qui il codice ricevuto dal PC', 'Paste here the code received from PC', 'Pega aqui el codigo recibido del PC'),
+    codiceCopia:       t('Copia codice',                  'Copy code',                     'Copiar codigo'),
+    codiceCopiato:     t('✅ Codice copiato',             '✅ Code copied',                 '✅ Codigo copiado'),
+    codicePrompt:      t('Inserisci la password del codice:', 'Enter code password:',      'Ingresa la contraseña del codigo:'),
   },
 
   // ── Notifiche ──────────────────────────────────────────

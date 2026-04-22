@@ -10,7 +10,7 @@ import NotFound from './pages/NotFound'
 import {
   isUnlocked,
   importAllData,
-  ingestQrTransferHash,
+  ingestQrTransferToken,
   getPendingQrTransferPayload,
   clearPendingQrTransferPayload,
 } from './shared/storage'
@@ -23,9 +23,23 @@ function App() {
 
   useEffect(() => {
     async function handleQrTransferFlow() {
-      const ingestResult = ingestQrTransferHash(window.location.hash)
+      const url = new URL(window.location.href)
+
+      let rawToken = ''
+      if (url.hash.startsWith('#xfer=')) {
+        rawToken = url.hash.slice(6)
+      } else {
+        rawToken = url.searchParams.get('xfer') ?? ''
+      }
+
+      if (!rawToken) {
+        const match = url.pathname.match(/\/xfer\/([^/]+)$/)
+        if (match?.[1]) rawToken = decodeURIComponent(match[1])
+      }
+
+      const ingestResult = ingestQrTransferToken(rawToken)
       if (ingestResult !== 'ignored') {
-        window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`)
+        window.history.replaceState(null, '', window.location.pathname)
       }
 
       const pendingPayload = getPendingQrTransferPayload()

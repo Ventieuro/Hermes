@@ -312,6 +312,8 @@ interface ImportOptions {
   mode?: 'replace' | 'merge'
 }
 
+const TRANSFER_CODE_PREFIX = 'HX1.'
+
 function bufToBase64(buf: ArrayBuffer): string {
   return btoa(String.fromCharCode(...new Uint8Array(buf)))
 }
@@ -518,13 +520,49 @@ export async function buildQrTransferLinks(password: string): Promise<string[]> 
 
   const total = chunks.length
   const baseUrl = `${window.location.origin}${window.location.pathname}`
-  return chunks.map((chunk, i) => `${baseUrl}#xfer=1.${sessionId}.${i + 1}.${total}.${chunk}`)
+  return chunks.map((chunk, i) => {
+    const token = `1.${sessionId}.${i + 1}.${total}.${chunk}`
+    return `${baseUrl}?xfer=${encodeURIComponent(token)}`
+  })
 }
 
-export function ingestQrTransferHash(hash: string): 'ignored' | 'partial' | 'ready' | 'invalid' {
-  if (!hash.startsWith('#xfer=')) return 'ignored'
+export async function buildTransferCode(password: string): Promise<string> {
+  const backup: AppBackup = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    transactions: loadTransactions(),
+    settings: loadSettings(),
+    customCategories: loadCustomCategories(),
+    customIcons: loadCustomIcons(),
+    notificationSettings: loadNotificationSettings(),
+  }
 
-  const raw = hash.slice(6)
+  const encrypted = await encryptJson(JSON.stringify(backup), password)
+  return `${TRANSFER_CODE_PREFIX}${toBase64Url(JSON.stringify(encrypted))}`
+}
+
+export async function importTransferCode(
+  code: string,
+  password?: string,
+  options: ImportOptions = {},
+): Promise<'ok' | 'invalid' | 'needs-password' | 'wrong-password'> {
+  try {
+    const compact = code.trim().replace(/\s+/g, '')
+    const raw = compact.startsWith(TRANSFER_CODE_PREFIX)
+      ? compact.slice(TRANSFER_CODE_PREFIX.length)
+      : compact
+
+    if (!raw) return 'invalid'
+    const payload = fromBase64Url(raw)
+    return importAllData(payload, password, options)
+  } catch {
+    return 'invalid'
+  }
+}
+
+export function ingestQrTransferToken(raw: string): 'ignored' | 'partial' | 'ready' | 'invalid' {
+  if (!raw) return 'ignored'
+
   const parts = raw.split('.')
   if (parts.length < 5) return 'invalid'
 
@@ -573,6 +611,12 @@ export function ingestQrTransferHash(hash: string): 'ignored' | 'partial' | 'rea
   } catch {
     return 'invalid'
   }
+}
+
+// Backward-compatible helper for hash links generated in previous version.
+export function ingestQrTransferHash(hash: string): 'ignored' | 'partial' | 'ready' | 'invalid' {
+  if (!hash.startsWith('#xfer=')) return 'ignored'
+  return ingestQrTransferToken(hash.slice(6))
 }
 
 export function getPendingQrTransferPayload(): string | null {

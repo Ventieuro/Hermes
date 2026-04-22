@@ -32,6 +32,19 @@
 
 ## Completati
 
+### ✅ TASK-027 — Trasferimento con codice (Applica/Ricevi) (23/04/2026)
+- [x] `storage.ts` — generazione codice cifrato e import da codice
+- [x] `Settings.tsx` — UI "Genera codice", "Ricevi" e "Applica"
+- [x] `features.ts` — QR disattivato di default, code-transfer attivo
+- [x] `labels.ts` — label dedicate al flusso codice
+- [x] Build check
+
+### ✅ TASK-026 — Fix QR scan 404 + URL parser robusto (23/04/2026)
+- [x] `storage.ts` — generazione link QR con `?xfer=` (non hash)
+- [x] `storage.ts` — parser token compatibile con formato vecchio e nuovo
+- [x] `App.tsx` — ingest da hash/query/path + pulizia URL post-scan
+- [x] Build check
+
 ### ✅ TASK-025 — Import PC → telefono via QR con merge dati (22/04/2026)
 - [x] Strategia sync transazioni con metadati (`syncId`, `createdAt`, `updatedAt`)
 - [x] Merge sicuro su import (`mode: 'merge'`) senza sostituzione completa

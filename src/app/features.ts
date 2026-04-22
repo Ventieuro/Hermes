@@ -19,5 +19,10 @@ export const FEATURES = {
   /**
    * Trasferimento dati PC -> telefono tramite QR chunked.
    */
-  qrTransfer: true,
+  qrTransfer: false,
+
+  /**
+   * Trasferimento dati con codice cifrato (copia/incolla) tra dispositivi.
+   */
+  codeTransfer: true,
 } as const
