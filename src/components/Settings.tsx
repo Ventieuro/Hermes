@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useTheme } from '../shared/ThemeContext'
 import { loadNotificationSettings, saveNotificationSettings, exportAllData, importAllData } from '../shared/storage'
-import { SETTINGS, NOTIFICHE } from '../shared/labels'
+import { SETTINGS, NOTIFICHE, getLocale, setLocale, type Locale } from '../shared/labels'
 import { FEATURES } from '../app/features'
 
 function Settings() {
@@ -125,6 +125,39 @@ function Settings() {
               >
                 ☀️ {SETTINGS.lightMode}
               </button>
+            </div>
+          </div>
+
+          {/* ─── Language Section ─── */}
+          <div className="p-4" style={{ borderBottom: '1px solid var(--border)' }}>
+            <h3
+              className="text-xs font-semibold uppercase tracking-wide mb-3"
+              style={{ color: 'var(--text-muted)' }}
+            >
+              {SETTINGS.lingua}
+            </h3>
+            <div className="grid grid-cols-3 gap-2">
+              {([
+                { locale: 'it', flag: '🇮🇹', label: 'Italiano' },
+                { locale: 'en', flag: '🇬🇧', label: 'English' },
+                { locale: 'es', flag: '🇪🇸', label: 'Español' },
+              ] as { locale: Locale; flag: string; label: string }[]).map(({ locale, flag, label }) => {
+                const active = getLocale() === locale
+                return (
+                  <button
+                    key={locale}
+                    onClick={() => { setLocale(locale); window.location.reload() }}
+                    className={`py-2 px-1 rounded-xl text-xs font-medium transition ${active ? 'ring-2' : ''}`}
+                    style={{
+                      backgroundColor: active ? 'var(--accent-light)' : 'var(--bg-secondary)',
+                      color: active ? 'var(--accent)' : 'var(--text-secondary)',
+                      '--tw-ring-color': 'var(--accent)',
+                    } as React.CSSProperties}
+                  >
+                    {flag} {label}
+                  </button>
+                )
+              })}
             </div>
           </div>
 

@@ -201,6 +201,7 @@ const STRINGS = {
     tema:              t('Tema',                         'Theme',                       'Tema'),
     darkMode:          t('Spazio',                       'Space',                       'Espacio'),
     lightMode:         t('NASA',                         'NASA',                        'NASA'),
+    lingua:            t('Lingua',                       'Language',                    'Idioma'),
     notifiche:         t('Notifiche',                    'Notifications',               'Notificaciones'),
     promemoria:        t('Promemoria giornaliero',       'Daily reminder',              'Recordatorio diario'),
     orarioPromemoria:  t('A che ora?',                   'At what time?',               '¿A qué hora?'),

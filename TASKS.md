@@ -32,6 +32,14 @@
 
 ## Completati
 
+### ✅ TASK-024 — Cambio lingua nei Settings (22/04/2026)
+- [x] `labels.ts` — label `lingua` nella sezione settings (IT/EN/ES)
+- [x] `Settings.tsx` — sezione lingua con 3 bottoni (🇮🇹 🇬🇧 🇪🇸), reload su cambio
+- [x] Build check
+
+
+## Completati
+
 ### ✅ TASK-023 — Regola aggiornamento CHANGELOG (22/04/2026)
 - [x] `copilot-instructions.md` — sezione "Regole Obbligatorie a Fine Task"
 - [x] `CHANGELOG.md` — voci TASK-020 e TASK-021 aggiunte

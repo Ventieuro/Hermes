@@ -6,6 +6,15 @@
 
 ## [22/04/2026] — Sessione 3
 
+### TASK-024: Cambio lingua nei Settings
+**File modificati:** `src/shared/labels.ts`, `src/components/Settings.tsx`
+
+- Aggiunta sezione "Lingua" nel pannello Settings con 3 bottoni: 🇮🇹 Italiano, 🇬🇧 English, 🇪🇸 Español
+- Bottone lingua attiva evidenziato con `accent` + `ring-2`
+- Al cambio lingua: `setLocale()` salva in localStorage e `window.location.reload()` ricarica l'app
+- **Build check:** ✅ Passato
+
+---
 ### TASK-023: Regola aggiornamento CHANGELOG
 **File modificati:** `.github/copilot-instructions.md`, `CHANGELOG.md`
 
