@@ -304,6 +304,29 @@ const STRINGS = {
                       'To install: tap ⬆️ then "Add to Home Screen"',
                       'Para instalar: toca ⬆️ y luego "Añadir a pantalla de inicio"'),
   },
+
+  // ── Backup Automatico ─────────────────────────────────
+  autoBackup: {
+    titolo:          t('Backup automatico',                  'Auto backup',                   'Copia de seguridad automática'),
+    attiva:          t('Attiva alla chiusura',               'Enable on close',               'Activar al cerrar'),
+    destinazione:    t('Dove salvare',                       'Save to',                       'Guardar en'),
+    download:        t('Download (file JSON)',               'Download (JSON file)',           'Descarga (archivo JSON)'),
+    cartella:        t('Cartella locale',                    'Local folder',                  'Carpeta local'),
+    sceglicartella:  t('Scegli cartella...',                 'Choose folder...',              'Elegir carpeta...'),
+    cartellaScelta:  tf(
+      (name: string) => `📁 ${name}`,
+      (name: string) => `📁 ${name}`,
+      (name: string) => `📁 ${name}`,
+    ),
+    cambiaCar:       t('Cambia cartella',                    'Change folder',                 'Cambiar carpeta'),
+    ultimoBackup:    t('Ultimo backup:',                     'Last backup:',                  'Última copia:'),
+    mai:             t('Mai',                                'Never',                         'Nunca'),
+    backupOra:       t('💾 Backup ora',                      '💾 Backup now',                  '💾 Copia ahora'),
+    nonSupportato:   t('Non supportato da questo browser.',  'Not supported by this browser.','No compatible con este navegador.'),
+    passwordLabel:   t('Password cifratura',                 'Encryption password',            'Contraseña de cifrado'),
+    passwordPlaceholder: t('Lascia vuoto = nessuna cifratura', 'Leave empty = no encryption',  'Dejar vacío = sin cifrar'),
+    nota:            t('Con password: file cifrato AES-256. Senza: JSON non cifrato.', 'With password: AES-256 encrypted file. Without: plain JSON.', 'Con contraseña: cifrado AES-256. Sin ella: JSON sin cifrar.'),
+  },
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -422,3 +445,4 @@ export const MOVIMENTI: Labels['movimenti'] = localize(STRINGS.movimenti)
 export const SETTINGS:  Labels['settings']  = localize(STRINGS.settings)
 export const NOTIFICHE: Labels['notifiche'] = localize(STRINGS.notifiche)
 export const PWA:       Labels['pwa']       = localize(STRINGS.pwa)
+export const AUTO_BACKUP: Labels['autoBackup'] = localize(STRINGS.autoBackup)

@@ -29,6 +29,30 @@
 
 <!-- Nessun task in corso -->
 
+## Completati
+
+### ✅ TASK-041 — Backup automatico alla chiusura app (24/04/2026)
+- [x] Creato `src/shared/autoBackup.ts` con logica backup (download / cartella FSA)
+- [x] Aggiunta sezione "Backup automatico" in `Settings.tsx`
+- [x] Toggle attiva/disattiva, scelta destinazione (download o cartella locale)
+- [x] Listener `visibilitychange` + `pagehide` in `Layout.tsx`
+- [x] Filename con solo data (sovrascrive stesso file nello stesso giorno)
+- [x] Label i18n in `labels.ts` sezione `autoBackup`
+- [x] Build check ✅
+
+### ✅ TASK-042 — Fix grafico donut: logica entrate→risparmi (24/04/2026)
+- [x] Donut mostra le uscite per categoria + slice verde = risparmi
+- [x] Il cerchio intero = entrate totali; le spese lo erodono
+- [x] Se spese ≥ entrate, nessuna slice verde
+- [x] Percentuali con 1 decimale (`toFixed(1)`)
+- [x] Build check ✅
+
+### ✅ TASK-043 — Fix parti nere nel donut chart (24/04/2026)
+- [x] `ctx.stroke()` era chiamato sul path completo (archi + linee radiali)
+- [x] Separato path del glow: solo arco esterno, nessuna linea laterale
+- [x] Rimosso anche il sistema gap lines precedente
+- [x] Build check ✅
+
 
 ## Completati
 

@@ -331,7 +331,7 @@ export interface AppBackup {
 
 // ─── Crypto helpers ──────────────────────────────────────
 
-interface EncryptedBackup {
+export interface EncryptedBackup {
   enc: 1
   salt: string  // base64
   iv: string    // base64
@@ -384,7 +384,7 @@ async function deriveKey(password: string, salt: Uint8Array): Promise<CryptoKey>
   )
 }
 
-async function encryptJson(json: string, password: string): Promise<EncryptedBackup> {
+export async function encryptJson(json: string, password: string): Promise<EncryptedBackup> {
   const salt = crypto.getRandomValues(new Uint8Array(16))
   const iv = crypto.getRandomValues(new Uint8Array(12))
   const key = await deriveKey(password, salt)

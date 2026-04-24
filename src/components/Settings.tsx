@@ -15,7 +15,15 @@ import {
   setLocalMode,
   type DriveSyncResult,
 } from '../shared/driveSync'
-import { SETTINGS, NOTIFICHE, getLocale, setLocale, type Locale } from '../shared/labels'
+import {
+  loadAutoBackupSettings,
+  saveAutoBackupSettings,
+  pickFolder,
+  triggerDownloadBackup,
+  isFSASupported,
+  type AutoBackupSettings,
+} from '../shared/autoBackup'
+import { SETTINGS, NOTIFICHE, AUTO_BACKUP, getLocale, setLocale, type Locale } from '../shared/labels'
 import { FEATURES } from '../app/features'
 import { useDialog } from '../shared/DialogContext'
 
@@ -91,6 +99,7 @@ function SettingsContent({ onRequestClose: _onRequestClose }: SettingsContentPro
   const [syncSettings, setSyncSettings] = useState(loadSyncSettings)
   const [driveStatus, setDriveStatus] = useState<'idle' | DriveSyncResult>('idle')
   const [isDriveSyncing, setIsDriveSyncing] = useState(false)
+  const [autoBackup, setAutoBackup] = useState<AutoBackupSettings>(loadAutoBackupSettings)
 
   function toggleNotifications() {
     if (!notifSettings.enabled && 'Notification' in window && Notification.permission === 'default') {
@@ -205,6 +214,17 @@ function SettingsContent({ onRequestClose: _onRequestClose }: SettingsContentPro
     if (driveStatus === 'missing-client-id') return SETTINGS.driveStatoNoClient
     if (driveStatus === 'needs-password' || driveStatus === 'wrong-password') return SETTINGS.passwordErrata
     return SETTINGS.driveStatoAuth
+  }
+
+  function updateAutoBackup(patch: Partial<AutoBackupSettings>) {
+    const updated = { ...autoBackup, ...patch }
+    setAutoBackup(updated)
+    saveAutoBackupSettings(updated)
+  }
+
+  async function handlePickFolder() {
+    const name = await pickFolder()
+    if (name) updateAutoBackup({ dest: 'folder', folderName: name })
   }
 
   return (
@@ -551,6 +571,124 @@ function SettingsContent({ onRequestClose: _onRequestClose }: SettingsContentPro
           </div>
         </div>
       )}
+
+      {/* ─── Backup Section ─── */}
+      <div className="p-4">
+        <h3
+          className="text-xs font-semibold uppercase tracking-wide mb-3"
+          style={{ color: 'var(--text-muted)' }}
+        >
+          {AUTO_BACKUP.titolo}
+        </h3>
+
+        <div className="space-y-3">
+          {/* Password cifratura */}
+          <div>
+            <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>
+              {AUTO_BACKUP.passwordLabel}
+            </p>
+            <input
+              type="password"
+              className="w-full px-3 py-2 rounded-xl text-sm"
+              style={{
+                backgroundColor: 'var(--input-bg)',
+                border: '1px solid var(--input-border)',
+                color: 'var(--text-primary)',
+              }}
+              placeholder={AUTO_BACKUP.passwordPlaceholder}
+              value={autoBackup.password ?? ''}
+              onChange={(e) => updateAutoBackup({ password: e.target.value || null })}
+            />
+          </div>
+
+          {/* Destinazione */}
+          <div>
+            <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>
+              {AUTO_BACKUP.destinazione}
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => updateAutoBackup({ dest: 'download' })}
+                className={`py-2 rounded-xl text-xs font-medium transition ${autoBackup.dest === 'download' ? 'ring-2' : ''}`}
+                style={{
+                  backgroundColor: autoBackup.dest === 'download' ? 'var(--accent-light)' : 'var(--bg-secondary)',
+                  color: autoBackup.dest === 'download' ? 'var(--accent)' : 'var(--text-secondary)',
+                  border: '1px solid var(--border)',
+                  '--tw-ring-color': 'var(--accent)',
+                } as React.CSSProperties}
+              >
+                📥 {AUTO_BACKUP.download}
+              </button>
+              <button
+                onClick={() => {
+                  if (!isFSASupported()) return
+                  updateAutoBackup({ dest: 'folder' })
+                }}
+                disabled={!isFSASupported()}
+                className={`py-2 rounded-xl text-xs font-medium transition disabled:opacity-40 ${autoBackup.dest === 'folder' ? 'ring-2' : ''}`}
+                style={{
+                  backgroundColor: autoBackup.dest === 'folder' ? 'var(--accent-light)' : 'var(--bg-secondary)',
+                  color: autoBackup.dest === 'folder' ? 'var(--accent)' : 'var(--text-secondary)',
+                  border: '1px solid var(--border)',
+                  '--tw-ring-color': 'var(--accent)',
+                } as React.CSSProperties}
+              >
+                📁 {AUTO_BACKUP.cartella}
+              </button>
+            </div>
+            {!isFSASupported() && (
+              <p className="text-[11px] mt-1" style={{ color: 'var(--text-muted)' }}>
+                {AUTO_BACKUP.nonSupportato}
+              </p>
+            )}
+          </div>
+
+          {/* Scegli cartella */}
+          {autoBackup.dest === 'folder' && isFSASupported() && (
+            <button
+              onClick={handlePickFolder}
+              className="w-full py-2 rounded-xl text-sm font-medium transition active:scale-95"
+              style={{
+                backgroundColor: 'var(--bg-secondary)',
+                color: 'var(--text-primary)',
+                border: '1px solid var(--border)',
+              }}
+            >
+              {autoBackup.folderName
+                ? AUTO_BACKUP.cartellaScelta(autoBackup.folderName)
+                : AUTO_BACKUP.sceglicartella}
+            </button>
+          )}
+
+          {/* Ultimo backup */}
+          <p className="text-[11px]" style={{ color: 'var(--text-muted)' }}>
+            {AUTO_BACKUP.ultimoBackup}{' '}
+            {autoBackup.lastBackup
+              ? new Date(autoBackup.lastBackup).toLocaleString()
+              : AUTO_BACKUP.mai}
+          </p>
+
+          {/* Backup ora */}
+          <button
+            onClick={async () => {
+              await triggerDownloadBackup(autoBackup.password ?? null)
+              updateAutoBackup({ lastBackup: new Date().toISOString() })
+            }}
+            className="w-full py-2 rounded-xl text-sm font-medium transition active:scale-95"
+            style={{
+              backgroundColor: 'var(--bg-secondary)',
+              color: 'var(--text-primary)',
+              border: '1px solid var(--border)',
+            }}
+          >
+            {AUTO_BACKUP.backupOra}
+          </button>
+
+          <p className="text-[11px]" style={{ color: 'var(--text-muted)' }}>
+            {AUTO_BACKUP.nota}
+          </p>
+        </div>
+      </div>
 
     </>
   )
