@@ -6,6 +6,49 @@
   100% { filter: brightness(1.25); }
 }
 
+@keyframes dock-plus-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
+}
+
+@keyframes dock-plus-ring {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.55;
+  }
+  65% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+
+.dock-plus-core {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  animation: dock-plus-pulse 3.2s ease-in-out infinite;
+}
+
+.dock-plus-ring {
+  position: absolute;
+  inset: 9px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--accent) 48%, #ffffff);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--accent) 30%, transparent);
+  animation: dock-plus-ring 3.4s ease-out infinite;
+  pointer-events: none;
+}
+
 /* ========== TEMA: Spazio ========== */
 :root,
 [data-theme="spazio"] {
@@ -48,6 +91,48 @@
   --tx-balance-neg-border: #573515;
   --tx-balance-neg-text: #FF6633;
   --tx-balance-neg-label: #FF8A65;
+}
+
+/* ========== TEMA: Mission Control ========== */
+[data-theme="mission"] {
+  --bg-primary: #0d1323;
+  --bg-secondary: #111827;
+  --bg-card: rgba(255, 255, 255, 0.04);
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #4a5568;
+  --border: rgba(255, 255, 255, 0.08);
+  --accent: #ff9800;
+  --accent-hover: #f57c00;
+  --accent-light: rgba(255, 152, 0, 0.14);
+  --nav-bg: rgba(10, 14, 26, 0.92);
+  --nav-text: #e2e8f0;
+  --btn-bg: rgba(255, 255, 255, 0.06);
+  --btn-text: #e2e8f0;
+  --input-bg: rgba(255, 255, 255, 0.06);
+  --input-border: rgba(255, 255, 255, 0.13);
+  --highlight: #00bcd4;
+  --gold: #ffd740;
+  --water: #29b6f6;
+  --tropical: #ff9800;
+  --fab-bg: #ff9800;
+  --fab-text: #0d1323;
+  --tx-income-bg: rgba(46, 204, 113, 0.07);
+  --tx-income-border: rgba(46, 204, 113, 0.22);
+  --tx-income-text: #2ecc71;
+  --tx-income-label: #27ae60;
+  --tx-expense-bg: rgba(231, 76, 60, 0.07);
+  --tx-expense-border: rgba(231, 76, 60, 0.22);
+  --tx-expense-text: #e74c3c;
+  --tx-expense-label: #c0392b;
+  --tx-balance-pos-bg: rgba(255, 152, 0, 0.07);
+  --tx-balance-pos-border: rgba(255, 152, 0, 0.22);
+  --tx-balance-pos-text: #ff9800;
+  --tx-balance-pos-label: #e67e22;
+  --tx-balance-neg-bg: rgba(231, 76, 60, 0.07);
+  --tx-balance-neg-border: rgba(231, 76, 60, 0.22);
+  --tx-balance-neg-text: #e74c3c;
+  --tx-balance-neg-label: #c0392b;
 }
 
 /* ========== TEMA: NASA Light ========== */

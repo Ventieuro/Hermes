@@ -4,6 +4,103 @@
 
 ---
 
+## [24/04/2026] — Sessione 5
+
+### TASK-037: Rimozione notch e riallineamento dock
+**File modificati:** `src/components/BottomNav.tsx`, `TASKS.md`, `CHANGELOG.md`
+
+- Rimossa la notch sopra il tasto `+` su richiesta UX
+- Ripristinato il `+` in posizione sospesa sopra la barra
+- Spostate le icone della dock più in basso (`translate-y-1` + padding top barra) per ridurre lo spazio vuoto percepito
+- Eseguiti build e deploy su GitHub Pages
+- **Build check:** ✅ Passato
+
+---
+
+### TASK-036: Fix resa visiva dock
+**File modificati:** `src/components/BottomNav.tsx`, `src/index.css`, `TASKS.md`, `CHANGELOG.md`
+
+- Corretta la proporzione generale della dock: larghezza ridotta e layout più compatto
+- Notch centrale ridimensionata per evitare effetto troppo "pesante" sul contenuto
+- Migliorato l'allineamento delle voci nav con colonna centrale riservata al bottone `+`
+- Rifinito il bottone `+`: dimensioni ridotte, glow e pulse più morbidi
+- Eseguiti build e deploy su GitHub Pages
+- **Build check:** ✅ Passato
+
+---
+
+### TASK-035: Rifiniture dock (pulse + notch + icone vector)
+**File modificati:** `src/components/BottomNav.tsx`, `src/index.css`, `TASKS.md`, `CHANGELOG.md`
+
+- Aggiunta animazione pulse del tasto `+` con ring esterno (piu elegante e leggibile)
+- Notch centrale resa piu pronunciata con cutout dedicato sopra la barra
+- Sostituite le emoji della navigazione con icone SVG outline coerenti con lo stile app
+- Mantenuto il comportamento del `+` (apertura form aggiunta movimento)
+- Eseguiti build e deploy su GitHub Pages
+- **Build check:** ✅ Passato
+
+---
+
+### TASK-034: Bottom dock stile Satispay adattata Hermes
+**File modificati:** `src/components/BottomNav.tsx`, `src/pages/Dashboard.tsx`, `src/shared/labels.ts`, `TASKS.md`, `CHANGELOG.md`
+
+- Ridisegnata la barra bassa in stile dock floating (glassmorphism + glow in palette Hermes)
+- Aggiunto tasto centrale `+` con look orbitale e feedback attivo
+- Il click sul `+` apre il form movimento in Dashboard (anche se cliccato da altre pagine)
+- Rimosso il vecchio FAB fisso dalla Dashboard per evitare doppio CTA
+- Estese le label i18n sezione `layout` per le voci della bottom bar
+- Eseguiti build e deploy su GitHub Pages
+- **Build check:** ✅ Passato
+
+---
+
+## [23/04/2026] — Sessione 4
+
+### TASK-033: Ripristino tasto + sopra barra bassa
+**File modificati:** `src/pages/Dashboard.tsx`, `TASKS.md`, `CHANGELOG.md`
+
+- Corretto il FAB `+` in Dashboard spostandolo sopra la bottom bar (`bottom-24`)
+- Aumentato z-index del FAB a `z-50` per evitare che venga coperto dalla barra (`z-40`)
+- Eseguiti build e deploy su GitHub Pages
+- **Build check:** ✅ Passato
+
+---
+
+### TASK-032: Barra in basso visibile anche su desktop
+**File modificati:** `src/components/BottomNav.tsx`, `src/components/Layout.tsx`, `TASKS.md`, `CHANGELOG.md`
+
+- Rimossa la classe `md:hidden` da BottomNav per mostrare la barra anche su sito desktop
+- Aggiunto `z-40` alla barra fissa per evitare layer nascosti
+- Aggiornato il layout con `md:pb-24` per evitare sovrapposizione contenuti
+- **Build check:** ✅ Passato
+
+---
+
+### TASK-031: Deploy su GitHub Pages
+**File modificati:** `TASKS.md`, `CHANGELOG.md`
+
+- Eseguito `npm run deploy` (build + publish con `gh-pages`)
+- Build Vite completata senza errori
+- Pubblicazione completata con output `Published`
+- **Deploy check:** ✅ Passato
+
+---
+
+### TASK-030: Bottom Navigation (menu in basso)
+**File creati:** `src/components/BottomNav.tsx`
+**File modificati:** `src/components/Layout.tsx`, `src/components/Settings.tsx`, `src/shared/labels.ts`
+
+- Creato componente **BottomNav** con tre voci: Home (🏠), Categorie (📁), Impostazioni (⚙️)
+- Riposizionato menu in basso per mobile (`md:hidden`), stile bottom-bar moderno tipo Satispay
+- Modificato Settings per supportare due modalità:
+  - **Popover**: dall'header come prima (non visibile su mobile)
+  - **Modal**: aperto dal BottomNav con overlay e bottone di chiusura
+- Aggiunto `pb-24 md:pb-6` al main content di Layout per evitare sovrapposizioni
+- Aggiunta label `impostazioni` al SETTINGS in `labels.ts`
+- **Build check:** ✅ Passato
+
+---
+
 ## [22/04/2026] — Sessione 3
 
 ### TASK-029: Modalita 100% manuale (Drive predisposto)

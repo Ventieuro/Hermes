@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import type { ReactNode } from 'react'
 
-export type Theme = 'spazio' | 'nasa'
+export type Theme = 'spazio' | 'nasa' | 'mission'
 
 const THEME_KEY = 'hermes-theme'
 
@@ -19,7 +19,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
     try {
       const saved = localStorage.getItem(THEME_KEY) as Theme
-      return saved === 'spazio' || saved === 'nasa' ? saved : 'spazio'
+      return saved === 'spazio' || saved === 'nasa' || saved === 'mission' ? saved : 'spazio'
     } catch {
       return 'spazio'
     }

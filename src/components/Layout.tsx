@@ -1,5 +1,5 @@
 import { Outlet, Link } from 'react-router-dom'
-import Settings from './Settings'
+import BottomNav from './BottomNav'
 import { LAYOUT } from '../shared/labels'
 
 function Layout() {
@@ -13,18 +13,15 @@ function Layout() {
           {LAYOUT.appName}
         </Link>
         <div className="flex-1" />
-        <Settings />
       </header>
 
-      <main className="flex-1 px-4 py-6 md:px-8">
+      <main className="flex-1 px-4 py-6 md:px-8 pb-28 md:pb-28">
         <div className="max-w-5xl w-full mx-auto">
           <Outlet />
         </div>
       </main>
 
-      <footer className="px-4 py-3 md:px-8 text-center text-sm transition-colors duration-300" style={{ borderTop: '1px solid var(--border)', color: 'var(--text-muted)' }}>
-        {LAYOUT.footerText} &copy; {new Date().getFullYear()}
-      </footer>
+      <BottomNav />
     </div>
   )
 }

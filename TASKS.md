@@ -32,6 +32,62 @@
 
 ## Completati
 
+### ✅ TASK-037 — Rimozione notch e riallineamento dock (24/04/2026)
+- [x] Rimossa notch sopra il bottone `+`
+- [x] Riposizionato `+` sospeso sopra la barra come versione precedente
+- [x] Spostate le icone piu in basso nella dock per ridurre spazio vuoto
+- [x] Build check
+- [x] Deploy GitHub Pages
+
+### ✅ TASK-036 — Fix resa visiva dock (24/04/2026)
+- [x] Ridotta larghezza della barra per evitare effetto "blocco" troppo grande
+- [x] Notch centrale ridimensionata e meno invasiva
+- [x] Riallineate le voci della nav con spazio centrale dedicato al `+`
+- [x] Tasto `+` ridimensionato e glow/pulse meno aggressivi
+- [x] Build check
+- [x] Deploy GitHub Pages
+
+### ✅ TASK-035 — Rifiniture dock: pulse, notch, icone vector (24/04/2026)
+- [x] Animazione pulse morbida del tasto `+`
+- [x] Notch centrale resa piu marcata e coerente con tema Hermes
+- [x] Sostituite emoji con icone vettoriali per Home, Categorie, Impostazioni
+- [x] Build check
+- [x] Deploy GitHub Pages
+
+### ✅ TASK-034 — Bottom dock stile Satispay adattata Hermes (24/04/2026)
+- [x] Restyling BottomNav con design dock floating (glass + glow)
+- [x] Inserito tasto `+` centrale orbit-style integrato nella barra
+- [x] Collegato il `+` all'apertura del form in Dashboard via evento globale
+- [x] Rimosso FAB duplicato dalla Dashboard
+- [x] Aggiunte label i18n per voci barra (`layout.nav*`)
+- [x] Build check
+- [x] Deploy GitHub Pages
+
+### ✅ TASK-033 — Ripristino tasto + sopra barra bassa (23/04/2026)
+- [x] Corretto posizionamento FAB nella Dashboard (`bottom-24`)
+- [x] Aumentato z-index FAB (`z-50`) per evitare overlay della bottom bar
+- [x] Build check
+- [x] Deploy GitHub Pages
+
+### ✅ TASK-032 — Barra in basso visibile anche su desktop (23/04/2026)
+- [x] Rimossa regola responsive che nascondeva la BottomNav (`md:hidden`)
+- [x] Aggiunto `z-40` alla barra per visibilità stabile
+- [x] Aumentato padding bottom del contenuto anche su desktop (`md:pb-24`)
+- [x] Build check
+
+### ✅ TASK-031 — Deploy su GitHub Pages (23/04/2026)
+- [x] Eseguito deploy con script `npm run deploy`
+- [x] Build produzione completata durante il deploy
+- [x] Pubblicazione completata (`gh-pages`)
+
+### ✅ TASK-030 — Bottom Navigation (menu in basso) (23/04/2026)
+- [x] Creato componente BottomNav con Home, Categorie, Impostazioni
+- [x] Riposizionato Settings come modal dal BottomNav
+- [x] Modificato Layout per integrare il BottomNav
+- [x] Aggiunto padding al main content per evitare sovrapposizioni
+- [x] Aggiunta label `impostazioni` in labels.ts
+- [x] Build check
+
 ### ✅ TASK-029 — Modalita 100% manuale (Drive predisposto) (23/04/2026)
 - [x] `features.ts` — disattivata sezione Locale/Drive in UI (`codeTransfer: false`)
 - [x] Conservata integrazione Drive nel codice per riattivazione futura

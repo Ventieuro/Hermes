@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import Mascot from '../components/Mascot'
 import AddTransactionForm from '../components/AddTransactionForm'
 import { loadTransactions, getTransactionsInPeriod, deleteTransaction, loadSettings, saveSettings } from '../shared/storage'
@@ -52,6 +52,12 @@ function Dashboard() {
   const [refreshKey, setRefreshKey] = useState(0)
 
   const refresh = useCallback(() => setRefreshKey((k) => k + 1), [])
+
+  useEffect(() => {
+    const handleAddTransaction = () => setShowForm(true)
+    window.addEventListener('hermes:add-transaction', handleAddTransaction)
+    return () => window.removeEventListener('hermes:add-transaction', handleAddTransaction)
+  }, [])
 
   const { start, end } = getPeriod(payDay, monthOffset)
   const isCurrentPeriod = monthOffset === 0
@@ -151,14 +157,22 @@ function Dashboard() {
 
       {/* Riepilogo */}
       <div className="grid grid-cols-3 gap-3">
-        <div className="rounded-2xl p-3 text-center" style={{ backgroundColor: 'var(--tx-income-bg)', border: '1px solid var(--tx-income-border)' }}>
+        <div className="rounded-2xl p-3 text-center" style={{
+          backgroundColor: 'var(--tx-income-bg)',
+          border: '1px solid var(--tx-income-border)',
+          boxShadow: '0 0 14px color-mix(in srgb, var(--tx-income-border) 90%, transparent)',
+        }}>
           <p className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: 'var(--tx-income-label)' }}>{DASHBOARD.entrate}</p>
           <p className="mt-1 text-base md:text-xl font-bold" style={{ color: 'var(--tx-income-text)' }}>
             {formatEuro(entrate)}
           </p>
         </div>
 
-        <div className="rounded-2xl p-3 text-center" style={{ backgroundColor: 'var(--tx-expense-bg)', border: '1px solid var(--tx-expense-border)' }}>
+        <div className="rounded-2xl p-3 text-center" style={{
+          backgroundColor: 'var(--tx-expense-bg)',
+          border: '1px solid var(--tx-expense-border)',
+          boxShadow: '0 0 14px color-mix(in srgb, var(--tx-expense-border) 90%, transparent)',
+        }}>
           <p className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: 'var(--tx-expense-label)' }}>{DASHBOARD.uscite}</p>
           <p className="mt-1 text-base md:text-xl font-bold" style={{ color: 'var(--tx-expense-text)' }}>
             {formatEuro(uscite)}
@@ -168,6 +182,7 @@ function Dashboard() {
         <div className="rounded-2xl p-3 text-center" style={{
           backgroundColor: saldo >= 0 ? 'var(--tx-balance-pos-bg)' : 'var(--tx-balance-neg-bg)',
           border: `1px solid ${saldo >= 0 ? 'var(--tx-balance-pos-border)' : 'var(--tx-balance-neg-border)'}`,
+          boxShadow: `0 0 14px color-mix(in srgb, ${saldo >= 0 ? 'var(--tx-balance-pos-border)' : 'var(--tx-balance-neg-border)'} 90%, transparent)`,
         }}>
           <p className="text-[10px] font-semibold uppercase tracking-wide" style={{
             color: saldo >= 0 ? 'var(--tx-balance-pos-label)' : 'var(--tx-balance-neg-label)',
@@ -179,6 +194,30 @@ function Dashboard() {
           </p>
         </div>
       </div>
+
+      {/* Hull Integrity — savings bar */}
+      {entrate > 0 && (
+        <div className="rounded-2xl px-4 py-3" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
+              ⛽ Hull Integrity
+            </span>
+            <span className="text-xs font-bold tabular-nums" style={{ color: saldo >= 0 ? 'var(--tx-income-text)' : 'var(--tx-expense-text)' }}>
+              {Math.round(Math.max(0, (saldo / entrate) * 100))}%
+            </span>
+          </div>
+          <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--border)' }}>
+            <div
+              className="h-full rounded-full transition-all duration-700"
+              style={{
+                width: `${Math.min(100, Math.max(0, (saldo / entrate) * 100))}%`,
+                backgroundColor: saldo >= 0 ? 'var(--tx-income-text)' : 'var(--tx-expense-text)',
+                boxShadow: `0 0 8px ${saldo >= 0 ? 'var(--tx-income-text)' : 'var(--tx-expense-text)'}`,
+              }}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Lista movimenti */}
       <div>
@@ -241,16 +280,6 @@ function Dashboard() {
           </div>
         )}
       </div>
-
-      {/* FAB - Bottone aggiungi */}
-      <button
-        onClick={() => setShowForm(true)}
-        className="fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-lg active:scale-95 transition flex items-center justify-center text-2xl z-40"
-        style={{ backgroundColor: 'var(--fab-bg)', color: 'var(--fab-text)' }}
-        aria-label={DASHBOARD.aggiungiMovimento}
-      >
-        +
-      </button>
 
       {/* Modale inserimento / modifica */}
       {showForm && (

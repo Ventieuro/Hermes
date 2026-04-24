@@ -40,13 +40,19 @@ const STRINGS = {
 
   // ── Layout ─────────────────────────────────────────────
   layout: {
-    appName:    t('🚀 Hermes',  '🚀 Hermes',     '🚀 Hermes'),
-    footerText: t('Hermes',     'Hermes',        'Hermes'),
+    appName:       t('🚀 Hermes',  '🚀 Hermes',     '🚀 Hermes'),
+    footerText:    t('Hermes',     'Hermes',        'Hermes'),
+    navHome:       t('Home',       'Home',          'Inicio'),
+    navCategories: t('Categorie',  'Categories',    'Categorias'),
+    navSettings:   t('Impostazioni','Settings',     'Configuracion'),
+    navAdd:        t('Aggiungi',   'Add',           'Agregar'),
   },
 
   // ── Temi ───────────────────────────────────────────────
   temi: {
-    spazio:  t('Spazio',  'Space',  'Espacio'),
+    spazio:  t('Spazio',   'Space',   'Espacio'),
+    nasa:    t('NASA',     'NASA',    'NASA'),
+    mission: t('Mission',  'Mission', 'Misión'),
   },
 
   // ── Dashboard ──────────────────────────────────────────
@@ -198,6 +204,7 @@ const STRINGS = {
 
   // ── Settings ───────────────────────────────────────────
   settings: {
+    impostazioni:      t('Impostazioni',                  'Settings',                    'Configuración'),
     tema:              t('Tema',                         'Theme',                       'Tema'),
     darkMode:          t('Spazio',                       'Space',                       'Espacio'),
     lightMode:         t('NASA',                         'NASA',                        'NASA'),
