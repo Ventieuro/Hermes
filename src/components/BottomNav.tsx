@@ -75,22 +75,23 @@ function BottomNav() {
         }}
         aria-label="Navigazione principale"
       >
-        {/* Wrapper: relative so the absolute + button is positioned against it */}
-        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-around', paddingTop: '10px', paddingBottom: 'max(10px, env(safe-area-inset-bottom))' }}>
+        {/* Wrapper: 5 equal flex slots — 4 nav items + 1 spacer centrale */}
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', paddingTop: '10px', paddingBottom: 'max(10px, env(safe-area-inset-bottom))' }}>
 
           {/* Home */}
           <Link
             to="/"
             style={{
-              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px',
-              padding: '4px 14px', borderRadius: '12px', textDecoration: 'none',
+              flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px',
+              padding: '4px 0', textDecoration: 'none',
               color: isActive('/') ? 'var(--accent)' : 'var(--nav-text)',
-              backgroundColor: isActive('/') ? 'color-mix(in srgb, var(--accent-light) 60%, transparent)' : 'transparent',
               transition: 'color 0.2s',
             }}
             title={LAYOUT.navHome}
           >
-            <HomeIcon />
+            <div style={{ width: '44px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '10px', backgroundColor: isActive('/') ? 'color-mix(in srgb, var(--accent-light) 60%, transparent)' : 'transparent' }}>
+              <HomeIcon />
+            </div>
             <span style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '0.04em' }}>{LAYOUT.navHome}</span>
           </Link>
 
@@ -98,34 +99,36 @@ function BottomNav() {
           <Link
             to="/movimenti"
             style={{
-              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px',
-              padding: '4px 14px', borderRadius: '12px', textDecoration: 'none',
+              flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px',
+              padding: '4px 0', textDecoration: 'none',
               color: isActive('/movimenti') ? 'var(--accent)' : 'var(--nav-text)',
-              backgroundColor: isActive('/movimenti') ? 'color-mix(in srgb, var(--accent-light) 60%, transparent)' : 'transparent',
               transition: 'color 0.2s',
             }}
             title={LAYOUT.navMovimenti}
           >
-            <ListIcon />
+            <div style={{ width: '44px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '10px', backgroundColor: isActive('/movimenti') ? 'color-mix(in srgb, var(--accent-light) 60%, transparent)' : 'transparent' }}>
+              <ListIcon />
+            </div>
             <span style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '0.04em' }}>{LAYOUT.navMovimenti}</span>
           </Link>
 
           {/* Spacer for + button slot */}
-          <div style={{ width: '64px', flexShrink: 0 }} aria-hidden="true" />
+          <div style={{ flex: 1, flexShrink: 0 }} aria-hidden="true" />
 
           {/* Categorie */}
           <Link
             to="/categories"
             style={{
-              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px',
-              padding: '4px 14px', borderRadius: '12px', textDecoration: 'none',
+              flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px',
+              padding: '4px 0', textDecoration: 'none',
               color: isActive('/categories') ? 'var(--accent)' : 'var(--nav-text)',
-              backgroundColor: isActive('/categories') ? 'color-mix(in srgb, var(--accent-light) 60%, transparent)' : 'transparent',
               transition: 'color 0.2s',
             }}
             title={LAYOUT.navCategories}
           >
-            <FolderIcon />
+            <div style={{ width: '44px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '10px', backgroundColor: isActive('/categories') ? 'color-mix(in srgb, var(--accent-light) 60%, transparent)' : 'transparent' }}>
+              <FolderIcon />
+            </div>
             <span style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '0.04em' }}>{LAYOUT.navCategories}</span>
           </Link>
 
@@ -133,15 +136,16 @@ function BottomNav() {
           <Link
             to="/settings"
             style={{
-              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px',
-              padding: '4px 20px', borderRadius: '12px', textDecoration: 'none',
-              background: isActive('/settings') ? 'color-mix(in srgb, var(--accent-light) 60%, transparent)' : 'transparent',
+              flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px',
+              padding: '4px 0', textDecoration: 'none',
               color: isActive('/settings') ? 'var(--accent)' : 'var(--nav-text)',
               transition: 'color 0.2s',
             }}
             title={LAYOUT.navSettings}
           >
-            <SettingsIcon />
+            <div style={{ width: '44px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '10px', backgroundColor: isActive('/settings') ? 'color-mix(in srgb, var(--accent-light) 60%, transparent)' : 'transparent' }}>
+              <SettingsIcon />
+            </div>
             <span style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '0.04em' }}>{LAYOUT.navSettings}</span>
           </Link>
 

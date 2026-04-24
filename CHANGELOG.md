@@ -6,6 +6,20 @@
 
 ## [24/04/2026] — Sessione 5
 
+### TASK-039: Header navigazione unificato
+**File creati:** `src/components/ui/PageHeader.tsx`  
+**File modificati:** `src/components/ui/index.ts`, `src/pages/Categories.tsx`, `src/pages/Movimenti.tsx`, `src/pages/SettingsPage.tsx`, `src/components/Settings.tsx`
+
+- Creato `PageHeader` con tasto `‹ Indietro` (accent color), titolo centrato e slot destro opzionale
+- Usa `navigate(-1)` con fallback su path configurabile (default `/`)
+- `Categories.tsx`: rimosso `<Link to="/">` testuale, ora usa `<PageHeader>`
+- `Movimenti.tsx`: rimosso blocco `<div>` + `<h1>` manuale, ora usa `<PageHeader>`
+- `SettingsPage.tsx`: aggiunto `<PageHeader>`, rimosso `useNavigate` dal wrapper
+- `Settings.tsx`: rimosso l'header interno con ✕ dalla modal mode (gestito da `PageHeader`)
+- **Build check:** ✅ Passato
+
+---
+
 ### TASK-038: Popup custom al posto dei dialog nativi
 **File creati:** `src/shared/DialogContext.tsx`  
 **File modificati:** `src/main.tsx`, `src/pages/Dashboard.tsx`, `src/pages/Categories.tsx`, `src/components/Settings.tsx`

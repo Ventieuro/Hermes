@@ -67,29 +67,9 @@ function Settings({ onClose }: SettingsProps) {
         </div>
       )}
 
-      {/* ─── Modal Mode: Full Panel with Close Button (when onClose is provided) ─── */}
+      {/* ─── Modal Mode: Full Content (header is handled by SettingsPage via PageHeader) ─── */}
       {onClose && (
         <div className="w-full" ref={panelRef}>
-          {/* Close button header */}
-          <div
-            className="px-4 py-3 flex items-center justify-between"
-            style={{
-              borderBottom: '1px solid var(--border)',
-            }}
-          >
-            <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>
-              {SETTINGS.impostazioni}
-            </h2>
-            <button
-              onClick={onClose}
-              className="text-2xl leading-none transition hover:opacity-70"
-              style={{ color: 'var(--text-secondary)' }}
-              aria-label="Close"
-            >
-              ✕
-            </button>
-          </div>
-
           {/* Settings Content */}
           <SettingsContent onRequestClose={onClose} />
         </div>

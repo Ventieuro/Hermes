@@ -32,6 +32,15 @@
 
 ## Completati
 
+### ✅ TASK-039 — Header navigazione unificato (24/04/2026)
+- [x] Creato componente `PageHeader` in `src/components/ui/PageHeader.tsx`
+- [x] Esportato da `src/components/ui/index.ts`
+- [x] `Categories.tsx`: rimosso `<Link>` testuale, sostituito con `<PageHeader>`
+- [x] `Movimenti.tsx`: rimosso `<h1>` manuale, sostituito con `<PageHeader>`
+- [x] `SettingsPage.tsx`: rimosso `useNavigate`, aggiunto `<PageHeader>`
+- [x] `Settings.tsx`: rimosso header interno con ✕ dalla modal mode
+- [x] Build check ✅
+
 ### ✅ TASK-038 — Popup custom al posto dei dialog nativi (24/04/2026)
 - [x] Creato `src/shared/DialogContext.tsx` con `DialogProvider` e `useDialog` hook
 - [x] `DialogProvider` aggiunto in `main.tsx` nello stack dei provider

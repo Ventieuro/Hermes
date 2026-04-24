@@ -6,6 +6,7 @@ import { MOVIMENTI, CATEGORIE, normalizeCategoryKey, translateCategory } from '.
 import { getCategoryIcon } from '../shared/categoryIcons'
 import { useDialog } from '../shared/DialogContext'
 import AddTransactionForm from '../components/AddTransactionForm'
+import { PageHeader } from '../components/ui'
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -105,11 +106,7 @@ function Movimenti() {
     <div style={{ paddingBottom: '96px' }}>
 
       {/* ─── Titolo ─── */}
-      <div style={{ padding: '20px 16px 12px' }}>
-        <h1 style={{ margin: 0, fontSize: '22px', fontWeight: 700, color: 'var(--text-primary)' }}>
-          {MOVIMENTI.titolo}
-        </h1>
-      </div>
+      <PageHeader title={MOVIMENTI.titolo} />
 
       {/* ─── Banner filtro periodo/categoria attivo ─── */}
       {(dateFrom || dateTo || filterCategory) && (

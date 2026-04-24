@@ -1,11 +1,12 @@
-import { useNavigate } from 'react-router-dom'
 import Settings from '../components/Settings'
+import { PageHeader } from '../components/ui'
+import { SETTINGS } from '../shared/labels'
 
 function SettingsPage() {
-  const navigate = useNavigate()
   return (
     <div style={{ minHeight: '100%' }}>
-      <Settings onClose={() => navigate(-1)} />
+      <PageHeader title={SETTINGS.impostazioni} />
+      <Settings onClose={() => {}} />
     </div>
   )
 }

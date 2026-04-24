@@ -12,6 +12,30 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '2.0.0',
+    date: '2026-04-24',
+    changes: {
+      it: [
+        '🧭 Navigazione unificata: tutte le pagine secondarie hanno ora il tasto ‹ Indietro',
+        '💬 Dialoghi custom al posto dei popup nativi del browser',
+        '📂 Grafici cliccabili: vai ai movimenti filtrati per categoria',
+        '🪐 Grafico Riepilogo mostra entrate e uscite insieme',
+      ],
+      en: [
+        '🧭 Unified navigation: all secondary pages now have a ‹ Back button',
+        '💬 Custom dialogs instead of native browser popups',
+        '📂 Clickable charts: go to transactions filtered by category',
+        '🪐 Overview chart now shows income and expenses together',
+      ],
+      es: [
+        '🧭 Navegación unificada: todas las páginas secundarias tienen botón ‹ Atrás',
+        '💬 Diálogos personalizados en lugar de popups nativos del navegador',
+        '📂 Gráficos clicables: ve a movimientos filtrados por categoría',
+        '🪐 Gráfico Resumen ahora muestra ingresos y gastos juntos',
+      ],
+    },
+  },
+  {
     version: '1.9.0',
     date: '2026-04-20',
     changes: {

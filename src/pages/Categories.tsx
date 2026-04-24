@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 import { GESTIONE_CATEGORIE, CATEGORIE } from '../shared/labels'
+import { PageHeader } from '../components/ui'
 import { loadCustomCategories, addCustomCategory, deleteCustomCategory, renameCustomCategory, saveCustomIcon, deleteCustomIcon } from '../shared/storage'
 import { getCategoryIcon } from '../shared/categoryIcons'
 import { useDialog } from '../shared/DialogContext'
@@ -137,18 +137,7 @@ function Categories() {
     <div className="space-y-6 pb-10">
 
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>
-          {GESTIONE_CATEGORIE.titolo}
-        </h1>
-        <Link
-          to="/"
-          className="text-sm font-medium transition"
-          style={{ color: 'var(--accent)' }}
-        >
-          {GESTIONE_CATEGORIE.tornaIndietro}
-        </Link>
-      </div>
+      <PageHeader title={GESTIONE_CATEGORIE.titolo} />
 
       {/* ─── Create Form ─── */}
       <div className="rounded-2xl p-4" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border)' }}>
