@@ -60,10 +60,26 @@ export function saveTransactions(transactions: Transaction[]) {
  * Migrazione una-tantum: normalizza le categorie dei movimenti esistenti
  * alla chiave canonica italiana (fix per categorie create in lingua diversa).
  */
+// Mapping per categorie rinominate tra versioni
+const RENAMED_CATEGORIES: Record<string, string> = {
+  Quotidiano: 'Spesa',
+  Daily: 'Spesa',
+  Diario: 'Spesa',
+  Abbigliamento: 'Altro',
+  Clothing: 'Altro',
+  Ropa: 'Altro',
+}
+
 export function migrateCategoryKeys() {
   const all = loadTransactions()
   let changed = false
   const migrated = all.map((tx) => {
+    // Prima applica eventuali rinominazioni
+    const renamed = RENAMED_CATEGORIES[tx.category]
+    if (renamed) {
+      changed = true
+      return { ...tx, category: renamed }
+    }
     const canonical = normalizeCategoryKey(tx.category, tx.type)
     if (canonical !== tx.category) {
       changed = true

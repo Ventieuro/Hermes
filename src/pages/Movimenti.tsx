@@ -18,14 +18,21 @@ function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
+function toLocalDate(d: Date): string {
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+
 function getCurrentPeriod(payDay: number): { start: string; end: string } {
   const today = new Date()
   const baseMonth = today.getDate() >= payDay ? today.getMonth() : today.getMonth() - 1
   const start = new Date(today.getFullYear(), baseMonth, payDay)
   const end = new Date(start.getFullYear(), start.getMonth() + 1, payDay - 1)
   return {
-    start: start.toISOString().slice(0, 10),
-    end: end.toISOString().slice(0, 10),
+    start: toLocalDate(start),
+    end: toLocalDate(end),
   }
 }
 

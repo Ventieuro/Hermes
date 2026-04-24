@@ -10,7 +10,7 @@ const ICON_MAP: Record<string, string> = {
 
   // Uscite
   Cibo: '🍕', Food: '🍕', Comida: '🍕',
-  Quotidiano: '🛒', Daily: '🛒', Diario: '🛒',
+  Spesa: '🛒', Shopping: '🛒', Compras: '🛒',
   Trasporti: '🚀', Transport: '🚀', Transporte: '🚀',
   Sociale: '🪐', Social: '🪐',
   Residenza: '🏠', Housing: '🏠', Vivienda: '🏠',
@@ -23,6 +23,7 @@ const ICON_MAP: Record<string, string> = {
   Hobby: '🎨',
   Bollette: '⚡', Bills: '⚡', Facturas: '⚡',
   Finanziamento: '🏦', Financing: '🏦', Financiamiento: '🏦',
+  Multe: '🚨', Fines: '🚨', Multas: '🚨',
 
   // Fallback
   Altro: '🌌', Other: '🌌', Otro: '🌌',

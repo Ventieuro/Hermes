@@ -148,9 +148,9 @@ const STRINGS = {
       ['Salario',   'Freelance', 'Regalo', 'Reembolso','Otro'],
     ),
     uscita: ta(
-      ['Cibo', 'Quotidiano', 'Trasporti', 'Sociale', 'Residenza', 'Regalo', 'Comunicazioni', 'Abbigliamento', 'Svago', 'Bellezza', 'Medico', 'Hobby', 'Bollette', 'Finanziamento', 'Altro'],
-      ['Food', 'Daily',      'Transport', 'Social',  'Housing',   'Gift',   'Communications','Clothing',      'Entertainment','Beauty','Medical','Hobby','Bills',   'Financing',      'Other'],
-      ['Comida','Diario',    'Transporte','Social',  'Vivienda',  'Regalo', 'Comunicaciones','Ropa',          'Ocio',         'Belleza','Médico','Hobby','Facturas','Financiamiento',  'Otro'],
+      ['Cibo', 'Spesa',   'Trasporti', 'Sociale', 'Residenza', 'Regalo', 'Comunicazioni', 'Svago', 'Bellezza', 'Medico', 'Hobby', 'Bollette', 'Finanziamento', 'Multe', 'Altro'],
+      ['Food', 'Shopping', 'Transport', 'Social',  'Housing',   'Gift',   'Communications','Entertainment','Beauty','Medical','Hobby','Bills',   'Financing',      'Fines', 'Other'],
+      ['Comida','Compras',  'Transporte','Social',  'Vivienda',  'Regalo', 'Comunicaciones','Ocio',         'Belleza','Médico','Hobby','Facturas','Financiamiento',  'Multas','Otro'],
     ),
   },
 
