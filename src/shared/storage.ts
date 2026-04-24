@@ -1,4 +1,5 @@
 import type { Transaction, AppSettings } from './types'
+import { normalizeCategoryKey } from './labels'
 
 const STORAGE_KEY = 'hermes-transactions'
 const SETTINGS_KEY = 'hermes-settings'
@@ -53,6 +54,24 @@ function isValidTransaction(data: unknown): data is Transaction {
 
 export function saveTransactions(transactions: Transaction[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions.map(normalizeTransaction)))
+}
+
+/**
+ * Migrazione una-tantum: normalizza le categorie dei movimenti esistenti
+ * alla chiave canonica italiana (fix per categorie create in lingua diversa).
+ */
+export function migrateCategoryKeys() {
+  const all = loadTransactions()
+  let changed = false
+  const migrated = all.map((tx) => {
+    const canonical = normalizeCategoryKey(tx.category, tx.type)
+    if (canonical !== tx.category) {
+      changed = true
+      return { ...tx, category: canonical }
+    }
+    return tx
+  })
+  if (changed) saveTransactions(migrated)
 }
 
 export function addTransaction(tx: Transaction) {

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import type { TransactionType, Transaction } from '../shared/types'
 import { generateId, addTransaction, updateTransaction, loadCustomCategories, addCustomCategory } from '../shared/storage'
 import Mascot from './Mascot'
-import { FORM, CATEGORIE } from '../shared/labels'
+import { FORM, normalizeCategoryKey, translateCategory, getCanonicalCategories } from '../shared/labels'
 import { getCategoryIcon } from '../shared/categoryIcons'
 
 interface AddTransactionProps {
@@ -27,7 +27,9 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
   const [description, setDescription] = useState(editTransaction?.description ?? '')
   const [amount, setAmount] = useState(editTransaction ? String(editTransaction.amount) : '')
   const [date, setDate] = useState(editTransaction?.date ?? today)
-  const [category, setCategory] = useState(editTransaction?.category ?? '')
+  const [category, setCategory] = useState(
+    editTransaction ? normalizeCategoryKey(editTransaction.category, editTransaction.type) : ''
+  )
   const [recurring, setRecurring] = useState(editTransaction?.recurring ?? false)
   const [recurringMonths, setRecurringMonths] = useState(editTransaction?.recurringMonths ?? 1)
   const [showNewCat, setShowNewCat] = useState(false)
@@ -35,7 +37,9 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
   const [saveForFuture, setSaveForFuture] = useState(false)
 
   const customCats = loadCustomCategories()
-  const categories = [...CATEGORIE[type], ...customCats[type]]
+  // Usiamo sempre chiavi canoniche IT; la visualizzazione usa translateCategory()
+  const builtinKeys = getCanonicalCategories(type)
+  const categories = [...builtinKeys, ...customCats[type]]
   const isValid = Number(amount) > 0 && category
 
   function handleSubmit(e: React.FormEvent) {
@@ -200,7 +204,7 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
                   }`}
                   style={category !== cat ? { backgroundColor: 'var(--bg-secondary)', color: 'var(--text-secondary)' } : undefined}
                 >
-                  {getCategoryIcon(cat)} {cat}
+                  {getCategoryIcon(cat)} {translateCategory(cat, type)}
                 </button>
               ))}
               <button

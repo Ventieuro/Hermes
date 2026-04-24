@@ -1,6 +1,6 @@
 import { useRef, useEffect, useCallback, useMemo } from 'react'
 import type { Transaction } from '../shared/types'
-import { DASHBOARD } from '../shared/labels'
+import { DASHBOARD, normalizeCategoryKey, translateCategory } from '../shared/labels'
 import { getCategoryIcon } from '../shared/categoryIcons'
 import MiniPlanet from './MiniPlanet'
 
@@ -18,6 +18,7 @@ const PLANET_COLORS = [
 
 interface PlanetData {
   category: string
+  canonicalKey: string
   icon: string
   amount: number
   percent: number
@@ -26,6 +27,7 @@ interface PlanetData {
 
 interface SolarSystemChartProps {
   transactions: Transaction[]
+  onCategoryClick?: (canonicalKey: string) => void
 }
 
 function formatEuro(amount: number) {
@@ -47,14 +49,16 @@ function buildPlanets(transactions: Transaction[]): { planets: PlanetData[]; tot
 
   const byCategory = new Map<string, number>()
   for (const tx of expenses) {
-    byCategory.set(tx.category, (byCategory.get(tx.category) ?? 0) + tx.amount)
+    const key = normalizeCategoryKey(tx.category, 'uscita')
+    byCategory.set(key, (byCategory.get(key) ?? 0) + tx.amount)
   }
 
   const planets: PlanetData[] = [...byCategory.entries()]
     .sort((a, b) => b[1] - a[1])
-    .map(([category, amount], i) => ({
-      category,
-      icon: getCategoryIcon(category),
+    .map(([canonicalKey, amount], i) => ({
+      canonicalKey,
+      category: translateCategory(canonicalKey, 'uscita'),
+      icon: getCategoryIcon(canonicalKey),
       amount,
       percent: Math.round((amount / total) * 100),
       color: PLANET_COLORS[i % PLANET_COLORS.length],
@@ -226,7 +230,7 @@ function drawPlanet(
 }
 
 // ─── Component ───────────────────────────────────────────
-function SolarSystemChart({ transactions }: SolarSystemChartProps) {
+function SolarSystemChart({ transactions, onCategoryClick }: SolarSystemChartProps) {
   const { planets, total } = useMemo(() => buildPlanets(transactions), [transactions])
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const starsRef = useRef<Star[]>([])
@@ -340,15 +344,25 @@ function SolarSystemChart({ transactions }: SolarSystemChartProps) {
         </h3>
         {planets.map((p) => (
           <div
-            key={p.category}
+            key={p.canonicalKey}
             className="flex items-center gap-3 py-1.5"
             style={{ borderBottom: '1px solid var(--border)' }}
           >
             <MiniPlanet color={p.color} size={20} />
             <div className="flex-1 min-w-0">
-              <span className="block text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>
-                {p.icon} {p.category}
-              </span>
+              {onCategoryClick ? (
+                <button
+                  className="block text-sm font-medium truncate text-left w-full"
+                  style={{ color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                  onClick={() => onCategoryClick(p.canonicalKey)}
+                >
+                  {p.icon} {p.category} ›
+                </button>
+              ) : (
+                <span className="block text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>
+                  {p.icon} {p.category}
+                </span>
+              )}
               <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
                 {formatEuro(p.amount)}
               </span>

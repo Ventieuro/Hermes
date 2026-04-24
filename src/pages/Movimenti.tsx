@@ -1,7 +1,8 @@
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { loadTransactions, deleteTransaction } from '../shared/storage'
 import type { Transaction } from '../shared/types'
-import { MOVIMENTI, CATEGORIE } from '../shared/labels'
+import { MOVIMENTI, CATEGORIE, normalizeCategoryKey, translateCategory } from '../shared/labels'
 import { getCategoryIcon } from '../shared/categoryIcons'
 import { useDialog } from '../shared/DialogContext'
 import AddTransactionForm from '../components/AddTransactionForm'
@@ -20,11 +21,21 @@ function formatDate(iso: string) {
 
 function Movimenti() {
   const { showConfirm } = useDialog()
+  const [searchParams, setSearchParams] = useSearchParams()
   const [refreshKey, setRefreshKey] = useState(0)
   const [search, setSearch] = useState('')
   const [filterType, setFilterType] = useState<'all' | 'entrata' | 'uscita'>('all')
-  const [filterCategory, setFilterCategory] = useState('')
+  const [filterCategory, setFilterCategory] = useState(searchParams.get('category') ?? '')
+  const [dateFrom, setDateFrom] = useState(searchParams.get('from') ?? '')
+  const [dateTo, setDateTo] = useState(searchParams.get('to') ?? '')
   const [editingTx, setEditingTx] = useState<Transaction | null>(null)
+
+  // Sincronizza lo stato dai searchParams quando cambiano (navigazione esterna)
+  useEffect(() => {
+    setFilterCategory(searchParams.get('category') ?? '')
+    setDateFrom(searchParams.get('from') ?? '')
+    setDateTo(searchParams.get('to') ?? '')
+  }, [searchParams])
 
   const refresh = useCallback(() => setRefreshKey((k) => k + 1), [])
   void refreshKey
@@ -33,7 +44,8 @@ function Movimenti() {
 
   // Tutte le categorie disponibili (da etichette + transazioni esistenti)
   const allCategories = useMemo(() => {
-    const fromTx = new Set(allTx.map((t) => t.category).filter(Boolean))
+    // Normalizza le categorie esistenti alla chiave canonica IT, poi traduci per la visualizzazione
+    const fromTx = new Set(allTx.map((t) => normalizeCategoryKey(t.category, t.type)).filter(Boolean))
     const fromLabels = [...CATEGORIE.entrata, ...CATEGORIE.uscita]
     return Array.from(new Set([...fromLabels, ...fromTx])).sort()
   }, [allTx.length]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -43,18 +55,27 @@ function Movimenti() {
     return allTx
       .filter((t) => {
         if (filterType !== 'all' && t.type !== filterType) return false
-        if (filterCategory && t.category !== filterCategory) return false
+        if (filterCategory && normalizeCategoryKey(t.category, t.type) !== filterCategory) return false
+        if (dateFrom && t.date < dateFrom) return false
+        if (dateTo && t.date > dateTo) return false
         if (search.trim()) {
           const q = search.toLowerCase()
           return (
             t.description.toLowerCase().includes(q) ||
-            t.category.toLowerCase().includes(q)
+            translateCategory(t.category).toLowerCase().includes(q)
           )
         }
         return true
       })
       .sort((a, b) => b.date.localeCompare(a.date))
-  }, [allTx, filterType, filterCategory, search, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [allTx, filterType, filterCategory, dateFrom, dateTo, search, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  function clearPeriodFilter() {
+    setDateFrom('')
+    setDateTo('')
+    setFilterCategory('')
+    setSearchParams({})
+  }
 
   async function handleDelete(tx: Transaction) {
     const ok = await showConfirm({
@@ -89,6 +110,37 @@ function Movimenti() {
           {MOVIMENTI.titolo}
         </h1>
       </div>
+
+      {/* ─── Banner filtro periodo/categoria attivo ─── */}
+      {(dateFrom || dateTo || filterCategory) && (
+        <div style={{
+          margin: '0 16px 12px',
+          padding: '10px 14px',
+          borderRadius: '14px',
+          background: 'var(--accent-light)',
+          border: '1px solid var(--accent)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '8px',
+        }}>
+          <div style={{ fontSize: '13px', color: 'var(--accent)', fontWeight: 600, lineHeight: 1.4 }}>
+            {filterCategory && <span>📂 {translateCategory(filterCategory)}</span>}
+            {(dateFrom || dateTo) && (
+              <span style={{ display: 'block', fontSize: '12px', fontWeight: 400, color: 'var(--text-secondary)' }}>
+                {dateFrom && new Date(dateFrom).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' })}
+                {dateFrom && dateTo && ' — '}
+                {dateTo && new Date(dateTo).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' })}
+              </span>
+            )}
+          </div>
+          <button
+            onClick={clearPeriodFilter}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px', padding: '2px', color: 'var(--accent)', flexShrink: 0 }}
+            aria-label="Rimuovi filtro"
+          >✕</button>
+        </div>
+      )}
 
       {/* ─── Search ─── */}
       <div style={{ padding: '0 16px 12px' }}>
@@ -180,10 +232,10 @@ function Movimenti() {
               {/* Info */}
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {tx.description || tx.category}
+                  {tx.description || translateCategory(tx.category)}
                 </p>
                 <p style={{ margin: '2px 0 0', fontSize: '12px', color: 'var(--text-muted)' }}>
-                  {tx.category} · {formatDate(tx.date)}
+                  {translateCategory(tx.category)} · {formatDate(tx.date)}
                 </p>
               </div>
 

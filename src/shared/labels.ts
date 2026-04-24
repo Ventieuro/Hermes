@@ -329,6 +329,43 @@ export function labels(): Labels {
   return resolve(STRINGS) as Labels
 }
 
+/**
+ * Restituisce le chiavi canoniche italiane delle categorie built-in per un tipo.
+ */
+export function getCanonicalCategories(type: 'entrata' | 'uscita'): readonly string[] {
+  return STRINGS.categorie[type]['it'] as readonly string[]
+}
+
+/**
+ * Normalizza il nome di una categoria alla chiave canonica italiana,
+ * indipendentemente dalla lingua in cui è stato salvato.
+ * Le categorie personalizzate vengono restituite invariate.
+ */
+export function normalizeCategoryKey(category: string, type: 'entrata' | 'uscita'): string {
+  const arr = STRINGS.categorie[type]
+  for (const locale of ['it', 'en', 'es'] as Locale[]) {
+    const localeArr = arr[locale] as readonly string[]
+    const idx = localeArr.indexOf(category)
+    if (idx !== -1) return (arr['it'] as readonly string[])[idx]
+  }
+  return category // categoria personalizzata
+}
+
+/**
+ * Traduce una chiave canonica italiana nella lingua attiva corrente.
+ * Se non trovata (categoria personalizzata), restituisce l'input invariato.
+ */
+export function translateCategory(category: string, type?: 'entrata' | 'uscita'): string {
+  const types: ('entrata' | 'uscita')[] = type ? [type] : ['entrata', 'uscita']
+  for (const t of types) {
+    const arr = STRINGS.categorie[t]
+    const itArr = arr['it'] as readonly string[]
+    const idx = itArr.indexOf(category)
+    if (idx !== -1) return (arr[currentLocale] as readonly string[])[idx]
+  }
+  return category // categoria personalizzata
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function resolve(obj: Record<string, any>): Record<string, unknown> {
   const out: Record<string, unknown> = {}

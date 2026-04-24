@@ -1,10 +1,11 @@
 import { useState, useCallback, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Mascot from '../components/Mascot'
 import AddTransactionForm from '../components/AddTransactionForm'
 import { loadTransactions, getTransactionsInPeriod, deleteTransaction, loadSettings, saveSettings } from '../shared/storage'
 import type { Transaction } from '../shared/types'
 import ExpensePieChart from '../components/ExpensePieChart'
-import { DASHBOARD, MASCOTTE } from '../shared/labels'
+import { DASHBOARD, MASCOTTE, translateCategory } from '../shared/labels'
 import { getCategoryIcon } from '../shared/categoryIcons'
 import { useDialog } from '../shared/DialogContext'
 
@@ -47,11 +48,13 @@ function getMascotMessage(saldo: number, count: number): { mood: 'happy' | 'sad'
 function Dashboard() {
   const settings = loadSettings()
   const { showConfirm } = useDialog()
+  const navigate = useNavigate()
   const [payDay, setPayDay] = useState(settings.payDay)
   const [monthOffset, setMonthOffset] = useState(0)
   const [showForm, setShowForm] = useState(false)
   const [editingTx, setEditingTx] = useState<Transaction | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
+  const [chartView, setChartView] = useState<'pie' | 'solar' | 'comet'>('pie')
 
   const refresh = useCallback(() => setRefreshKey((k) => k + 1), [])
 
@@ -93,191 +96,178 @@ function Dashboard() {
     }
   }
 
-  // Ordina per data decrescente
+  function handleCategoryClick(canonicalKey: string) {
+    const from = start.toISOString().slice(0, 10)
+    const to = end.toISOString().slice(0, 10)
+    navigate(`/movimenti?category=${encodeURIComponent(canonicalKey)}&from=${from}&to=${to}`)
+  }
+
+  // Solo uscite, ordinate per data decrescente
   const sortedTx = [...periodTx].sort((a, b) => b.date.localeCompare(a.date))
 
   return (
-    <div className="space-y-5 pb-24">
+    <div style={{ paddingBottom: '96px' }}>
 
-      {/* Mascotte + Grafico insieme */}
-      <div className="space-y-3">
+      {/* ── 0. Messaggio mascotte ─────────────────────────── */}
+      <div style={{ padding: '16px 16px 0' }}>
         <Mascot mood={mascot.mood} message={mascot.message} />
-        <ExpensePieChart transactions={periodTx} />
       </div>
 
-      {/* Navigazione periodo */}
-      <div className="rounded-2xl p-4 transition-colors duration-300" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-        <div className="flex items-center justify-between">
-          <button
-            onClick={() => setMonthOffset(monthOffset - 1)}
-            className="w-10 h-10 flex items-center justify-center rounded-xl active:scale-95 transition"
-            style={{ backgroundColor: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-secondary)' }}
-            aria-label={DASHBOARD.periodoPrecedente}
-          >
-            ◀
-          </button>
+      {/* ── 1. Navigazione periodo ─────────────────────────── */}
+      <div
+        style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '16px 16px 0',
+        }}
+      >
+        <button
+          onClick={() => setMonthOffset(monthOffset - 1)}
+          style={{
+            width: '40px', height: '40px', borderRadius: '12px', border: '1px solid var(--border)',
+            background: 'var(--bg-card)', color: 'var(--text-secondary)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', fontSize: '14px',
+          }}
+          aria-label={DASHBOARD.periodoPrecedente}
+        >◀</button>
 
-          <div className="text-center flex-1 px-2">
-            <p className="text-lg font-bold capitalize" style={{ color: 'var(--text-primary)' }}>
-              {formatMonth(start)}
-            </p>
-            <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
-              {formatRange(start, end)}
-            </p>
-          </div>
-
-          <button
-            onClick={() => setMonthOffset(monthOffset + 1)}
-            className="w-10 h-10 flex items-center justify-center rounded-xl active:scale-95 transition"
-            style={{ backgroundColor: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-secondary)' }}
-            aria-label={DASHBOARD.periodoSuccessivo}
-          >
-            ▶
-          </button>
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ margin: 0, fontSize: '18px', fontWeight: 700, textTransform: 'capitalize', color: 'var(--text-primary)' }}>
+            {formatMonth(start)}
+          </p>
+          <p style={{ margin: '2px 0 0', fontSize: '12px', color: 'var(--text-muted)' }}>
+            {formatRange(start, end)}
+          </p>
         </div>
 
-        <div className="flex items-center justify-between mt-3 pt-3" style={{ borderTop: '1px solid var(--border)' }}>
-          <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
-            <label htmlFor="payday">{DASHBOARD.stipendioIl}</label>
-            <select
-              id="payday"
-              value={payDay}
-              onChange={(e) => handlePayDayChange(Number(e.target.value))}
-              className="rounded-lg px-2 py-1 text-sm focus:outline-none focus:ring-2"
-              style={{ backgroundColor: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)', '--tw-ring-color': 'var(--accent)' } as React.CSSProperties}
-            >
-              {Array.from({ length: 28 }, (_, i) => i + 1).map((d) => (
-                <option key={d} value={d}>{d}</option>
-              ))}
-            </select>
-          </div>
-          {!isCurrentPeriod && (
-            <button
-              onClick={() => setMonthOffset(0)}
-              className="text-sm font-medium"
-              style={{ color: 'var(--accent)' }}
-            >
-              {DASHBOARD.oggi}
-            </button>
-          )}
-        </div>
+        <button
+          onClick={() => setMonthOffset(monthOffset + 1)}
+          style={{
+            width: '40px', height: '40px', borderRadius: '12px', border: '1px solid var(--border)',
+            background: 'var(--bg-card)', color: 'var(--text-secondary)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', fontSize: '14px',
+          }}
+          aria-label={DASHBOARD.periodoSuccessivo}
+        >▶</button>
       </div>
 
-      {/* Riepilogo */}
-      <div className="grid grid-cols-3 gap-3">
-        <div className="rounded-2xl p-3 text-center" style={{
-          backgroundColor: 'var(--tx-income-bg)',
-          border: '1px solid var(--tx-income-border)',
+      {/* Stipendio + Oggi inline sotto nav */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 16px 0' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: 'var(--text-muted)' }}>
+          <label htmlFor="payday">{DASHBOARD.stipendioIl}</label>
+          <select
+            id="payday"
+            value={payDay}
+            onChange={(e) => handlePayDayChange(Number(e.target.value))}
+            style={{
+              background: 'var(--input-bg)', border: '1px solid var(--input-border)',
+              color: 'var(--text-primary)', borderRadius: '8px', padding: '3px 8px',
+              fontSize: '13px', outline: 'none',
+            }}
+          >
+            {Array.from({ length: 28 }, (_, i) => i + 1).map((d) => (
+              <option key={d} value={d}>{d}</option>
+            ))}
+          </select>
+        </div>
+        {!isCurrentPeriod && (
+          <button
+            onClick={() => setMonthOffset(0)}
+            style={{ fontSize: '13px', fontWeight: 600, color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer' }}
+          >{DASHBOARD.oggi}</button>
+        )}
+      </div>
+
+      {/* ── 2. Grafico grande ─────────────────────────────── */}
+      <div style={{ padding: '12px 16px 0' }}>
+        <ExpensePieChart transactions={periodTx} onCategoryClick={handleCategoryClick} onViewChange={setChartView} />
+      </div>
+
+      {/* ── 3. Riepilogo Entrate / Uscite / Risparmi ─────── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', padding: '12px 16px 0' }}>
+        <div style={{
+          borderRadius: '16px', padding: '12px 8px', textAlign: 'center',
+          background: 'var(--tx-income-bg)', border: '1px solid var(--tx-income-border)',
           boxShadow: '0 0 14px color-mix(in srgb, var(--tx-income-border) 90%, transparent)',
         }}>
-          <p className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: 'var(--tx-income-label)' }}>{DASHBOARD.entrate}</p>
-          <p className="mt-1 text-base md:text-xl font-bold" style={{ color: 'var(--tx-income-text)' }}>
-            {formatEuro(entrate)}
-          </p>
+          <p style={{ margin: 0, fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--tx-income-label)' }}>{DASHBOARD.entrate}</p>
+          <p style={{ margin: '4px 0 0', fontSize: '14px', fontWeight: 800, color: 'var(--tx-income-text)', lineHeight: 1.2 }}>{formatEuro(entrate)}</p>
         </div>
 
-        <div className="rounded-2xl p-3 text-center" style={{
-          backgroundColor: 'var(--tx-expense-bg)',
-          border: '1px solid var(--tx-expense-border)',
+        <div style={{
+          borderRadius: '16px', padding: '12px 8px', textAlign: 'center',
+          background: 'var(--tx-expense-bg)', border: '1px solid var(--tx-expense-border)',
           boxShadow: '0 0 14px color-mix(in srgb, var(--tx-expense-border) 90%, transparent)',
         }}>
-          <p className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: 'var(--tx-expense-label)' }}>{DASHBOARD.uscite}</p>
-          <p className="mt-1 text-base md:text-xl font-bold" style={{ color: 'var(--tx-expense-text)' }}>
-            {formatEuro(uscite)}
-          </p>
+          <p style={{ margin: 0, fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--tx-expense-label)' }}>{DASHBOARD.uscite}</p>
+          <p style={{ margin: '4px 0 0', fontSize: '14px', fontWeight: 800, color: 'var(--tx-expense-text)', lineHeight: 1.2 }}>{formatEuro(uscite)}</p>
         </div>
 
-        <div className="rounded-2xl p-3 text-center" style={{
-          backgroundColor: saldo >= 0 ? 'var(--tx-balance-pos-bg)' : 'var(--tx-balance-neg-bg)',
+        <div style={{
+          borderRadius: '16px', padding: '12px 8px', textAlign: 'center',
+          background: saldo >= 0 ? 'var(--tx-balance-pos-bg)' : 'var(--tx-balance-neg-bg)',
           border: `1px solid ${saldo >= 0 ? 'var(--tx-balance-pos-border)' : 'var(--tx-balance-neg-border)'}`,
           boxShadow: `0 0 14px color-mix(in srgb, ${saldo >= 0 ? 'var(--tx-balance-pos-border)' : 'var(--tx-balance-neg-border)'} 90%, transparent)`,
         }}>
-          <p className="text-[10px] font-semibold uppercase tracking-wide" style={{
-            color: saldo >= 0 ? 'var(--tx-balance-pos-label)' : 'var(--tx-balance-neg-label)',
-          }}>{DASHBOARD.risparmi}</p>
-          <p className="mt-1 text-base md:text-xl font-bold" style={{
-            color: saldo >= 0 ? 'var(--tx-balance-pos-text)' : 'var(--tx-balance-neg-text)',
-          }}>
-            {formatEuro(saldo)}
-          </p>
+          <p style={{ margin: 0, fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: saldo >= 0 ? 'var(--tx-balance-pos-label)' : 'var(--tx-balance-neg-label)' }}>{DASHBOARD.risparmi}</p>
+          <p style={{ margin: '4px 0 0', fontSize: '14px', fontWeight: 800, color: saldo >= 0 ? 'var(--tx-balance-pos-text)' : 'var(--tx-balance-neg-text)', lineHeight: 1.2 }}>{formatEuro(saldo)}</p>
         </div>
       </div>
 
-      {/* Lista movimenti */}
-      <div>
-        <h2 className="text-sm font-semibold uppercase tracking-wide mb-3" style={{ color: 'var(--text-muted)' }}>
+      {/* ── 4. Messaggio mascotte (spostato in cima) ───────────────── */}
+
+      {/* ── 5. Ultimi movimenti (solo uscite, nascosto in Annuale) ─── */}
+      {chartView !== 'comet' && <div style={{ padding: '16px 16px 0' }}>
+        <h2 style={{ margin: '0 0 10px', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)' }}>
           {DASHBOARD.movimenti}
         </h2>
 
         {sortedTx.length === 0 ? (
-          <div className="rounded-2xl p-6 text-center" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-            <p className="text-4xl mb-2">{DASHBOARD.nessunoMovimentoEmoji}</p>
-            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-              {DASHBOARD.nessunoMovimento}<br />
-              {DASHBOARD.nessunoMovimentoSuggerimento}
+          <div style={{ padding: '32px 16px', textAlign: 'center', borderRadius: '18px', background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
+            <p style={{ margin: 0, fontSize: '32px' }}>{DASHBOARD.nessunoMovimentoEmoji}</p>
+            <p style={{ margin: '8px 0 0', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+              {DASHBOARD.nessunoMovimento}<br />{DASHBOARD.nessunoMovimentoSuggerimento}
             </p>
           </div>
         ) : (
-          <div className="space-y-2">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {sortedTx.map((tx) => (
               <div
                 key={tx.id}
-                className="flex items-center gap-3 p-3 rounded-xl transition-colors duration-300"
                 style={{
-                  backgroundColor: tx.type === 'entrata' ? 'var(--tx-income-bg)' : 'var(--tx-expense-bg)',
+                  display: 'flex', alignItems: 'center', gap: '12px',
+                  padding: '11px 14px', borderRadius: '14px',
+                  background: tx.type === 'entrata' ? 'var(--tx-income-bg)' : 'var(--tx-expense-bg)',
                   border: `1px solid ${tx.type === 'entrata' ? 'var(--tx-income-border)' : 'var(--tx-expense-border)'}`,
                 }}
               >
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>
-                    <span className="mr-1">{getCategoryIcon(tx.category)}</span>
-                    {tx.description}
-                    {tx.recurring && <span className="ml-1">🔄</span>}
+                <span style={{ fontSize: '20px', flexShrink: 0 }}>{getCategoryIcon(tx.category)}</span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <p style={{ margin: 0, fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {tx.description}{tx.recurring && ' 🔄'}
                   </p>
-                  <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                    {tx.category} · {formatDay(tx.date)}
+                  <p style={{ margin: '2px 0 0', fontSize: '11px', color: 'var(--text-muted)' }}>
+                    {translateCategory(tx.category)} · {formatDay(tx.date)}
                   </p>
                 </div>
-                <p className="text-sm font-bold whitespace-nowrap" style={{
-                  color: tx.type === 'entrata' ? 'var(--tx-income-text)' : 'var(--tx-expense-text)',
-                }}>
+                <span style={{ fontSize: '14px', fontWeight: 700, flexShrink: 0, color: tx.type === 'entrata' ? 'var(--tx-income-text)' : 'var(--tx-expense-text)' }}>
                   {tx.type === 'entrata' ? '+' : '-'}{formatEuro(tx.amount)}
-                </p>
-                <button
-                  onClick={() => setEditingTx(tx)}
-                  className="w-7 h-7 flex items-center justify-center rounded-full transition text-xs"
-                  style={{ color: 'var(--text-muted)' }}
-                  aria-label="Modifica"
-                >
-                  ✏️
-                </button>
-                <button
-                  onClick={() => handleDelete(tx)}
-                  className="w-7 h-7 flex items-center justify-center rounded-full transition text-xs"
-                  style={{ color: 'var(--text-muted)' }}
-                  aria-label={DASHBOARD.eliminaLabel}
-                >
-                  🗑
-                </button>
+                </span>
+                <button onClick={() => setEditingTx(tx)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '15px', padding: '4px', color: 'var(--text-muted)' }} aria-label="Modifica">✏️</button>
+                <button onClick={() => handleDelete(tx)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '15px', padding: '4px', color: 'var(--text-muted)' }} aria-label={DASHBOARD.eliminaLabel}>🗑</button>
               </div>
             ))}
           </div>
         )}
-      </div>
+      </div>}
 
-      {/* Modale inserimento / modifica */}
+      {/* ── Modali ────────────────────────────────────────── */}
       {showForm && (
-        <AddTransactionForm
-          onClose={() => setShowForm(false)}
-          onSaved={refresh}
-        />
+        <AddTransactionForm onClose={() => setShowForm(false)} onSaved={refresh} />
       )}
       {editingTx && (
-        <AddTransactionForm
-          onClose={() => setEditingTx(null)}
-          onSaved={refresh}
-          editTransaction={editingTx}
-        />
+        <AddTransactionForm onClose={() => setEditingTx(null)} onSaved={refresh} editTransaction={editingTx} />
       )}
     </div>
   )

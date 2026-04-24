@@ -5,15 +5,19 @@ import MiniPlanet from './MiniPlanet'
 // ─── Types ───────────────────────────────────────────────
 interface SliceData {
   category: string
+  canonicalKey: string
   amount: number
   percent: number
   color: string
+  type: 'entrata' | 'uscita'
 }
 
 interface SpaceDonutChartProps {
   slices: SliceData[]
   totalIncome: number
   totalExpenses: number
+  size?: number
+  onCategoryClick?: (canonicalKey: string) => void
 }
 
 // ─── Helpers ─────────────────────────────────────────────
@@ -246,7 +250,7 @@ function drawCenter(
 }
 
 // ─── Component ───────────────────────────────────────────
-function SpaceDonutChart({ slices, totalIncome, totalExpenses }: SpaceDonutChartProps) {
+function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, onCategoryClick }: SpaceDonutChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const starsRef = useRef<Star[]>([])
   const animRef = useRef<number>(0)
@@ -258,8 +262,8 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses }: SpaceDonutChart
     if (!ctx) return
 
     const dpr = window.devicePixelRatio || 1
-    const W = 320
-    const H = 320
+    const W = size
+    const H = size
     canvas.width = W * dpr
     canvas.height = H * dpr
     canvas.style.width = `${W}px`
@@ -272,8 +276,9 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses }: SpaceDonutChart
 
     const cx = W / 2
     const cy = H / 2
-    const outerR = 100
-    const innerR = 58
+    const scale = W / 320
+    const outerR = 100 * scale
+    const innerR = 58 * scale
 
     // Planet orbit config — keep planets inside canvas
     const maxPlanetR = 10
@@ -329,7 +334,7 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses }: SpaceDonutChart
     animRef.current = requestAnimationFrame(frame)
 
     return () => cancelAnimationFrame(animRef.current)
-  }, [slices, totalIncome, totalExpenses])
+  }, [slices, totalIncome, totalExpenses, size])
 
   useEffect(() => {
     const cleanup = draw()
@@ -344,37 +349,55 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses }: SpaceDonutChart
       <canvas
         ref={canvasRef}
         className="flex-shrink-0 rounded-xl"
-        style={{ width: 320, height: 320 }}
+        style={{ width: size, height: size }}
       />
 
       {/* Legenda */}
-      <div className="flex-1 space-y-2.5 w-full">
-        <h3
-          className="text-xs font-semibold uppercase tracking-wide mb-2"
-          style={{ color: 'var(--text-muted)' }}
-        >
-          {DASHBOARD.categorieLabel}
-        </h3>
-        {slices.map((s) => (
-          <div
-            key={s.category}
-            className="flex items-center gap-3 py-1.5"
-            style={{ borderBottom: '1px solid var(--border)' }}
-          >
-            <MiniPlanet color={s.color} size={20} />
-            <div className="flex-1 min-w-0">
-              <span className="block text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>
-                {s.category}
-              </span>
-              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                {formatEuro(s.amount)}
-              </span>
+      <div className="flex-1 space-y-1 w-full">
+        {(['entrata', 'uscita'] as const).map((group) => {
+          const groupSlices = slices.filter((s) => s.type === group)
+          if (groupSlices.length === 0) return null
+          return (
+            <div key={group}>
+              <h3
+                className="text-xs font-semibold uppercase tracking-wide mb-1 mt-2"
+                style={{ color: group === 'entrata' ? '#22c55e' : '#ef4444' }}
+              >
+                {group === 'entrata' ? DASHBOARD.entrate : DASHBOARD.uscite}
+              </h3>
+              {groupSlices.map((s) => (
+                <div
+                  key={s.canonicalKey || s.category}
+                  className="flex items-center gap-3 py-1"
+                  style={{ borderBottom: '1px solid var(--border)' }}
+                >
+                  <MiniPlanet color={s.color} size={18} />
+                  <div className="flex-1 min-w-0">
+                    {onCategoryClick && s.canonicalKey ? (
+                      <button
+                        className="block text-sm font-medium truncate text-left w-full"
+                        style={{ color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                        onClick={() => onCategoryClick(s.canonicalKey)}
+                      >
+                        {s.category} ›
+                      </button>
+                    ) : (
+                      <span className="block text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>
+                        {s.category}
+                      </span>
+                    )}
+                    <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                      {formatEuro(s.amount)}
+                    </span>
+                  </div>
+                  <span className="text-sm font-bold tabular-nums" style={{ color: s.color }}>
+                    {s.percent}%
+                  </span>
+                </div>
+              ))}
             </div>
-            <span className="text-sm font-bold tabular-nums" style={{ color: s.color }}>
-              {s.percent}%
-            </span>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )
