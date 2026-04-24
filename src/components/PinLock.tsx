@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
-import { PIN } from '../shared/labels'
-import { loadPin, savePin, verifyPin, setUnlocked } from '../shared/storage'
+import { PIN, LAYOUT } from '../shared/labels'
+import { loadPin, savePin, verifyPin, setUnlocked, loadSettings } from '../shared/storage'
 
 interface PinLockProps {
   onUnlocked: () => void
@@ -9,6 +9,7 @@ interface PinLockProps {
 function PinLock({ onUnlocked }: PinLockProps) {
   const storedPin = loadPin()
   const isSetup = !storedPin
+  const { userName } = loadSettings()
 
   const [pin, setPin] = useState(['', '', '', ''])
   const [confirmPin, setConfirmPin] = useState(['', '', '', ''])
@@ -135,36 +136,49 @@ function PinLock({ onUnlocked }: PinLockProps) {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center p-4"
+      className="min-h-screen flex flex-col items-center justify-center p-4"
       style={{ backgroundColor: 'var(--bg-primary)' }}
     >
+      {/* ─── Stelle decorative ─── */}
+      <div aria-hidden="true" style={{ position: 'fixed', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 0 }}>
+        {['12% 18%','82% 12%','25% 72%','70% 65%','50% 30%','88% 80%','6% 50%','60% 88%'].map((pos, i) => (
+          <div key={i} style={{
+            position: 'absolute', left: pos.split(' ')[0], top: pos.split(' ')[1],
+            width: i % 3 === 0 ? '3px' : '2px', height: i % 3 === 0 ? '3px' : '2px',
+            borderRadius: '50%', backgroundColor: 'var(--text-muted)', opacity: 0.4,
+          }} />
+        ))}
+      </div>
+
+      {/* ─── Card ─── */}
       <div
-        className="w-full max-w-sm rounded-2xl p-8 text-center shadow-lg"
+        className="relative w-full max-w-sm rounded-3xl p-8 text-center shadow-2xl"
         style={{
           backgroundColor: 'var(--bg-card)',
           border: '1px solid var(--border)',
+          zIndex: 1,
         }}
       >
-        {/* Icona */}
-        <div className="text-5xl mb-4">🔒</div>
+        {/* Logo app */}
+        <div className="mb-1" style={{ fontSize: '38px', lineHeight: 1 }}>🚀</div>
+        <div className="text-lg font-bold mb-6" style={{ color: 'var(--accent)', letterSpacing: '0.05em' }}>
+          {LAYOUT.appName.replace('🚀 ', '')}
+        </div>
 
-        {/* Titolo */}
-        <h1
-          className="text-xl font-bold mb-2"
-          style={{ color: 'var(--text-primary)' }}
-        >
-          {PIN.titolo}
+        {/* Icona lucchetto */}
+        <div className="text-4xl mb-3">🔒</div>
+
+        {/* Titolo / Benvenuto */}
+        <h1 className="text-xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>
+          {isSetup
+            ? PIN.titolo
+            : (userName ? PIN.benvenutoNome(userName) : PIN.benvenuto)}
         </h1>
 
         {/* Istruzione */}
-        <p
-          className="text-sm mb-6"
-          style={{ color: 'var(--text-secondary)' }}
-        >
+        <p className="text-sm mb-6" style={{ color: 'var(--text-secondary)' }}>
           {isSetup
-            ? step === 'enter'
-              ? PIN.creaPin
-              : PIN.confermaPin
+            ? (step === 'enter' ? PIN.primoAccesso : PIN.confermaPin)
             : PIN.inserisciPin}
         </p>
 
@@ -184,12 +198,8 @@ function PinLock({ onUnlocked }: PinLockProps) {
         {isSetup && step === 'enter' && pin.every((d) => d !== '') && (
           <button
             onClick={handleSubmit}
-            className="mt-6 w-full py-3 rounded-xl font-semibold transition-colors duration-200
-                       active:scale-95"
-            style={{
-              backgroundColor: 'var(--accent)',
-              color: '#fff',
-            }}
+            className="mt-6 w-full py-3 rounded-xl font-semibold transition-colors duration-200 active:scale-95"
+            style={{ backgroundColor: 'var(--accent)', color: '#fff' }}
           >
             {PIN.conferma}
           </button>

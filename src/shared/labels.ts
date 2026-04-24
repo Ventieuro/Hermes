@@ -170,6 +170,13 @@ const STRINGS = {
     pinNonCoincide:  t('I PIN non coincidono, riprova.', 'PINs don\'t match, try again.', 'Los PIN no coinciden, inténtalo de nuevo.'),
     sblocca:         t('Sblocca',                        'Unlock',                        'Desbloquear'),
     conferma:        t('Conferma',                       'Confirm',                       'Confirmar'),
+    benvenuto:       t('Bentornato',                      'Welcome back',                  'Bienvenido de nuevo'),
+    benvenutoNome:   tf(
+      (nome: string) => `Bentornato, ${nome}`,
+      (nome: string) => `Welcome back, ${nome}`,
+      (nome: string) => `Bienvenido, ${nome}`,
+    ),
+    primoAccesso:    t('Prima di iniziare, imposta il tuo PIN di sicurezza', 'Before you start, set your security PIN', 'Antes de empezar, configura tu PIN de seguridad'),
   },
 
   // ── Home ───────────────────────────────────────────────
