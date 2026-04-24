@@ -67,7 +67,7 @@ function buildSlices(transactions: Transaction[]): Slice[] {
       canonicalKey,
       category: translateCategory(canonicalKey, 'entrata'),
       amount,
-      percent: Math.round((amount / base) * 100),
+      percent: Math.round((amount / base) * 1000) / 10,
       color: INCOME_COLORS[i % INCOME_COLORS.length],
       type: 'entrata' as const,
     }))
@@ -78,7 +78,7 @@ function buildSlices(transactions: Transaction[]): Slice[] {
       canonicalKey,
       category: translateCategory(canonicalKey, 'uscita'),
       amount,
-      percent: Math.round((amount / base) * 100),
+      percent: Math.round((amount / base) * 1000) / 10,
       color: EXPENSE_COLORS[i % EXPENSE_COLORS.length],
       type: 'uscita' as const,
     }))

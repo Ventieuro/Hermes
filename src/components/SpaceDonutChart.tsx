@@ -81,7 +81,7 @@ function drawDonut(
     const sweep = (slice.percent / 100) * Math.PI * 2
     const endAngle = startAngle + sweep
 
-    // Main slice
+    // Main slice fill
     ctx.beginPath()
     ctx.arc(cx, cy, outerR, startAngle, endAngle)
     ctx.arc(cx, cy, innerR, endAngle, startAngle, true)
@@ -89,14 +89,16 @@ function drawDonut(
     ctx.fillStyle = slice.color
     ctx.fill()
 
-    // Glowing edge
+    // Glowing outer edge — new path with only the arc (no radial lines)
     const { r, g, b } = hexToRgb(slice.color)
     const glowAlpha = 0.4 + 0.2 * Math.sin(time * 1.5)
+    ctx.beginPath()
+    ctx.arc(cx, cy, outerR, startAngle, endAngle)
     ctx.strokeStyle = `rgba(${r},${g},${b},${glowAlpha})`
     ctx.lineWidth = 2
     ctx.stroke()
 
-    // Bright inner & outer border
+    // Bright outer border
     ctx.beginPath()
     ctx.arc(cx, cy, outerR, startAngle, endAngle)
     ctx.strokeStyle = `rgba(255,255,255,0.12)`
@@ -106,22 +108,7 @@ function drawDonut(
     startAngle = endAngle
   }
 
-  // Gap lines between slices
-  startAngle = -Math.PI / 2
-  ctx.strokeStyle = 'rgba(8,11,24,0.9)'
-  ctx.lineWidth = 2
-  for (const slice of slices) {
-    const sweep = (slice.percent / 100) * Math.PI * 2
-    const endAngle = startAngle + sweep
 
-    // radial line at start
-    ctx.beginPath()
-    ctx.moveTo(cx + innerR * Math.cos(startAngle), cy + innerR * Math.sin(startAngle))
-    ctx.lineTo(cx + outerR * Math.cos(startAngle), cy + outerR * Math.sin(startAngle))
-    ctx.stroke()
-
-    startAngle = endAngle
-  }
 }
 
 // ─── Planet drawing ──────────────────────────────────────
@@ -391,7 +378,7 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, onCat
                     </span>
                   </div>
                   <span className="text-sm font-bold tabular-nums" style={{ color: s.color }}>
-                    {s.percent}%
+                    {s.percent.toFixed(1)}%
                   </span>
                 </div>
               ))}
