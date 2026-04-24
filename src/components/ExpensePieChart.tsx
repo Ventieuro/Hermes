@@ -16,14 +16,6 @@ const EXPENSE_COLORS = [
   '#ec4899', // rosa
   '#f43f5e', // rosa-rosso
 ]
-const INCOME_COLORS = [
-  '#22c55e', // verde
-  '#16a34a', // verde scuro
-  '#4ade80', // verde chiaro
-  '#86efac', // verde pallido
-  '#15803d', // verde profondo
-  '#bbf7d0', // verde acqua
-]
 
 interface Slice {
   category: string
@@ -47,30 +39,16 @@ function buildSlices(transactions: Transaction[]): Slice[] {
 
   const totalIncome = incomeTx.reduce((s, t) => s + t.amount, 0)
   const totalExpenses = expenseTx.reduce((s, t) => s + t.amount, 0)
-  const base = totalIncome + totalExpenses || 1
 
+  // Base = income (or expenses if they exceed income)
+  const base = Math.max(totalIncome, totalExpenses) || 1
+
+  // Expense slices — each is a portion of the income circle
   const byExpense = new Map<string, number>()
   for (const tx of expenseTx) {
     const key = normalizeCategoryKey(tx.category, 'uscita')
     byExpense.set(key, (byExpense.get(key) ?? 0) + tx.amount)
   }
-
-  const byIncome = new Map<string, number>()
-  for (const tx of incomeTx) {
-    const key = normalizeCategoryKey(tx.category, 'entrata')
-    byIncome.set(key, (byIncome.get(key) ?? 0) + tx.amount)
-  }
-
-  const incomeSlices: Slice[] = [...byIncome.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .map(([canonicalKey, amount], i) => ({
-      canonicalKey,
-      category: translateCategory(canonicalKey, 'entrata'),
-      amount,
-      percent: Math.round((amount / base) * 1000) / 10,
-      color: INCOME_COLORS[i % INCOME_COLORS.length],
-      type: 'entrata' as const,
-    }))
 
   const expenseSlices: Slice[] = [...byExpense.entries()]
     .sort((a, b) => b[1] - a[1])
@@ -83,7 +61,19 @@ function buildSlices(transactions: Transaction[]): Slice[] {
       type: 'uscita' as const,
     }))
 
-  return [...incomeSlices, ...expenseSlices]
+  // Savings slice — the green remainder (income − expenses)
+  const savings = totalIncome - totalExpenses
+  const savingsSlices: Slice[] = savings > 0 ? [{
+    canonicalKey: '', // non-clickable
+    category: DASHBOARD.risparmiLabel,
+    amount: savings,
+    percent: Math.round((savings / base) * 1000) / 10,
+    color: '#22c55e',
+    type: 'entrata' as const,
+  }] : []
+
+  // Expenses first, savings (green) last so it ends the circle
+  return [...expenseSlices, ...savingsSlices]
 }
 
 function ExpensePieChart({ transactions, onCategoryClick, onViewChange }: ExpensePieChartProps) {
