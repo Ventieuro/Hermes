@@ -6,6 +6,7 @@ import type { Transaction } from '../shared/types'
 import ExpensePieChart from '../components/ExpensePieChart'
 import { DASHBOARD, MASCOTTE } from '../shared/labels'
 import { getCategoryIcon } from '../shared/categoryIcons'
+import { useDialog } from '../shared/DialogContext'
 
 function getPeriod(payDay: number, offset: number) {
   const today = new Date()
@@ -45,6 +46,7 @@ function getMascotMessage(saldo: number, count: number): { mood: 'happy' | 'sad'
 
 function Dashboard() {
   const settings = loadSettings()
+  const { showConfirm } = useDialog()
   const [payDay, setPayDay] = useState(settings.payDay)
   const [monthOffset, setMonthOffset] = useState(0)
   const [showForm, setShowForm] = useState(false)
@@ -78,8 +80,14 @@ function Dashboard() {
     saveSettings({ ...settings, payDay: day })
   }
 
-  function handleDelete(tx: Transaction) {
-    if (confirm(DASHBOARD.eliminaConferma(tx.description))) {
+  async function handleDelete(tx: Transaction) {
+    const ok = await showConfirm({
+      title: DASHBOARD.eliminaLabel,
+      message: DASHBOARD.eliminaConferma(tx.description),
+      confirmLabel: DASHBOARD.eliminaLabel,
+      cancelLabel: '❌ Annulla',
+    })
+    if (ok) {
       deleteTransaction(tx.id)
       refresh()
     }
@@ -194,30 +202,6 @@ function Dashboard() {
           </p>
         </div>
       </div>
-
-      {/* Hull Integrity — savings bar */}
-      {entrate > 0 && (
-        <div className="rounded-2xl px-4 py-3" style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border)' }}>
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-[10px] font-semibold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
-              ⛽ Hull Integrity
-            </span>
-            <span className="text-xs font-bold tabular-nums" style={{ color: saldo >= 0 ? 'var(--tx-income-text)' : 'var(--tx-expense-text)' }}>
-              {Math.round(Math.max(0, (saldo / entrate) * 100))}%
-            </span>
-          </div>
-          <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--border)' }}>
-            <div
-              className="h-full rounded-full transition-all duration-700"
-              style={{
-                width: `${Math.min(100, Math.max(0, (saldo / entrate) * 100))}%`,
-                backgroundColor: saldo >= 0 ? 'var(--tx-income-text)' : 'var(--tx-expense-text)',
-                boxShadow: `0 0 8px ${saldo >= 0 ? 'var(--tx-income-text)' : 'var(--tx-expense-text)'}`,
-              }}
-            />
-          </div>
-        </div>
-      )}
 
       {/* Lista movimenti */}
       <div>

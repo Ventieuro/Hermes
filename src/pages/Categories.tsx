@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { GESTIONE_CATEGORIE, CATEGORIE } from '../shared/labels'
 import { loadCustomCategories, addCustomCategory, deleteCustomCategory, renameCustomCategory, saveCustomIcon, deleteCustomIcon } from '../shared/storage'
 import { getCategoryIcon } from '../shared/categoryIcons'
+import { useDialog } from '../shared/DialogContext'
 
 const EMOJI_OPTIONS = [
   '💰', '💳', '🏠', '🚗', '✈️', '🍕', '🛒', '👕', '💊', '🎮',
@@ -12,6 +13,7 @@ const EMOJI_OPTIONS = [
 ]
 
 function Categories() {
+  const { showConfirm } = useDialog()
   const [refreshKey, setRefreshKey] = useState(0)
   void refreshKey
 
@@ -37,8 +39,13 @@ function Categories() {
     setRefreshKey((k) => k + 1)
   }
 
-  function handleDelete(type: 'entrata' | 'uscita', name: string) {
-    if (confirm(GESTIONE_CATEGORIE.confermaElimina(name))) {
+  async function handleDelete(type: 'entrata' | 'uscita', name: string) {
+    const ok = await showConfirm({
+      message: GESTIONE_CATEGORIE.confermaElimina(name),
+      confirmLabel: 'Elimina',
+      cancelLabel: 'Annulla',
+    })
+    if (ok) {
       deleteCustomCategory(type, name)
       deleteCustomIcon(name)
       setRefreshKey((k) => k + 1)

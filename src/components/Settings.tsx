@@ -17,6 +17,7 @@ import {
 } from '../shared/driveSync'
 import { SETTINGS, NOTIFICHE, getLocale, setLocale, type Locale } from '../shared/labels'
 import { FEATURES } from '../app/features'
+import { useDialog } from '../shared/DialogContext'
 
 interface SettingsProps {
   onClose?: () => void
@@ -104,6 +105,7 @@ interface SettingsContentProps {
 
 function SettingsContent({ onRequestClose: _onRequestClose }: SettingsContentProps) {
   const { theme, setTheme } = useTheme()
+  const { showConfirm, showPrompt } = useDialog()
   const [notifSettings, setNotifSettings] = useState(loadNotificationSettings)
   const [importStatus, setImportStatus] = useState<'idle' | 'ok' | 'invalid' | 'wrong-password'>('idle')
   const [syncSettings, setSyncSettings] = useState(loadSyncSettings)
@@ -135,17 +137,25 @@ function SettingsContent({ onRequestClose: _onRequestClose }: SettingsContentPro
   function handleImport(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
-    if (!window.confirm(SETTINGS.importaConferma)) {
-      e.target.value = ''
-      return
-    }
     const reader = new FileReader()
     reader.onload = async (ev) => {
+      const ok = await showConfirm({
+        title: SETTINGS.importaDati,
+        message: SETTINGS.importaConferma,
+        confirmLabel: SETTINGS.importaDati,
+        cancelLabel: '✕ Annulla',
+      })
+      if (!ok) { e.target.value = ''; return }
       const content = ev.target?.result as string
       // First try without password to detect format
       const probe = await importAllData(content, undefined, { mode: 'merge' })
       if (probe === 'needs-password') {
-        const pwd = window.prompt(SETTINGS.passwordImporta)
+        const pwd = await showPrompt({
+          title: SETTINGS.passwordImporta,
+          message: SETTINGS.passwordImporta,
+          inputType: 'password',
+          confirmLabel: 'OK',
+        })
         if (!pwd) return
         const result = await importAllData(content, pwd, { mode: 'merge' })
         setImportStatus(result === 'needs-password' ? 'invalid' : result)
@@ -184,7 +194,12 @@ function SettingsContent({ onRequestClose: _onRequestClose }: SettingsContentPro
   }
 
   async function handleSyncNow() {
-    const pwd = window.prompt(SETTINGS.passwordImporta)
+    const pwd = await showPrompt({
+      title: SETTINGS.passwordImporta,
+      message: SETTINGS.passwordImporta,
+      inputType: 'password',
+      confirmLabel: 'OK',
+    })
     if (!pwd) return
 
     setIsDriveSyncing(true)
@@ -406,7 +421,12 @@ function SettingsContent({ onRequestClose: _onRequestClose }: SettingsContentPro
           <div className="flex flex-col gap-2">
             <button
               onClick={async () => {
-                const pwd = window.prompt(SETTINGS.passwordEsporta)
+                const pwd = await showPrompt({
+                  title: SETTINGS.passwordEsporta,
+                  message: SETTINGS.passwordEsporta,
+                  inputType: 'password',
+                  confirmLabel: SETTINGS.esportaDati,
+                })
                 if (!pwd) return
                 await exportAllData(pwd)
               }}

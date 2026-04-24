@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { TransactionType, Transaction } from '../shared/types'
 import { generateId, addTransaction, updateTransaction, loadCustomCategories, addCustomCategory } from '../shared/storage'
 import Mascot from './Mascot'
@@ -15,6 +15,13 @@ interface AddTransactionProps {
 function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: AddTransactionProps) {
   const today = defaultDate ?? new Date().toISOString().slice(0, 10)
   const isEdit = !!editTransaction
+
+  // Blocca lo scroll del body mentre il modale è aperto
+  useEffect(() => {
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = prev }
+  }, [])
 
   const [type, setType] = useState<TransactionType>(editTransaction?.type ?? 'uscita')
   const [description, setDescription] = useState(editTransaction?.description ?? '')
@@ -82,8 +89,34 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
   }
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4">
-      <div className="w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl max-h-[90vh] overflow-y-auto" style={{ backgroundColor: 'var(--bg-card)' }}>
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 9000,
+        background: 'rgba(0,0,0,0.55)',
+        backdropFilter: 'blur(4px)',
+        WebkitBackdropFilter: 'blur(4px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '16px',
+      }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
+    >
+      <div
+        style={{
+          width: '100%',
+          maxWidth: '480px',
+          maxHeight: '90dvh',
+          overflowY: 'auto',
+          borderRadius: '22px',
+          backgroundColor: 'var(--bg-card)',
+          backgroundImage: 'none',
+          isolation: 'isolate',
+          boxShadow: '0 32px 80px rgba(0,0,0,0.5)',
+        }}
+      >
 
         {/* Header */}
         <div className="flex items-center justify-between p-4" style={{ borderBottom: '1px solid var(--border)' }}>

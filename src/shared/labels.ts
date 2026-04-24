@@ -42,10 +42,11 @@ const STRINGS = {
   layout: {
     appName:       t('🚀 Hermes',  '🚀 Hermes',     '🚀 Hermes'),
     footerText:    t('Hermes',     'Hermes',        'Hermes'),
-    navHome:       t('Home',       'Home',          'Inicio'),
-    navCategories: t('Categorie',  'Categories',    'Categorias'),
-    navSettings:   t('Impostazioni','Settings',     'Configuracion'),
-    navAdd:        t('Aggiungi',   'Add',           'Agregar'),
+    navHome:        t('Home',         'Home',          'Inicio'),
+    navCategories:  t('Categorie',    'Categories',    'Categorias'),
+    navMovimenti:   t('Movimenti',    'Transactions',  'Movimientos'),
+    navSettings:    t('Impostazioni', 'Settings',      'Configuracion'),
+    navAdd:         t('Aggiungi',     'Add',           'Agregar'),
   },
 
   // ── Temi ───────────────────────────────────────────────
@@ -202,6 +203,22 @@ const STRINGS = {
     annulla:          t('Annulla',                     'Cancel',                      'Cancelar'),
   },
 
+  // ── Movimenti ──────────────────────────────────────────
+  movimenti: {
+    titolo:           t('Movimenti',                    'Transactions',                'Movimientos'),
+    cercaPlaceholder: t('Cerca...',                     'Search...',                   'Buscar...'),
+    filtroTutti:      t('Tutti',                        'All',                         'Todos'),
+    filtroEntrate:    t('Entrate',                      'Income',                      'Ingresos'),
+    filtroUscite:     t('Uscite',                       'Expenses',                    'Gastos'),
+    nessuno:          t('Nessun movimento trovato.',    'No transactions found.',      'No se encontraron movimientos.'),
+    eliminaLabel:     t('Elimina',                      'Delete',                      'Eliminar'),
+    eliminaConferma: tf(
+      (desc: string) => `Vuoi eliminare "${desc}"?`,
+      (desc: string) => `Delete "${desc}"?`,
+      (desc: string) => `¿Eliminar "${desc}"?`,
+    ),
+  },
+
   // ── Settings ───────────────────────────────────────────
   settings: {
     impostazioni:      t('Impostazioni',                  'Settings',                    'Configuración'),
@@ -353,6 +370,7 @@ export const NOT_FOUND: Labels['notFound']  = localize(STRINGS.notFound)
 export const HOME:      Labels['home']      = localize(STRINGS.home)
 export const PIN:       Labels['pin']       = localize(STRINGS.pin)
 export const GESTIONE_CATEGORIE: Labels['gestioneCategorie'] = localize(STRINGS.gestioneCategorie)
+export const MOVIMENTI: Labels['movimenti'] = localize(STRINGS.movimenti)
 export const SETTINGS:  Labels['settings']  = localize(STRINGS.settings)
 export const NOTIFICHE: Labels['notifiche'] = localize(STRINGS.notifiche)
 export const PWA:       Labels['pwa']       = localize(STRINGS.pwa)

@@ -32,6 +32,14 @@
 
 ## Completati
 
+### ✅ TASK-038 — Popup custom al posto dei dialog nativi (24/04/2026)
+- [x] Creato `src/shared/DialogContext.tsx` con `DialogProvider` e `useDialog` hook
+- [x] `DialogProvider` aggiunto in `main.tsx` nello stack dei provider
+- [x] Sostituito `window.confirm` in `Dashboard.tsx` (elimina transazione)
+- [x] Sostituito `confirm` in `Categories.tsx` (elimina categoria)
+- [x] Sostituiti `window.confirm` e `window.prompt` (×3) in `Settings.tsx` (importa, sync, esporta)
+- [x] Build check ✅
+
 ### ✅ TASK-037 — Rimozione notch e riallineamento dock (24/04/2026)
 - [x] Rimossa notch sopra il bottone `+`
 - [x] Riposizionato `+` sospeso sopra la barra come versione precedente

@@ -97,11 +97,11 @@
 [data-theme="mission"] {
   --bg-primary: #0d1323;
   --bg-secondary: #111827;
-  --bg-card: rgba(255, 255, 255, 0.04);
+  --bg-card: #141c2e;
   --text-primary: #e2e8f0;
   --text-secondary: #94a3b8;
   --text-muted: #4a5568;
-  --border: rgba(255, 255, 255, 0.08);
+  --border: rgba(255, 255, 255, 0.10);
   --accent: #ff9800;
   --accent-hover: #f57c00;
   --accent-light: rgba(255, 152, 0, 0.14);
@@ -147,8 +147,8 @@
   --accent: #FC3D21;               /* NASA arancione-rosso */
   --accent-hover: #e0321a;
   --accent-light: #fff0ed;
-  --nav-bg: #0b1026;               /* NASA nero profondo */
-  --nav-text: #ffffff;
+  --nav-bg: #ffffff;               /* nav bianco su tema chiaro */
+  --nav-text: #1a1a1a;
   --btn-bg: #ffffff;
   --btn-text: #1a1a1a;
   --input-bg: #ffffff;

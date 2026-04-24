@@ -6,6 +6,20 @@
 
 ## [24/04/2026] — Sessione 5
 
+### TASK-038: Popup custom al posto dei dialog nativi
+**File creati:** `src/shared/DialogContext.tsx`  
+**File modificati:** `src/main.tsx`, `src/pages/Dashboard.tsx`, `src/pages/Categories.tsx`, `src/components/Settings.tsx`
+
+- Creato `DialogContext.tsx` con `DialogProvider` e hook `useDialog()` che espone `showConfirm`, `showPrompt`, `showInfo`
+- I dialog sono Promise-based (drop-in per `confirm()`/`prompt()` async)
+- UI: overlay blur + card con bordi arrotondati usando CSS variables del tema attivo
+- Input password con `autoFocus` e support `Enter`/`Escape` keyboard
+- Aggiunto `<DialogProvider>` nello stack provider in `main.tsx`
+- Eliminati tutti i `window.confirm` / `window.prompt` nativi (6 occorrenze)
+- **Build check:** ✅ Passato
+
+---
+
 ### TASK-037: Rimozione notch e riallineamento dock
 **File modificati:** `src/components/BottomNav.tsx`, `TASKS.md`, `CHANGELOG.md`
 
