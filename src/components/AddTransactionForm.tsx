@@ -173,12 +173,18 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
             <label className="block text-xs mb-1" style={{ color: 'var(--text-muted)' }}>{FORM.labelQuanto}</label>
             <div className="relative">
               <input
-                type="number"
-                step="0.01"
-                min="0.01"
+                type="text"
+                inputMode="decimal"
                 placeholder={FORM.placeholderImporto}
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                onChange={(e) => {
+                  const v = e.target.value.replace(',', '.')
+                  // Accetta solo cifre e un singolo punto decimale
+                  if (v === '' || /^\d*\.?\d{0,2}$/.test(v)) {
+                    setAmount(v)
+                  }
+                }}
+                onFocus={(e) => { if (e.target.value === '0') setAmount('') }}
                 className="w-full rounded-xl px-4 py-3 text-2xl font-bold text-center focus:outline-none focus:ring-2"
                 style={{ backgroundColor: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)', '--tw-ring-color': 'var(--accent)' } as React.CSSProperties}
               />

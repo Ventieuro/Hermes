@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { loadTransactions, deleteTransaction } from '../shared/storage'
+import { loadTransactions, deleteTransaction, loadSettings } from '../shared/storage'
 import type { Transaction } from '../shared/types'
 import { MOVIMENTI, CATEGORIE, normalizeCategoryKey, translateCategory } from '../shared/labels'
 import { getCategoryIcon } from '../shared/categoryIcons'
@@ -18,6 +18,17 @@ function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
+function getCurrentPeriod(payDay: number): { start: string; end: string } {
+  const today = new Date()
+  const baseMonth = today.getDate() >= payDay ? today.getMonth() : today.getMonth() - 1
+  const start = new Date(today.getFullYear(), baseMonth, payDay)
+  const end = new Date(start.getFullYear(), start.getMonth() + 1, payDay - 1)
+  return {
+    start: start.toISOString().slice(0, 10),
+    end: end.toISOString().slice(0, 10),
+  }
+}
+
 // ─── Component ───────────────────────────────────────────────────────────────
 
 function Movimenti() {
@@ -26,10 +37,13 @@ function Movimenti() {
   const [refreshKey, setRefreshKey] = useState(0)
   const [search, setSearch] = useState('')
   const [filterType, setFilterType] = useState<'all' | 'entrata' | 'uscita'>('all')
+  const [filterRecurring, setFilterRecurring] = useState(false)
   const [filterCategory, setFilterCategory] = useState(searchParams.get('category') ?? '')
   const [dateFrom, setDateFrom] = useState(searchParams.get('from') ?? '')
   const [dateTo, setDateTo] = useState(searchParams.get('to') ?? '')
   const [editingTx, setEditingTx] = useState<Transaction | null>(null)
+
+  const { payDay } = loadSettings()
 
   // Sincronizza lo stato dai searchParams quando cambiano (navigazione esterna)
   useEffect(() => {
@@ -56,6 +70,7 @@ function Movimenti() {
     return allTx
       .filter((t) => {
         if (filterType !== 'all' && t.type !== filterType) return false
+        if (filterRecurring && !t.recurring) return false
         if (filterCategory && normalizeCategoryKey(t.category, t.type) !== filterCategory) return false
         if (dateFrom && t.date < dateFrom) return false
         if (dateTo && t.date > dateTo) return false
@@ -69,13 +84,20 @@ function Movimenti() {
         return true
       })
       .sort((a, b) => b.date.localeCompare(a.date))
-  }, [allTx, filterType, filterCategory, dateFrom, dateTo, search, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [allTx, filterType, filterRecurring, filterCategory, dateFrom, dateTo, search, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function clearPeriodFilter() {
     setDateFrom('')
     setDateTo('')
     setFilterCategory('')
     setSearchParams({})
+  }
+
+  function applyCurrentPeriod() {
+    const { start, end } = getCurrentPeriod(payDay)
+    setDateFrom(start)
+    setDateTo(end)
+    setSearchParams({ from: start, to: end })
   }
 
   async function handleDelete(tx: Transaction) {
@@ -160,7 +182,7 @@ function Movimenti() {
         />
       </div>
 
-      {/* ─── Filtri tipo ─── */}
+      {/* ─── Filtri tipo + ricorrenti ─── */}
       <div style={{ padding: '0 16px 12px', display: 'flex', gap: '8px', overflowX: 'auto', scrollbarWidth: 'none' }}>
         <button style={chipStyle(filterType === 'all')} onClick={() => setFilterType('all')}>
           {MOVIMENTI.filtroTutti}
@@ -170,6 +192,12 @@ function Movimenti() {
         </button>
         <button style={chipStyle(filterType === 'uscita')} onClick={() => setFilterType('uscita')}>
           {MOVIMENTI.filtroUscite}
+        </button>
+        <button style={chipStyle(filterRecurring)} onClick={() => setFilterRecurring((v) => !v)}>
+          🔁 {MOVIMENTI.filtroRicorrenti}
+        </button>
+        <button style={chipStyle(!!(dateFrom || dateTo))} onClick={applyCurrentPeriod}>
+          📅 {MOVIMENTI.filtroPeriodo}
         </button>
       </div>
 

@@ -60,7 +60,7 @@ const STRINGS = {
   dashboard: {
     periodoPrecedente:            t('Periodo precedente',                             'Previous period',                        'Período anterior'),
     periodoSuccessivo:            t('Periodo successivo',                              'Next period',                            'Período siguiente'),
-    stipendioIl:                  t('�️ Stipendio il:',                                '🛰️ Pay day:',                             '🛰️ Día de pago:'),
+    stipendioIl:                  t('📅 Stipendio il:',                                '📅 Pay day:',                             '📅 Día de pago:'),
     oggi:                         t('🌍 Oggi',                                         '🌍 Today',                                '🌍 Hoy'),
     entrate:                      t('Entrate',                                         'Income',                                 'Ingresos'),
     uscite:                       t('Uscite',                                          'Expenses',                               'Gastos'),
@@ -148,9 +148,9 @@ const STRINGS = {
       ['Salario',   'Freelance', 'Regalo', 'Reembolso','Otro'],
     ),
     uscita: ta(
-      ['Cibo', 'Quotidiano', 'Trasporti', 'Sociale', 'Residenza', 'Regalo', 'Comunicazioni', 'Abbigliamento', 'Svago', 'Bellezza', 'Medico', 'Hobby', 'Bollette', 'Altro'],
-      ['Food', 'Daily',      'Transport', 'Social',  'Housing',   'Gift',   'Communications','Clothing',      'Entertainment','Beauty','Medical','Hobby','Bills',   'Other'],
-      ['Comida','Diario',    'Transporte','Social',  'Vivienda',  'Regalo', 'Comunicaciones','Ropa',          'Ocio',         'Belleza','Médico','Hobby','Facturas','Otro'],
+      ['Cibo', 'Quotidiano', 'Trasporti', 'Sociale', 'Residenza', 'Regalo', 'Comunicazioni', 'Abbigliamento', 'Svago', 'Bellezza', 'Medico', 'Hobby', 'Bollette', 'Finanziamento', 'Altro'],
+      ['Food', 'Daily',      'Transport', 'Social',  'Housing',   'Gift',   'Communications','Clothing',      'Entertainment','Beauty','Medical','Hobby','Bills',   'Financing',      'Other'],
+      ['Comida','Diario',    'Transporte','Social',  'Vivienda',  'Regalo', 'Comunicaciones','Ropa',          'Ocio',         'Belleza','Médico','Hobby','Facturas','Financiamiento',  'Otro'],
     ),
   },
 
@@ -217,6 +217,8 @@ const STRINGS = {
     filtroTutti:      t('Tutti',                        'All',                         'Todos'),
     filtroEntrate:    t('Entrate',                      'Income',                      'Ingresos'),
     filtroUscite:     t('Uscite',                       'Expenses',                    'Gastos'),
+    filtroRicorrenti: t('Ricorrenti',                   'Recurring',                   'Recurrentes'),
+    filtroPeriodo:    t('Periodo corrente',             'Current period',              'Período actual'),
     nessuno:          t('Nessun movimento trovato.',    'No transactions found.',      'No se encontraron movimientos.'),
     eliminaLabel:     t('Elimina',                      'Delete',                      'Eliminar'),
     eliminaConferma: tf(

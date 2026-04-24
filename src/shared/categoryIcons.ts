@@ -22,6 +22,7 @@ const ICON_MAP: Record<string, string> = {
   Medico: '🩺', Medical: '🩺', Médico: '🩺',
   Hobby: '🎨',
   Bollette: '⚡', Bills: '⚡', Facturas: '⚡',
+  Finanziamento: '🏦', Financing: '🏦', Financiamiento: '🏦',
 
   // Fallback
   Altro: '🌌', Other: '🌌', Otro: '🌌',
