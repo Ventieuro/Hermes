@@ -39,18 +39,21 @@ function Movimenti() {
   const [filterType, setFilterType] = useState<'all' | 'entrata' | 'uscita'>('all')
   const [filterRecurring, setFilterRecurring] = useState(false)
   const [filterCategory, setFilterCategory] = useState(searchParams.get('category') ?? '')
-  const [dateFrom, setDateFrom] = useState(searchParams.get('from') ?? '')
-  const [dateTo, setDateTo] = useState(searchParams.get('to') ?? '')
-  const [editingTx, setEditingTx] = useState<Transaction | null>(null)
 
   const { payDay } = loadSettings()
+  const defaultPeriod = getCurrentPeriod(payDay)
+
+  const [dateFrom, setDateFrom] = useState(searchParams.get('from') ?? defaultPeriod.start)
+  const [dateTo, setDateTo] = useState(searchParams.get('to') ?? defaultPeriod.end)
+  const [editingTx, setEditingTx] = useState<Transaction | null>(null)
 
   // Sincronizza lo stato dai searchParams quando cambiano (navigazione esterna)
   useEffect(() => {
+    const { start, end } = getCurrentPeriod(payDay)
     setFilterCategory(searchParams.get('category') ?? '')
-    setDateFrom(searchParams.get('from') ?? '')
-    setDateTo(searchParams.get('to') ?? '')
-  }, [searchParams])
+    setDateFrom(searchParams.get('from') ?? start)
+    setDateTo(searchParams.get('to') ?? end)
+  }, [searchParams]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const refresh = useCallback(() => setRefreshKey((k) => k + 1), [])
   void refreshKey
@@ -87,17 +90,11 @@ function Movimenti() {
   }, [allTx, filterType, filterRecurring, filterCategory, dateFrom, dateTo, search, refreshKey]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function clearPeriodFilter() {
-    setDateFrom('')
-    setDateTo('')
-    setFilterCategory('')
-    setSearchParams({})
-  }
-
-  function applyCurrentPeriod() {
     const { start, end } = getCurrentPeriod(payDay)
     setDateFrom(start)
     setDateTo(end)
-    setSearchParams({ from: start, to: end })
+    setFilterCategory('')
+    setSearchParams({})
   }
 
   async function handleDelete(tx: Transaction) {
@@ -130,8 +127,8 @@ function Movimenti() {
       {/* ─── Titolo ─── */}
       <PageHeader title={MOVIMENTI.titolo} />
 
-      {/* ─── Banner filtro periodo/categoria attivo ─── */}
-      {(dateFrom || dateTo || filterCategory) && (
+      {/* ─── Banner filtro categoria (da navigazione Dashboard) ─── */}
+      {filterCategory && (
         <div style={{
           margin: '0 16px 12px',
           padding: '10px 14px',
@@ -143,16 +140,9 @@ function Movimenti() {
           justifyContent: 'space-between',
           gap: '8px',
         }}>
-          <div style={{ fontSize: '13px', color: 'var(--accent)', fontWeight: 600, lineHeight: 1.4 }}>
-            {filterCategory && <span>📂 {translateCategory(filterCategory)}</span>}
-            {(dateFrom || dateTo) && (
-              <span style={{ display: 'block', fontSize: '12px', fontWeight: 400, color: 'var(--text-secondary)' }}>
-                {dateFrom && new Date(dateFrom).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' })}
-                {dateFrom && dateTo && ' — '}
-                {dateTo && new Date(dateTo).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' })}
-              </span>
-            )}
-          </div>
+          <span style={{ fontSize: '13px', color: 'var(--accent)', fontWeight: 600 }}>
+            📂 {translateCategory(filterCategory)}
+          </span>
           <button
             onClick={clearPeriodFilter}
             style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px', padding: '2px', color: 'var(--accent)', flexShrink: 0 }}
@@ -162,7 +152,7 @@ function Movimenti() {
       )}
 
       {/* ─── Search ─── */}
-      <div style={{ padding: '0 16px 12px' }}>
+      <div style={{ padding: '0 16px 10px' }}>
         <input
           type="search"
           placeholder={MOVIMENTI.cercaPlaceholder}
@@ -182,6 +172,76 @@ function Movimenti() {
         />
       </div>
 
+      {/* ─── Filtro date Dal / Al ─── */}
+      <div style={{ padding: '0 16px 12px', display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
+        <div style={{ flex: 1 }}>
+          <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em', color: 'var(--text-muted)', marginBottom: '4px', textTransform: 'uppercase' }}>
+            {MOVIMENTI.dalLabel}
+          </label>
+          <input
+            type="date"
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
+            style={{
+              width: '100%',
+              boxSizing: 'border-box',
+              padding: '9px 12px',
+              borderRadius: '12px',
+              border: `1px solid ${dateFrom ? 'var(--accent)' : 'var(--input-border)'}`,
+              background: 'var(--input-bg)',
+              color: dateFrom ? 'var(--text-primary)' : 'var(--text-muted)',
+              fontSize: '14px',
+              outline: 'none',
+              colorScheme: 'dark',
+            }}
+          />
+        </div>
+        <div style={{ flex: 1 }}>
+          <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, letterSpacing: '0.05em', color: 'var(--text-muted)', marginBottom: '4px', textTransform: 'uppercase' }}>
+            {MOVIMENTI.alLabel}
+          </label>
+          <input
+            type="date"
+            value={dateTo}
+            onChange={(e) => setDateTo(e.target.value)}
+            min={dateFrom || undefined}
+            style={{
+              width: '100%',
+              boxSizing: 'border-box',
+              padding: '9px 12px',
+              borderRadius: '12px',
+              border: `1px solid ${dateTo ? 'var(--accent)' : 'var(--input-border)'}`,
+              background: 'var(--input-bg)',
+              color: dateTo ? 'var(--text-primary)' : 'var(--text-muted)',
+              fontSize: '14px',
+              outline: 'none',
+              colorScheme: 'dark',
+            }}
+          />
+        </div>
+        {(dateFrom !== defaultPeriod.start || dateTo !== defaultPeriod.end) && (
+          <button
+            onClick={() => { setDateFrom(defaultPeriod.start); setDateTo(defaultPeriod.end) }}
+            style={{
+              flexShrink: 0,
+              width: '36px',
+              height: '36px',
+              borderRadius: '10px',
+              border: 'none',
+              background: 'var(--bg-secondary)',
+              color: 'var(--text-muted)',
+              cursor: 'pointer',
+              fontSize: '16px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: '1px',
+            }}
+            aria-label="Cancella date"
+          >✕</button>
+        )}
+      </div>
+
       {/* ─── Filtri tipo + ricorrenti ─── */}
       <div style={{ padding: '0 16px 12px', display: 'flex', gap: '8px', overflowX: 'auto', scrollbarWidth: 'none' }}>
         <button style={chipStyle(filterType === 'all')} onClick={() => setFilterType('all')}>
@@ -195,9 +255,6 @@ function Movimenti() {
         </button>
         <button style={chipStyle(filterRecurring)} onClick={() => setFilterRecurring((v) => !v)}>
           🔁 {MOVIMENTI.filtroRicorrenti}
-        </button>
-        <button style={chipStyle(!!(dateFrom || dateTo))} onClick={applyCurrentPeriod}>
-          📅 {MOVIMENTI.filtroPeriodo}
         </button>
       </div>
 

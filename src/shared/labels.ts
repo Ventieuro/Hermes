@@ -219,6 +219,8 @@ const STRINGS = {
     filtroUscite:     t('Uscite',                       'Expenses',                    'Gastos'),
     filtroRicorrenti: t('Ricorrenti',                   'Recurring',                   'Recurrentes'),
     filtroPeriodo:    t('Periodo corrente',             'Current period',              'Período actual'),
+    dalLabel:         t('Dal',                          'From',                        'Desde'),
+    alLabel:          t('Al',                           'To',                          'Hasta'),
     nessuno:          t('Nessun movimento trovato.',    'No transactions found.',      'No se encontraron movimientos.'),
     eliminaLabel:     t('Elimina',                      'Delete',                      'Eliminar'),
     eliminaConferma: tf(

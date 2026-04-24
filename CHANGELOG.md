@@ -6,6 +6,18 @@
 
 ## [24/04/2026] — Sessione 5
 
+### TASK-040: Filtro date Dal/Al in Movimenti
+**File modificati:** `src/shared/labels.ts`, `src/pages/Movimenti.tsx`
+
+- Aggiunte label `dalLabel` / `alLabel` nella sezione `movimenti` di `labels.ts` (IT/EN/ES)
+- Aggiunto blocco visuale Dal/Al con `input[type="date"]` sotto la search bar in `Movimenti.tsx`
+- I campi si evidenziano con bordo `--accent` quando hanno un valore; pulsante ✕ inline per reset
+- Il chip "📅 Periodo corrente" rimane come shortcut per compilare entrambi i campi in un tap
+- Banner semplificato: appare solo per filtro categoria (navigazione da Dashboard), non per date
+- **Build check:** ✅ Passato
+
+---
+
 ### TASK-039: Header navigazione unificato
 **File creati:** `src/components/ui/PageHeader.tsx`  
 **File modificati:** `src/components/ui/index.ts`, `src/pages/Categories.tsx`, `src/pages/Movimenti.tsx`, `src/pages/SettingsPage.tsx`, `src/components/Settings.tsx`

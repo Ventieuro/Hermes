@@ -32,6 +32,14 @@
 
 ## Completati
 
+### ✅ TASK-040 — Filtro date Dal/Al in Movimenti (24/04/2026)
+- [x] Aggiunte label `dalLabel` e `alLabel` in `labels.ts` sezione `movimenti` (IT/EN/ES)
+- [x] Aggiunto blocco date picker (Dal / Al) in `Movimenti.tsx` sotto la search bar
+- [x] Banner filtro semplificato: mostra solo filtro categoria (da navigazione), non le date
+- [x] Pulsante ✕ inline per cancellare il range date
+- [x] Il chip "Periodo corrente" compila i campi Dal/Al come shortcut
+- [x] Build check passato
+
 ### ✅ TASK-039 — Header navigazione unificato (24/04/2026)
 - [x] Creato componente `PageHeader` in `src/components/ui/PageHeader.tsx`
 - [x] Esportato da `src/components/ui/index.ts`
