@@ -620,8 +620,9 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
                       <input
                         type="text"
                         inputMode="decimal"
-                        value={item.price.toFixed(2).replace('.', ',')}
-                        onChange={(e) => dispatch({ type: 'MODIFICA_PREZZO', id: item.id, valore: e.target.value })}
+                        key={item.id}
+                        defaultValue={item.price.toFixed(2).replace('.', ',')}
+                        onBlur={(e) => dispatch({ type: 'MODIFICA_PREZZO', id: item.id, valore: e.target.value })}
                         style={{
                           fontSize: '13px',
                           fontWeight: 600,
