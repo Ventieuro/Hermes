@@ -145,6 +145,7 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
           backgroundImage: 'none',
           isolation: 'isolate',
           boxShadow: '0 32px 80px rgba(0,0,0,0.5)',
+          paddingBottom: 'max(20px, env(safe-area-inset-bottom, 20px))',
         }}
       >
 
@@ -164,7 +165,7 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-4 space-y-4">
+        <form onSubmit={handleSubmit} className="p-4 space-y-4" style={{ paddingBottom: 'max(28px, env(safe-area-inset-bottom, 28px))' }}>
 
           {!isEdit && (
             <div className="space-y-2 rounded-2xl p-3" style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
@@ -434,7 +435,11 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
                   : 'bg-red-500 hover:bg-red-600 active:scale-[0.98]'
                 : 'cursor-not-allowed opacity-40'
             }`}
-            style={!isValid ? { backgroundColor: 'var(--text-muted)' } : undefined}
+            style={{
+              marginTop: '8px',
+              marginBottom: '8px',
+              ...( !isValid ? { backgroundColor: 'var(--text-muted)' } : {}),
+            }}
           >
             {isEdit
               ? (type === 'entrata' ? FORM.modificaEntrata : FORM.modificaUscita)

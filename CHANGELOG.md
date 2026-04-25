@@ -6,6 +6,14 @@
 
 ## [25/04/2026] — Sessione 6
 
+### TASK-049: Fix Safari iPhone per submit troppo vicino alla toolbar
+**File modificati:** `src/components/AddTransactionForm.tsx`, `TASKS.md`, `CHANGELOG.md`
+
+- Aggiunto padding inferiore con `env(safe-area-inset-bottom)` al contenitore e al form della modale di aggiunta movimento
+- Il bottone submit e stato leggermente rialzato con margine verticale extra per allontanarlo dalla toolbar bassa di Safari
+- Nessuna modifica alla logica di salvataggio: fix limitato al layout touch-safe del modale
+- **Build check:** ✅ Passato
+
 ### TASK-048: Deploy aggiornamento UI form
 **File modificati:** `TASKS.md`, `CHANGELOG.md`
 
