@@ -27,6 +27,27 @@ import { SETTINGS, NOTIFICHE, AUTO_BACKUP, getLocale, setLocale, type Locale } f
 import { FEATURES } from '../app/features'
 import { useDialog } from '../shared/DialogContext'
 
+const LOCAL_STORAGE_ESTIMATED_LIMIT_BYTES = 5 * 1024 * 1024
+
+function getLocalStorageUsedBytes(): number {
+  try {
+    let used = 0
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
+      if (!key) continue
+      const value = localStorage.getItem(key) ?? ''
+      used += key.length + value.length
+    }
+    return used
+  } catch {
+    return 0
+  }
+}
+
+function formatBytesAsMB(bytes: number): string {
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
+}
+
 interface SettingsProps {
   onClose?: () => void
 }
@@ -100,6 +121,9 @@ function SettingsContent({ onRequestClose: _onRequestClose }: SettingsContentPro
   const [driveStatus, setDriveStatus] = useState<'idle' | DriveSyncResult>('idle')
   const [isDriveSyncing, setIsDriveSyncing] = useState(false)
   const [autoBackup, setAutoBackup] = useState<AutoBackupSettings>(loadAutoBackupSettings)
+  const localStorageUsedBytes = getLocalStorageUsedBytes()
+  const localStoragePercent = Math.min(100, Math.round((localStorageUsedBytes / LOCAL_STORAGE_ESTIMATED_LIMIT_BYTES) * 100))
+  const isStorageHigh = localStoragePercent >= 70
 
   function toggleNotifications() {
     if (!notifSettings.enabled && 'Notification' in window && Notification.permission === 'default') {
@@ -410,6 +434,52 @@ function SettingsContent({ onRequestClose: _onRequestClose }: SettingsContentPro
       </div>
 
       {/* ─── Sync Section ─── */}
+      <div className="p-4" style={{ borderBottom: '1px solid var(--border)' }}>
+        <h3
+          className="text-xs font-semibold uppercase tracking-wide mb-3"
+          style={{ color: 'var(--text-muted)' }}
+        >
+          {SETTINGS.spazioLocaleTitolo}
+        </h3>
+
+        <div
+          className="rounded-xl p-3"
+          style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border)' }}
+        >
+          <div
+            className="h-2 rounded-full overflow-hidden"
+            style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border)' }}
+          >
+            <div
+              style={{
+                height: '100%',
+                width: `${localStoragePercent}%`,
+                background: isStorageHigh ? '#f59e0b' : 'var(--accent)',
+                transition: 'width 0.35s ease',
+              }}
+            />
+          </div>
+
+          <p className="text-xs mt-2" style={{ color: 'var(--text-secondary)' }}>
+            {SETTINGS.spazioLocaleDettaglio(
+              formatBytesAsMB(localStorageUsedBytes),
+              formatBytesAsMB(LOCAL_STORAGE_ESTIMATED_LIMIT_BYTES),
+              localStoragePercent,
+            )}
+          </p>
+
+          {isStorageHigh && (
+            <p className="text-xs mt-2" style={{ color: '#f59e0b' }}>
+              {SETTINGS.spazioLocaleWarning}
+            </p>
+          )}
+
+          <p className="text-[11px] mt-2" style={{ color: 'var(--text-muted)' }}>
+            {SETTINGS.spazioLocaleNota}
+          </p>
+        </div>
+      </div>
+
       {FEATURES.exportImportJson && (
         <div className="p-4" style={{ borderBottom: '1px solid var(--border)' }}>
           <h3

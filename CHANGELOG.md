@@ -6,6 +6,15 @@
 
 ## [25/04/2026] — Sessione 6
 
+### TASK-053: Indicatore uso localStorage nei Settings
+**File modificati:** `src/components/Settings.tsx`, `src/shared/labels.ts`, `TASKS.md`, `CHANGELOG.md`
+
+- Aggiunta nuova sezione `Spazio locale` nei Settings con barra progresso utilizzo localStorage
+- Mostrati dettaglio `usato / limite stimato` in MB e percentuale corrente
+- Aggiunto warning visivo sopra soglia alta (>= 70%)
+- Inserite nuove label i18n (IT/EN/ES) per titolo, dettaglio, warning e nota
+- **Build check:** ✅ Passato
+
 ### TASK-052: Riordino TASKS per ordine cronologico decrescente
 **File modificati:** `TASKS.md`, `CHANGELOG.md`
 

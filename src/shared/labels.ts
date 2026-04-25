@@ -298,6 +298,14 @@ const STRINGS = {
     codiceCopia:       t('Copia codice',                  'Copy code',                     'Copiar codigo'),
     codiceCopiato:     t('✅ Codice copiato',             '✅ Code copied',                 '✅ Codigo copiado'),
     codicePrompt:      t('Inserisci la password del codice:', 'Enter code password:',      'Ingresa la contraseña del codigo:'),
+    spazioLocaleTitolo: t('Spazio locale',                 'Local storage',                 'Espacio local'),
+    spazioLocaleDettaglio: tf(
+      (used: string, max: string, pct: number) => `Usato ${used} su circa ${max} (${pct}%)`,
+      (used: string, max: string, pct: number) => `Using ${used} out of about ${max} (${pct}%)`,
+      (used: string, max: string, pct: number) => `Usado ${used} de aproximadamente ${max} (${pct}%)`,
+    ),
+    spazioLocaleWarning: t('⚠️ Spazio locale quasi pieno: valuta backup/esportazione e pulizia dati vecchi.', '⚠️ Local storage is getting full: consider backup/export and cleaning old data.', '⚠️ El espacio local se está llenando: considera backup/exportación y limpieza de datos antiguos.'),
+    spazioLocaleNota:   t('Stima basata su limite tipico browser (~5 MB per dominio).', 'Estimate based on typical browser limit (~5 MB per origin).', 'Estimación basada en el límite típico del navegador (~5 MB por dominio).'),
   },
 
   // ── Notifiche ──────────────────────────────────────────

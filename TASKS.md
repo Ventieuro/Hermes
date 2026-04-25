@@ -23,13 +23,21 @@
 
 ## Da Fare
 
-<!-- Nessun task da fare -->
+### 🔜 TASK-054 — Promemoria gestione spazio dati (non implementare ora)
+- [ ] Valutare strategia archiviazione storica (es. export annuale + pulizia dati vecchi)
+- [ ] Definire soglia operativa (es. warning 70-80%) e flusso guidato utente
+- [ ] Considerare eventuale migrazione a IndexedDB se la crescita dati continua
 
 ## In Corso
 
 <!-- Nessun task in corso -->
 
 ## Completati
+
+### ✅ TASK-053 — Indicatore uso localStorage in Settings (25/04/2026)
+- [x] Aggiunto indicatore spazio localStorage usato in Settings
+- [x] Mostrata percentuale con barra di avanzamento e warning sopra soglia
+- [x] Aggiornate label i18n e verificata build ✅
 
 ### ✅ TASK-052 — Riordino TASKS dal più recente al più vecchio (25/04/2026)
 - [x] Unificate le sezioni duplicate "Completati"
