@@ -356,6 +356,85 @@ export function setUnlocked() {
   sessionStorage.setItem(PIN_SESSION_KEY, Date.now().toString())
 }
 
+// ─── WebAuthn Biometric ───────────────────────────────────
+const BIOMETRIC_KEY = 'hermes-biometric-credential'
+
+export function isBiometricCredentialSaved(): boolean {
+  return !!localStorage.getItem(BIOMETRIC_KEY)
+}
+
+export function removeBiometricCredential(): void {
+  localStorage.removeItem(BIOMETRIC_KEY)
+}
+
+export async function isBiometricAvailable(): Promise<boolean> {
+  try {
+    if (!window.PublicKeyCredential) return false
+    return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()
+  } catch {
+    return false
+  }
+}
+
+export async function registerBiometric(): Promise<boolean> {
+  try {
+    const challenge = crypto.getRandomValues(new Uint8Array(32))
+    const userId = crypto.getRandomValues(new Uint8Array(16))
+
+    const credential = await navigator.credentials.create({
+      publicKey: {
+        challenge,
+        rp: { name: 'Hermes', id: window.location.hostname },
+        user: { id: userId, name: 'hermes-user', displayName: 'Hermes' },
+        pubKeyCredParams: [
+          { type: 'public-key', alg: -7 },   // ES256
+          { type: 'public-key', alg: -257 },  // RS256
+        ],
+        authenticatorSelection: {
+          authenticatorAttachment: 'platform',
+          userVerification: 'required',
+        },
+        timeout: 60000,
+      },
+    }) as PublicKeyCredential | null
+
+    if (!credential) return false
+
+    const rawId = new Uint8Array(credential.rawId)
+    const credentialId = btoa(String.fromCharCode(...rawId))
+    localStorage.setItem(BIOMETRIC_KEY, credentialId)
+    return true
+  } catch {
+    return false
+  }
+}
+
+export async function verifyBiometric(): Promise<boolean> {
+  try {
+    const stored = localStorage.getItem(BIOMETRIC_KEY)
+    if (!stored) return false
+
+    const binary = atob(stored)
+    const credentialId = new Uint8Array(binary.length)
+    for (let i = 0; i < binary.length; i++) {
+      credentialId[i] = binary.charCodeAt(i)
+    }
+
+    const challenge = crypto.getRandomValues(new Uint8Array(32))
+    const assertion = await navigator.credentials.get({
+      publicKey: {
+        challenge,
+        allowCredentials: [{ type: 'public-key', id: credentialId }],
+        userVerification: 'required',
+        timeout: 60000,
+      },
+    })
+    return !!assertion
+  } catch {
+    return false
+  }
+}
+
 // ─── Categorie Custom ────────────────────────────────────
 
 export interface CustomCategories {

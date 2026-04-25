@@ -1,6 +1,9 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { PIN, LAYOUT } from '../shared/labels'
-import { loadPin, savePin, verifyPin, setUnlocked, loadSettings } from '../shared/storage'
+import {
+  loadPin, savePin, verifyPin, setUnlocked, loadSettings,
+  isBiometricCredentialSaved, isBiometricAvailable, verifyBiometric,
+} from '../shared/storage'
 
 interface PinLockProps {
   onUnlocked: () => void
@@ -15,13 +18,46 @@ function PinLock({ onUnlocked }: PinLockProps) {
   const [confirmPin, setConfirmPin] = useState(['', '', '', ''])
   const [step, setStep] = useState<'enter' | 'confirm'>('enter')
   const [error, setError] = useState('')
+  const [biometricAvailable, setBiometricAvailable] = useState(false)
+  const [showPin, setShowPin] = useState(false)
 
   const inputsRef = useRef<(HTMLInputElement | null)[]>([])
   const confirmInputsRef = useRef<(HTMLInputElement | null)[]>([])
 
+  const handleBiometricAuth = useCallback(async () => {
+    const ok = await verifyBiometric()
+    if (ok) {
+      setUnlocked()
+      onUnlocked()
+    } else {
+      setBiometricAvailable(false)
+      setShowPin(true)
+      setError(PIN.biometriaFallita)
+      setTimeout(() => inputsRef.current[0]?.focus(), 50)
+    }
+  }, [onUnlocked])
+
   useEffect(() => {
-    inputsRef.current[0]?.focus()
-  }, [])
+    if (isSetup) {
+      inputsRef.current[0]?.focus()
+      return
+    }
+    // Check and auto-trigger biometric if available
+    if (isBiometricCredentialSaved()) {
+      isBiometricAvailable().then((available) => {
+        if (available) {
+          setBiometricAvailable(true)
+          handleBiometricAuth()
+        } else {
+          setShowPin(true)
+          inputsRef.current[0]?.focus()
+        }
+      })
+    } else {
+      setShowPin(true)
+      inputsRef.current[0]?.focus()
+    }
+  }, [isSetup, handleBiometricAuth])
 
   function handleDigit(
     index: number,
@@ -179,30 +215,70 @@ function PinLock({ onUnlocked }: PinLockProps) {
         <p className="text-sm mb-6" style={{ color: 'var(--text-secondary)' }}>
           {isSetup
             ? (step === 'enter' ? PIN.primoAccesso : PIN.confermaPin)
-            : PIN.inserisciPin}
+            : (showPin ? PIN.inserisciPin : '')}
         </p>
 
-        {/* Input PIN */}
-        {step === 'enter'
-          ? renderInputs(pin, setPin, inputsRef)
-          : renderInputs(confirmPin, setConfirmPin, confirmInputsRef)}
-
-        {/* Errore */}
-        {error && (
-          <p className="mt-4 text-sm font-medium" style={{ color: '#ef4444' }}>
-            {error}
-          </p>
+        {/* ─── Biometric button (unlock mode, credential registered) ─── */}
+        {!isSetup && biometricAvailable && !showPin && (
+          <div className="flex flex-col items-center gap-4">
+            <button
+              onClick={handleBiometricAuth}
+              className="w-full py-4 rounded-2xl text-base font-semibold transition active:scale-95"
+              style={{ backgroundColor: 'var(--accent)', color: '#fff' }}
+            >
+              {PIN.biometriaAvvia}
+            </button>
+            <button
+              onClick={() => { setShowPin(true); setTimeout(() => inputsRef.current[0]?.focus(), 50) }}
+              className="text-sm transition"
+              style={{ color: 'var(--text-muted)' }}
+            >
+              {PIN.usaPin}
+            </button>
+          </div>
         )}
 
-        {/* Bottone submit (solo per setup primo step) */}
-        {isSetup && step === 'enter' && pin.every((d) => d !== '') && (
-          <button
-            onClick={handleSubmit}
-            className="mt-6 w-full py-3 rounded-xl font-semibold transition-colors duration-200 active:scale-95"
-            style={{ backgroundColor: 'var(--accent)', color: '#fff' }}
-          >
-            {PIN.conferma}
-          </button>
+        {/* ─── PIN inputs ─── */}
+        {(isSetup || showPin) && (
+          <>
+            {/* Input PIN */}
+            {step === 'enter'
+              ? renderInputs(pin, setPin, inputsRef)
+              : renderInputs(confirmPin, setConfirmPin, confirmInputsRef)}
+
+            {/* Errore */}
+            {error && (
+              <p className="mt-4 text-sm font-medium" style={{ color: '#ef4444' }}>
+                {error}
+              </p>
+            )}
+
+            {/* Bottone biometria (fallback se showPin dopo failure) */}
+            {!isSetup && biometricAvailable && showPin && (
+              <button
+                onClick={() => { setShowPin(false); setError(''); handleBiometricAuth() }}
+                className="mt-4 w-full py-2.5 rounded-xl text-sm font-medium transition active:scale-95"
+                style={{
+                  backgroundColor: 'var(--bg-secondary)',
+                  color: 'var(--text-secondary)',
+                  border: '1px solid var(--border)',
+                }}
+              >
+                {PIN.biometriaAvvia}
+              </button>
+            )}
+
+            {/* Bottone submit (solo per setup primo step) */}
+            {isSetup && step === 'enter' && pin.every((d) => d !== '') && (
+              <button
+                onClick={handleSubmit}
+                className="mt-6 w-full py-3 rounded-xl font-semibold transition-colors duration-200 active:scale-95"
+                style={{ backgroundColor: 'var(--accent)', color: '#fff' }}
+              >
+                {PIN.conferma}
+              </button>
+            )}
+          </>
         )}
       </div>
     </div>

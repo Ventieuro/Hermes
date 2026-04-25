@@ -189,7 +189,15 @@ const STRINGS = {
       (nome: string) => `Welcome back, ${nome}`,
       (nome: string) => `Bienvenido, ${nome}`,
     ),
-    primoAccesso:    t('Prima di iniziare, imposta il tuo PIN di sicurezza', 'Before you start, set your security PIN', 'Antes de empezar, configura tu PIN de seguridad'),
+    primoAccesso:         t('Prima di iniziare, imposta il tuo PIN di sicurezza', 'Before you start, set your security PIN', 'Antes de empezar, configura tu PIN de seguridad'),
+    biometriaAvvia:       t('🔐 Sblocca con biometria',                          '🔐 Unlock with biometrics',                  '🔐 Desbloquear con biometría'),
+    biometriaFallita:     t('Biometria non riuscita, inserisci il PIN',           'Biometrics failed, enter your PIN',          'Biometría fallida, introduce el PIN'),
+    abilitaBiometria:     t('Face ID / Impronta digitale',                        'Face ID / Fingerprint',                      'Face ID / Huella dactilar'),
+    disabilitaBiometria:  t('Disabilita biometria',                               'Disable biometrics',                         'Desactivar biometría'),
+    biometriaAttiva:      t('✓ Attiva',                                           '✓ Active',                                   '✓ Activa'),
+    biometriaTitolo:      t('Sicurezza',                                          'Security',                                   'Seguridad'),
+    biometriaFallitoReg:  t('Registrazione fallita. Riprova.',                    'Registration failed. Try again.',            'Registro fallido. Inténtalo de nuevo.'),
+    usaPin:               t('Usa PIN',                                            'Use PIN',                                    'Usar PIN'),
   },
 
   // ── Home ───────────────────────────────────────────────

@@ -5,6 +5,11 @@ import {
   saveNotificationSettings,
   exportAllData,
   importAllData,
+  loadPin,
+  isBiometricAvailable,
+  isBiometricCredentialSaved,
+  registerBiometric,
+  removeBiometricCredential,
 } from '../shared/storage'
 import {
   loadAutoBackupSettings,
@@ -14,7 +19,7 @@ import {
   isFSASupported,
   type AutoBackupSettings,
 } from '../shared/autoBackup'
-import { SETTINGS, NOTIFICHE, AUTO_BACKUP, getLocale, setLocale, type Locale } from '../shared/labels'
+import { SETTINGS, NOTIFICHE, AUTO_BACKUP, PIN, getLocale, setLocale, type Locale } from '../shared/labels'
 import { FEATURES } from '../app/features'
 import { useDialog } from '../shared/DialogContext'
 
@@ -92,9 +97,14 @@ function SettingsContent() {
   const [importStatus, setImportStatus] = useState<'idle' | 'ok' | 'invalid' | 'wrong-password'>('idle')
   const [autoBackup, setAutoBackup] = useState<AutoBackupSettings>(loadAutoBackupSettings)
   const [localStorageUsedBytes, setLocalStorageUsedBytes] = useState(0)
+  const [biometricSupported, setBiometricSupported] = useState(false)
+  const [biometricEnabled, setBiometricEnabled] = useState(isBiometricCredentialSaved)
+  const [biometricError, setBiometricError] = useState('')
+  const pinIsSet = !!loadPin()
 
   // Calculate storage usage on mount and periodically
   useEffect(() => {
+    isBiometricAvailable().then(setBiometricSupported)
     async function calculateStorageUsage() {
       try {
         // Try to open IndexedDB and calculate size
@@ -145,6 +155,21 @@ function SettingsContent() {
 
   const localStoragePercent = Math.min(100, parseFloat(((localStorageUsedBytes / LOCAL_STORAGE_ESTIMATED_LIMIT_BYTES) * 100).toFixed(1)))
   const isStorageHigh = localStoragePercent >= 70
+
+  async function toggleBiometric() {
+    setBiometricError('')
+    if (biometricEnabled) {
+      removeBiometricCredential()
+      setBiometricEnabled(false)
+    } else {
+      const ok = await registerBiometric()
+      if (ok) {
+        setBiometricEnabled(true)
+      } else {
+        setBiometricError(PIN.biometriaFallitoReg)
+      }
+    }
+  }
 
   function toggleNotifications() {
     if (!notifSettings.enabled && 'Notification' in window && Notification.permission === 'default') {
@@ -394,6 +419,51 @@ function SettingsContent() {
           </div>
         )}
       </div>
+
+      {/* ─── Security / Biometric Section ─── */}
+      {pinIsSet && biometricSupported && (
+        <div className="p-4" style={{ borderBottom: '1px solid var(--border)' }}>
+          <h3
+            className="text-xs font-semibold uppercase tracking-wide mb-3"
+            style={{ color: 'var(--text-muted)' }}
+          >
+            {PIN.biometriaTitolo}
+          </h3>
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-sm" style={{ color: 'var(--text-primary)' }}>
+                {PIN.abilitaBiometria}
+              </span>
+              {biometricEnabled && (
+                <p className="text-xs mt-0.5" style={{ color: 'var(--accent)' }}>
+                  {PIN.biometriaAttiva}
+                </p>
+              )}
+            </div>
+            <div
+              onClick={toggleBiometric}
+              className="w-11 h-6 rounded-full transition relative cursor-pointer"
+              style={{
+                backgroundColor: biometricEnabled ? 'var(--accent)' : 'var(--bg-secondary)',
+                border: '1px solid var(--border)',
+              }}
+              role="switch"
+              aria-checked={biometricEnabled}
+            >
+              <div
+                className="w-4 h-4 rounded-full absolute top-0.5 transition-transform"
+                style={{
+                  backgroundColor: '#fff',
+                  transform: biometricEnabled ? 'translateX(22px)' : 'translateX(3px)',
+                }}
+              />
+            </div>
+          </div>
+          {biometricError && (
+            <p className="text-xs mt-2" style={{ color: '#ef4444' }}>{biometricError}</p>
+          )}
+        </div>
+      )}
 
       {/* ─── Sync Section ─── */}
       <div className="p-4" style={{ borderBottom: '1px solid var(--border)' }}>
