@@ -6,6 +6,14 @@
 
 ## [25/04/2026] — Sessione 6
 
+### TASK-052: Riordino TASKS per ordine cronologico decrescente
+**File modificati:** `TASKS.md`, `CHANGELOG.md`
+
+- Unificate in una sola le sezioni duplicate `Completati` presenti nel file task
+- Riordinati i blocchi task dal piu recente al piu vecchio (TASK-052 → TASK-000)
+- Verificata la struttura finale con una sola intestazione `## Completati`
+- **Build check:** ✅ Passato
+
 ### TASK-051: Deploy novita correnti
 **File modificati:** `TASKS.md`, `CHANGELOG.md`
 
