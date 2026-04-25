@@ -132,6 +132,7 @@ export function DialogProvider({ children }: { children: ReactNode }) {
 
 // ─── Hook ────────────────────────────────────────────────
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useDialog() {
   const ctx = useContext(DialogContext)
   if (!ctx) throw new Error('useDialog must be used inside DialogProvider')

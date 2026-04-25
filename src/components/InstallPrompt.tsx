@@ -82,9 +82,18 @@ function InstallPrompt() {
         <p className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>
           {PWA.installTitle}
         </p>
-        <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
-          {iosMode ? PWA.iosMessage : PWA.installMessage}
-        </p>
+        {iosMode ? (
+          <ol className="mt-1.5 space-y-1" style={{ color: 'var(--text-muted)', fontSize: '12px', paddingLeft: '14px', listStyleType: 'decimal' }}>
+            <li>Apri in <strong style={{ color: 'var(--text-primary)' }}>Safari</strong> (non Chrome/Firefox)</li>
+            <li>Tocca <strong style={{ color: 'var(--text-primary)' }}>Condividi ⬆️</strong> in basso al centro</li>
+            <li>Scorri e tocca <strong style={{ color: 'var(--text-primary)' }}>"Aggiungi a schermata Home"</strong></li>
+            <li>Tocca <strong style={{ color: 'var(--text-primary)' }}>Aggiungi</strong> in alto a destra</li>
+          </ol>
+        ) : (
+          <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
+            {PWA.installMessage}
+          </p>
+        )}
         <div className="flex gap-2 mt-3">
           {!iosMode && (
             <button

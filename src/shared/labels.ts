@@ -387,7 +387,6 @@ const STRINGS = {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 // Tipo Labels derivato automaticamente dalla struttura STRINGS
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Resolve<S> = { [K in keyof S]: S[K] extends I18n<infer V> ? V : Resolve<S[K]> }
 export type Labels = Resolve<typeof STRINGS>
 

@@ -117,7 +117,11 @@ function Movimenti() {
         confirmLabel: MOVIMENTI.eliminaTutte,
         cancelLabel: MOVIMENTI.eliminaSoloQuesta,
       })
-      deleteAll ? deleteTransactionsByGroupId(tx.recurringGroupId) : deleteTransaction(tx.id)
+      if (deleteAll) {
+        deleteTransactionsByGroupId(tx.recurringGroupId)
+      } else {
+        deleteTransaction(tx.id)
+      }
     } else {
       deleteTransaction(tx.id)
     }

@@ -492,11 +492,12 @@ interface ImportOptions {
 
 const TRANSFER_CODE_PREFIX = 'HX1.'
 
-function bufToBase64(buf: ArrayBuffer): string {
-  return btoa(String.fromCharCode(...new Uint8Array(buf)))
+function bufToBase64(buf: ArrayBuffer | Uint8Array<ArrayBuffer>): string {
+  const bytes = buf instanceof Uint8Array ? buf : new Uint8Array(buf)
+  return btoa(String.fromCharCode(...bytes))
 }
 
-function base64ToBuf(b64: string): Uint8Array {
+function base64ToBuf(b64: string): Uint8Array<ArrayBuffer> {
   return Uint8Array.from(atob(b64), (c) => c.charCodeAt(0))
 }
 
@@ -514,7 +515,7 @@ function fromBase64Url(base64Url: string): string {
   return new TextDecoder().decode(bytes)
 }
 
-async function deriveKey(password: string, salt: Uint8Array): Promise<CryptoKey> {
+async function deriveKey(password: string, salt: Uint8Array<ArrayBuffer>): Promise<CryptoKey> {
   const keyMaterial = await crypto.subtle.importKey(
     'raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey'],
   )
