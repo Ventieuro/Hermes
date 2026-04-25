@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { TransactionType, Transaction } from '../shared/types'
 import { generateId, addTransaction, updateTransaction, updateTransactionsByGroupId, loadCustomCategories, addCustomCategory } from '../shared/storage'
 import Mascot from './Mascot'
+import ReceiptScanner from './ReceiptScanner'
 import { FORM, normalizeCategoryKey, translateCategory, getCanonicalCategories } from '../shared/labels'
 import { getCategoryIcon } from '../shared/categoryIcons'
 import { useDialog } from '../shared/DialogContext'
@@ -17,6 +18,7 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
   const today = defaultDate ?? new Date().toISOString().slice(0, 10)
   const isEdit = !!editTransaction
   const { showConfirm } = useDialog()
+  const amountInputRef = useRef<HTMLInputElement>(null)
 
   // Blocca lo scroll del body mentre il modale è aperto
   useEffect(() => {
@@ -41,6 +43,8 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
   const [showNewCat, setShowNewCat] = useState(false)
   const [newCatName, setNewCatName] = useState('')
   const [saveForFuture, setSaveForFuture] = useState(false)
+  const [showScanner, setShowScanner] = useState(false)
+  const [entryMode, setEntryMode] = useState<'manual' | 'receipt'>('manual')
 
   const customCats = loadCustomCategories()
   // Usiamo sempre chiavi canoniche IT; la visualizzazione usa translateCategory()
@@ -141,6 +145,7 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
           backgroundImage: 'none',
           isolation: 'isolate',
           boxShadow: '0 32px 80px rgba(0,0,0,0.5)',
+          paddingBottom: 'max(20px, env(safe-area-inset-bottom, 20px))',
         }}
       >
 
@@ -160,7 +165,73 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-4 space-y-4">
+        <form onSubmit={handleSubmit} className="p-4 space-y-4" style={{ paddingBottom: 'max(28px, env(safe-area-inset-bottom, 28px))' }}>
+
+          {!isEdit && (
+            <div className="space-y-2 rounded-2xl p-3" style={{ backgroundColor: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+              <p className="text-xs font-semibold uppercase tracking-[0.08em]" style={{ color: 'var(--text-muted)', margin: 0 }}>
+                {FORM.labelMetodoInserimento}
+              </p>
+              <div
+                className="grid grid-cols-2 gap-1 rounded-2xl p-1"
+                style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border)' }}
+              >
+                <button
+                  type="button"
+                  onClick={() => setEntryMode('receipt')}
+                  className="rounded-xl px-3 py-3 text-sm font-semibold transition active:scale-[0.98]"
+                  style={{
+                    backgroundColor: entryMode === 'receipt' ? 'var(--accent)' : 'transparent',
+                    border: 'none',
+                    color: entryMode === 'receipt' ? 'var(--fab-text)' : 'var(--text-secondary)',
+                  }}
+                >
+                  {FORM.inserisciTramiteScontrino}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEntryMode('manual')
+                    amountInputRef.current?.focus()
+                  }}
+                  className="rounded-xl px-3 py-3 text-sm font-semibold transition active:scale-[0.98]"
+                  style={{
+                    backgroundColor: entryMode === 'manual' ? 'var(--accent-light)' : 'transparent',
+                    border: 'none',
+                    color: entryMode === 'manual' ? 'var(--accent)' : 'var(--text-secondary)',
+                  }}
+                >
+                  {FORM.inserisciManualmente}
+                </button>
+              </div>
+
+              {entryMode === 'receipt' && (
+                <div
+                  className="rounded-2xl p-3"
+                  style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border)' }}
+                >
+                  <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)', margin: 0 }}>
+                    {FORM.scontrinoTitolo}
+                  </p>
+                  <p className="mt-1 text-xs leading-5" style={{ color: 'var(--text-muted)', marginBottom: '12px' }}>
+                    {FORM.scontrinoDescrizione}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setShowScanner(true)}
+                    className="w-full rounded-xl px-3 py-3 text-sm font-semibold transition active:scale-[0.98]"
+                    style={{
+                      backgroundColor: 'var(--accent)',
+                      color: 'var(--fab-text)',
+                      border: '1px solid color-mix(in srgb, var(--accent) 70%, var(--border))',
+                    }}
+                  >
+                    {FORM.apriScannerNelForm}
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Tipo toggle */}
           <div className="grid grid-cols-2 gap-2">
@@ -195,6 +266,7 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
             <label className="block text-xs mb-1" style={{ color: 'var(--text-muted)' }}>{FORM.labelQuanto}</label>
             <div className="relative">
               <input
+                ref={amountInputRef}
                 type="text"
                 inputMode="decimal"
                 placeholder={FORM.placeholderImporto}
@@ -363,7 +435,11 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
                   : 'bg-red-500 hover:bg-red-600 active:scale-[0.98]'
                 : 'cursor-not-allowed opacity-40'
             }`}
-            style={!isValid ? { backgroundColor: 'var(--text-muted)' } : undefined}
+            style={{
+              marginTop: '8px',
+              marginBottom: '8px',
+              ...( !isValid ? { backgroundColor: 'var(--text-muted)' } : {}),
+            }}
           >
             {isEdit
               ? (type === 'entrata' ? FORM.modificaEntrata : FORM.modificaUscita)
@@ -371,6 +447,16 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
           </button>
         </form>
       </div>
+
+      {showScanner && (
+        <ReceiptScanner
+          onClose={() => setShowScanner(false)}
+          onDone={() => {
+            onSaved()
+            onClose()
+          }}
+        />
+      )}
     </div>
   )
 }

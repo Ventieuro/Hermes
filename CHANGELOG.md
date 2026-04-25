@@ -6,6 +6,48 @@
 
 ## [25/04/2026] — Sessione 6
 
+### TASK-049: Fix Safari iPhone per submit troppo vicino alla toolbar
+**File modificati:** `src/components/AddTransactionForm.tsx`, `TASKS.md`, `CHANGELOG.md`
+
+- Aggiunto padding inferiore con `env(safe-area-inset-bottom)` al contenitore e al form della modale di aggiunta movimento
+- Il bottone submit e stato leggermente rialzato con margine verticale extra per allontanarlo dalla toolbar bassa di Safari
+- Nessuna modifica alla logica di salvataggio: fix limitato al layout touch-safe del modale
+- **Build check:** ✅ Passato
+
+### TASK-048: Deploy aggiornamento UI form
+**File modificati:** `TASKS.md`, `CHANGELOG.md`
+
+- Eseguito `npm run deploy` dopo gli ultimi aggiustamenti UI del form di inserimento
+- La build di produzione e terminata correttamente durante il deploy
+- Pubblicazione GitHub Pages completata con output `Published`
+- **Deploy check:** ✅ Passato
+
+### TASK-047: Restyling selezione manuale/scontrino con segmented control
+**File modificati:** `src/components/AddTransactionForm.tsx`, `src/shared/labels.ts`, `TASKS.md`, `CHANGELOG.md`
+
+- La sezione iniziale del form e stata convertita in un segmented control con stato attivo tra `Inserisci tramite scontrino` e `Inserisci manualmente`
+- Quando e selezionata la modalita scontrino compare un pannello contestuale con descrizione breve e CTA `Apri scanner scontrino`
+- Il resto del form rimane invariato e il flusso OCR si apre correttamente dal nuovo pannello
+- Aggiunte 3 nuove label i18n nella sezione `form`
+- **Build check:** ✅ Passato
+
+### TASK-046: Riposizionamento scelta scontrino/manuale in cima al form
+**File modificati:** `src/components/AddTransactionForm.tsx`, `TASKS.md`, `CHANGELOG.md`
+
+- La sezione `Inserisci tramite scontrino / Inserisci manualmente` e stata spostata sopra al toggle `Entrata / Uscita`
+- Il resto del form rimane interamente sotto, senza cambiare il comportamento della feature
+- Verifica eseguita sia con `npm run build` sia aprendo lo scanner dalla nuova posizione in UI
+- **Build check:** ✅ Passato
+
+### TASK-045: Spostamento accesso scontrino in Nuova uscita
+**File modificati:** `src/components/AddTransactionForm.tsx`, `src/pages/Dashboard.tsx`, `src/shared/labels.ts`, `TASKS.md`, `CHANGELOG.md`
+
+- Rimosso il pulsante `📷 Scontrino` dall'header della sezione Movimenti in Dashboard
+- Aggiunta in `Nuova uscita` una nuova sezione iniziale con due CTA: `Inserisci tramite scontrino` e `Inserisci manualmente`
+- Il flusso OCR resta invariato ma ora si apre direttamente dalla modale del form; al salvataggio via scontrino viene chiuso anche il form sottostante e aggiornata la dashboard
+- Aggiunte 3 nuove label i18n nella sezione `form` per la scelta del metodo di inserimento
+- **Build check:** ✅ Passato
+
 ### TASK-044b: Enhancement OCR Scanner — Fotocamera live + risultati in tempo reale
 **File modificati:** `src/components/ReceiptScanner.tsx`, `src/shared/labels.ts`
 
