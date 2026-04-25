@@ -6,6 +6,15 @@
 
 ## [25/04/2026] — Sessione 6
 
+### TASK-055: Migrazione storage a IndexedDB con preservazione dati
+**File modificati:** `src/shared/storage.ts`, `src/main.tsx`, `TASKS.md`, `CHANGELOG.md`
+
+- Introdotto nuovo layer storage gestito con cache in memoria e backend IndexedDB (`hermes-db`, store `kv`)
+- Aggiunta funzione di bootstrap `initPersistentStorage()` con migrazione one-shot: se i dati esistono in localStorage vengono copiati in IndexedDB e poi rimossi da localStorage
+- Mantenuto fallback automatico a localStorage in caso di browser senza IndexedDB o errori di apertura DB
+- Aggiornato `main.tsx` per attendere l'inizializzazione/migrazione prima del rendering dell'app, evitando perdita dati durante il passaggio
+- **Build check:** ✅ Passato
+
 ### TASK-053: Indicatore uso localStorage nei Settings
 **File modificati:** `src/components/Settings.tsx`, `src/shared/labels.ts`, `TASKS.md`, `CHANGELOG.md`
 

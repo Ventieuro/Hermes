@@ -34,6 +34,12 @@
 
 ## Completati
 
+### ✅ TASK-055 — Migrazione storage a IndexedDB con preservazione dati (25/04/2026)
+- [x] Introdotto layer IndexedDB con fallback sicuro su localStorage
+- [x] Implementata migrazione automatica one-shot dei dati esistenti da localStorage
+- [x] Aggiornato bootstrap app per inizializzazione storage prima del render
+- [x] Build check e aggiornamento changelog ✅
+
 ### ✅ TASK-053 — Indicatore uso localStorage in Settings (25/04/2026)
 - [x] Aggiunto indicatore spazio localStorage usato in Settings
 - [x] Mostrata percentuale con barra di avanzamento e warning sopra soglia

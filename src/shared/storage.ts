@@ -3,8 +3,137 @@ import { normalizeCategoryKey } from './labels'
 
 const STORAGE_KEY = 'hermes-transactions'
 const SETTINGS_KEY = 'hermes-settings'
+const CUSTOM_CAT_KEY = 'hermes-custom-categories'
+const CUSTOM_ICONS_KEY = 'hermes-custom-icons'
+const NOTIFICATIONS_KEY = 'hermes-notifications'
+
 const QR_TRANSFER_PREFIX = 'hermes-xfer-session-'
 const QR_TRANSFER_READY_KEY = 'hermes-xfer-ready-payload'
+
+const INDEXED_DB_NAME = 'hermes-db'
+const INDEXED_DB_VERSION = 1
+const INDEXED_DB_STORE = 'kv'
+
+const MANAGED_KEYS = [
+  STORAGE_KEY,
+  SETTINGS_KEY,
+  CUSTOM_CAT_KEY,
+  CUSTOM_ICONS_KEY,
+  NOTIFICATIONS_KEY,
+] as const
+
+type ManagedKey = (typeof MANAGED_KEYS)[number]
+
+interface KVRecord {
+  key: ManagedKey
+  value: string
+}
+
+const storageCache = new Map<ManagedKey, string | null>()
+let storageEngine: 'localStorage' | 'indexeddb' = 'localStorage'
+let indexedDbReady = false
+
+function openHermesDb(): Promise<IDBDatabase> {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(INDEXED_DB_NAME, INDEXED_DB_VERSION)
+    request.onupgradeneeded = () => {
+      const db = request.result
+      if (!db.objectStoreNames.contains(INDEXED_DB_STORE)) {
+        db.createObjectStore(INDEXED_DB_STORE, { keyPath: 'key' })
+      }
+    }
+    request.onsuccess = () => resolve(request.result)
+    request.onerror = () => reject(request.error)
+  })
+}
+
+function idbGet(db: IDBDatabase, key: ManagedKey): Promise<string | null> {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(INDEXED_DB_STORE, 'readonly')
+    const store = tx.objectStore(INDEXED_DB_STORE)
+    const req = store.get(key)
+    req.onsuccess = () => {
+      const record = req.result as KVRecord | undefined
+      resolve(record?.value ?? null)
+    }
+    req.onerror = () => reject(req.error)
+  })
+}
+
+function idbSet(db: IDBDatabase, key: ManagedKey, value: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(INDEXED_DB_STORE, 'readwrite')
+    const store = tx.objectStore(INDEXED_DB_STORE)
+    store.put({ key, value } satisfies KVRecord)
+    tx.oncomplete = () => resolve()
+    tx.onerror = () => reject(tx.error)
+    tx.onabort = () => reject(tx.error)
+  })
+}
+
+export async function initPersistentStorage(): Promise<void> {
+  if (indexedDbReady) return
+
+  if (typeof indexedDB === 'undefined') {
+    storageEngine = 'localStorage'
+    for (const key of MANAGED_KEYS) {
+      storageCache.set(key, localStorage.getItem(key))
+    }
+    indexedDbReady = true
+    return
+  }
+
+  try {
+    const db = await openHermesDb()
+
+    for (const key of MANAGED_KEYS) {
+      const fromDb = await idbGet(db, key)
+      if (fromDb !== null) {
+        storageCache.set(key, fromDb)
+        continue
+      }
+
+      const fromLocal = localStorage.getItem(key)
+      if (fromLocal !== null) {
+        await idbSet(db, key, fromLocal)
+        localStorage.removeItem(key)
+        storageCache.set(key, fromLocal)
+      } else {
+        storageCache.set(key, null)
+      }
+    }
+
+    db.close()
+    storageEngine = 'indexeddb'
+  } catch {
+    storageEngine = 'localStorage'
+    for (const key of MANAGED_KEYS) {
+      storageCache.set(key, localStorage.getItem(key))
+    }
+  }
+
+  indexedDbReady = true
+}
+
+function getManagedItem(key: ManagedKey): string | null {
+  if (storageCache.has(key)) return storageCache.get(key) ?? null
+  const fallback = localStorage.getItem(key)
+  storageCache.set(key, fallback)
+  return fallback
+}
+
+function setManagedItem(key: ManagedKey, value: string) {
+  storageCache.set(key, value)
+  if (storageEngine === 'indexeddb' && typeof indexedDB !== 'undefined') {
+    void openHermesDb()
+      .then((db) => idbSet(db, key, value).finally(() => db.close()))
+      .catch(() => {
+        localStorage.setItem(key, value)
+      })
+    return
+  }
+  localStorage.setItem(key, value)
+}
 
 function isIsoDateTime(value: unknown): value is string {
   return typeof value === 'string' && !Number.isNaN(Date.parse(value))
@@ -24,7 +153,7 @@ function normalizeTransaction(tx: Transaction): Transaction {
 
 export function loadTransactions(): Transaction[] {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
+    const raw = getManagedItem(STORAGE_KEY)
     if (!raw) return []
     const parsed = JSON.parse(raw)
     if (!Array.isArray(parsed)) return []
@@ -54,7 +183,7 @@ function isValidTransaction(data: unknown): data is Transaction {
 }
 
 export function saveTransactions(transactions: Transaction[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions.map(normalizeTransaction)))
+  setManagedItem(STORAGE_KEY, JSON.stringify(transactions.map(normalizeTransaction)))
 }
 
 /**
@@ -149,7 +278,7 @@ export function getTransactionsInPeriod(
 
 export function loadSettings(): AppSettings {
   try {
-    const raw = localStorage.getItem(SETTINGS_KEY)
+    const raw = getManagedItem(SETTINGS_KEY)
     return raw ? JSON.parse(raw) : { payDay: 27, userName: '' }
   } catch {
     return { payDay: 27, userName: '' }
@@ -157,7 +286,7 @@ export function loadSettings(): AppSettings {
 }
 
 export function saveSettings(settings: AppSettings) {
-  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings))
+  setManagedItem(SETTINGS_KEY, JSON.stringify(settings))
 }
 
 export function generateId(): string {
@@ -228,7 +357,6 @@ export function setUnlocked() {
 }
 
 // ─── Categorie Custom ────────────────────────────────────
-const CUSTOM_CAT_KEY = 'hermes-custom-categories'
 
 export interface CustomCategories {
   entrata: string[]
@@ -237,7 +365,7 @@ export interface CustomCategories {
 
 export function loadCustomCategories(): CustomCategories {
   try {
-    const raw = localStorage.getItem(CUSTOM_CAT_KEY)
+    const raw = getManagedItem(CUSTOM_CAT_KEY)
     return raw ? JSON.parse(raw) : { entrata: [], uscita: [] }
   } catch {
     return { entrata: [], uscita: [] }
@@ -245,7 +373,7 @@ export function loadCustomCategories(): CustomCategories {
 }
 
 export function saveCustomCategories(cats: CustomCategories) {
-  localStorage.setItem(CUSTOM_CAT_KEY, JSON.stringify(cats))
+  setManagedItem(CUSTOM_CAT_KEY, JSON.stringify(cats))
 }
 
 export function addCustomCategory(type: 'entrata' | 'uscita', name: string) {
@@ -275,7 +403,7 @@ export function renameCustomCategory(type: 'entrata' | 'uscita', oldName: string
   if (icons[oldName]) {
     icons[trimmed] = icons[oldName]
     delete icons[oldName]
-    localStorage.setItem(CUSTOM_ICONS_KEY, JSON.stringify(icons))
+    setManagedItem(CUSTOM_ICONS_KEY, JSON.stringify(icons))
   }
   // Update transactions
   const txs = loadTransactions()
@@ -290,11 +418,10 @@ export function renameCustomCategory(type: 'entrata' | 'uscita', oldName: string
 }
 
 // ─── Custom Category Icons ──────────────────────────────
-const CUSTOM_ICONS_KEY = 'hermes-custom-icons'
 
 export function loadCustomIcons(): Record<string, string> {
   try {
-    const raw = localStorage.getItem(CUSTOM_ICONS_KEY)
+    const raw = getManagedItem(CUSTOM_ICONS_KEY)
     return raw ? JSON.parse(raw) : {}
   } catch {
     return {}
@@ -304,17 +431,16 @@ export function loadCustomIcons(): Record<string, string> {
 export function saveCustomIcon(categoryName: string, icon: string) {
   const icons = loadCustomIcons()
   icons[categoryName] = icon
-  localStorage.setItem(CUSTOM_ICONS_KEY, JSON.stringify(icons))
+  setManagedItem(CUSTOM_ICONS_KEY, JSON.stringify(icons))
 }
 
 export function deleteCustomIcon(categoryName: string) {
   const icons = loadCustomIcons()
   delete icons[categoryName]
-  localStorage.setItem(CUSTOM_ICONS_KEY, JSON.stringify(icons))
+  setManagedItem(CUSTOM_ICONS_KEY, JSON.stringify(icons))
 }
 
 // ─── Notification Settings ──────────────────────────────
-const NOTIFICATIONS_KEY = 'hermes-notifications'
 
 export interface NotificationSettings {
   enabled: boolean
@@ -323,7 +449,7 @@ export interface NotificationSettings {
 
 export function loadNotificationSettings(): NotificationSettings {
   try {
-    const raw = localStorage.getItem(NOTIFICATIONS_KEY)
+    const raw = getManagedItem(NOTIFICATIONS_KEY)
     return raw ? JSON.parse(raw) : { enabled: false, time: '21:30' }
   } catch {
     return { enabled: false, time: '21:30' }
@@ -331,7 +457,7 @@ export function loadNotificationSettings(): NotificationSettings {
 }
 
 export function saveNotificationSettings(settings: NotificationSettings) {
-  localStorage.setItem(NOTIFICATIONS_KEY, JSON.stringify(settings))
+  setManagedItem(NOTIFICATIONS_KEY, JSON.stringify(settings))
 }
 
 // ─── Export / Import JSON ────────────────────────────────
@@ -484,9 +610,9 @@ function applyBackup(data: Partial<AppBackup>, options: ImportOptions = {}): 'ok
   if (data.customIcons && typeof data.customIcons === 'object') {
     if (options.mode === 'merge') {
       const local = loadCustomIcons()
-      localStorage.setItem(CUSTOM_ICONS_KEY, JSON.stringify({ ...local, ...(data.customIcons as Record<string, string>) }))
+      setManagedItem(CUSTOM_ICONS_KEY, JSON.stringify({ ...local, ...(data.customIcons as Record<string, string>) }))
     } else {
-      localStorage.setItem(CUSTOM_ICONS_KEY, JSON.stringify(data.customIcons))
+      setManagedItem(CUSTOM_ICONS_KEY, JSON.stringify(data.customIcons))
     }
   }
 
