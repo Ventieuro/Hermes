@@ -1,27 +1,33 @@
-# 🚀 AstroCoin
+# 🚀 Hermes
 
 App personale per la gestione delle finanze a tema spaziale, costruita con React e pensata per il mobile.
 
 ## Funzionalità
 
 - **Dashboard** con saldo, entrate e uscite del periodo
-- **Grafico a torta** per la distribuzione delle spese per categoria
-- **Transazioni ricorrenti** con gestione automatica
-- **Mascotte astronauta** 🧑‍🚀 che commenta il tuo stato finanziario con metafore spaziali
-- **Tema spaziale** con pianeti, stelle e emoji a tema
+- **Grafici** — torta categorie, sistema solare, andamento annuale
+- **Transazioni ricorrenti** con gestione automatica per serie
+- **Mascotte astronauta** 🧑‍🚀 con messaggi a metafore spaziali
+- **Scanner scontrino** 📷 con OCR (Tesseract.js) per importare spese da foto
+- **Gestione categorie** personalizzate con icone
+- **Backup/Restore** — export/import JSON cifrato AES-256
+- **Trasferimento QR** — da PC a telefono senza cloud
+- **Blocco PIN** con hashing SHA-256
 - **Multilingua** — Italiano, English, Español
-- **Blocco PIN** per proteggere l'accesso
-- **Offline-first** — tutti i dati in localStorage, nessun backend
+- **PWA offline-first** — tutti i dati in IndexedDB, nessun backend
+- **Temi** — Spazio (dark), NASA (light), Mission
 
 ## Tech Stack
 
 | | Tecnologia |
 |---|---|
-| ⚛️ | React 19 + TypeScript 5.7 |
+| ⚛️ | React 19 + TypeScript 5.7 (strict) |
 | ⚡ | Vite 6 |
 | 🎨 | Tailwind CSS 4 |
 | 🧭 | React Router DOM 7 |
-| 💾 | localStorage |
+| 💾 | IndexedDB (+ fallback localStorage) |
+| 🔍 | Tesseract.js v7 (OCR) |
+| 📦 | Workbox PWA |
 
 ## Quick Start
 
@@ -43,9 +49,11 @@ npm run deploy
 
 ```
 src/
-├── components/     → Componenti riusabili (Layout, Mascot, Form, Chart...)
-├── pages/          → Pagine (Dashboard, Home, NotFound)
-└── shared/         → Logica condivisa (labels, storage, types, theme)
+├── app/            → Feature flags
+├── components/     → Componenti riusabili
+│   └── ui/         → Componenti UI primitivi (Button, Card, Modal…)
+├── pages/          → Pagine (Dashboard, Movimenti, Categories, Settings…)
+└── shared/         → Logica condivisa (labels, storage, types, theme…)
 ```
 
 Vedi [STRUCTURE.md](STRUCTURE.md) per la struttura completa.
