@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import type { TransactionType, Transaction } from '../shared/types'
-import { generateId, addTransaction, updateTransaction, loadCustomCategories, addCustomCategory } from '../shared/storage'
+import { generateId, addTransaction, updateTransaction, updateTransactionsByGroupId, loadCustomCategories, addCustomCategory } from '../shared/storage'
 import Mascot from './Mascot'
 import { FORM, normalizeCategoryKey, translateCategory, getCanonicalCategories } from '../shared/labels'
 import { getCategoryIcon } from '../shared/categoryIcons'
+import { useDialog } from '../shared/DialogContext'
 
 interface AddTransactionProps {
   onClose: () => void
@@ -15,6 +16,7 @@ interface AddTransactionProps {
 function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: AddTransactionProps) {
   const today = defaultDate ?? new Date().toISOString().slice(0, 10)
   const isEdit = !!editTransaction
+  const { showConfirm } = useDialog()
 
   // Blocca lo scroll del body mentre il modale è aperto
   useEffect(() => {
@@ -31,7 +33,11 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
     editTransaction ? normalizeCategoryKey(editTransaction.category, editTransaction.type) : ''
   )
   const [recurring, setRecurring] = useState(editTransaction?.recurring ?? false)
-  const [recurringMonths, setRecurringMonths] = useState(editTransaction?.recurringMonths ?? 1)
+  // String state per evitare il bug degli zeri iniziali (es. "02" → "2")
+  const [recurringMonthsStr, setRecurringMonthsStr] = useState(
+    String(editTransaction?.recurringMonths ?? 1)
+  )
+  const recurringMonths = Math.max(1, Math.min(60, parseInt(recurringMonthsStr, 10) || 1))
   const [showNewCat, setShowNewCat] = useState(false)
   const [newCatName, setNewCatName] = useState('')
   const [saveForFuture, setSaveForFuture] = useState(false)
@@ -42,13 +48,12 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
   const categories = [...builtinKeys, ...customCats[type]]
   const isValid = Number(amount) > 0 && category
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!isValid) return
 
     if (isEdit && editTransaction) {
-      updateTransaction({
-        ...editTransaction,
+      const patch = {
         type,
         description: description.trim() || category,
         amount: Number(amount),
@@ -56,7 +61,22 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
         category,
         recurring,
         recurringMonths: recurring ? recurringMonths : 0,
-      })
+      }
+      updateTransaction({ ...editTransaction, ...patch })
+      if (editTransaction.recurringGroupId) {
+        const applyAll = await showConfirm({
+          message: FORM.modificaRicorrenteScope,
+          confirmLabel: FORM.modificaTutte,
+          cancelLabel: FORM.modificaSoloQuesta,
+        })
+        if (applyAll) {
+          updateTransactionsByGroupId(editTransaction.recurringGroupId, {
+            type, description: description.trim() || category,
+            amount: Number(amount), category, recurring,
+            recurringMonths: recurring ? recurringMonths : 0,
+          })
+        }
+      }
       onSaved()
       onClose()
       return
@@ -73,14 +93,16 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
       recurringMonths: recurring ? recurringMonths : 0,
     }
 
-    // Se ricorrente, crea una copia per ogni mese futuro
+    // Se ricorrente, crea una copia per ogni mese futuro con groupId condiviso
     if (recurring && recurringMonths > 1) {
+      const groupId = generateId()
       for (let i = 0; i < recurringMonths; i++) {
         const d = new Date(date)
         d.setMonth(d.getMonth() + i)
         addTransaction({
           ...tx,
-          id: generateId() + i,
+          id: generateId(),
+          recurringGroupId: groupId,
           date: d.toISOString().slice(0, 10),
         })
       }
@@ -312,11 +334,16 @@ function AddTransactionForm({ onClose, onSaved, defaultDate, editTransaction }: 
             {recurring && (
               <div className="mt-2 flex items-center gap-2">
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
                   min={1}
                   max={60}
-                  value={recurringMonths}
-                  onChange={(e) => setRecurringMonths(Number(e.target.value))}
+                  value={recurringMonthsStr}
+                  onChange={(e) => {
+                    const v = e.target.value.replace(/[^0-9]/g, '')
+                    setRecurringMonthsStr(v === '' ? '' : String(Math.min(60, parseInt(v, 10) || 1)))
+                  }}
+                  onBlur={() => setRecurringMonthsStr(String(recurringMonths))}
                   className="w-20 rounded-lg px-3 py-2 text-sm text-center focus:outline-none focus:ring-2"
                   style={{ backgroundColor: 'var(--input-bg)', border: '1px solid var(--input-border)', color: 'var(--text-primary)' }}
                 />

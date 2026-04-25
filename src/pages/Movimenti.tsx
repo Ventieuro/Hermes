@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { loadTransactions, deleteTransaction, loadSettings } from '../shared/storage'
+import { loadTransactions, deleteTransaction, deleteTransactionsByGroupId, loadSettings } from '../shared/storage'
 import type { Transaction } from '../shared/types'
 import { MOVIMENTI, CATEGORIE, normalizeCategoryKey, translateCategory } from '../shared/labels'
 import { getCategoryIcon } from '../shared/categoryIcons'
@@ -110,10 +110,18 @@ function Movimenti() {
       confirmLabel: MOVIMENTI.eliminaLabel,
       cancelLabel: 'Annulla',
     })
-    if (ok) {
+    if (!ok) return
+    if (tx.recurringGroupId) {
+      const deleteAll = await showConfirm({
+        message: MOVIMENTI.eliminaRicorrenteScope,
+        confirmLabel: MOVIMENTI.eliminaTutte,
+        cancelLabel: MOVIMENTI.eliminaSoloQuesta,
+      })
+      deleteAll ? deleteTransactionsByGroupId(tx.recurringGroupId) : deleteTransaction(tx.id)
+    } else {
       deleteTransaction(tx.id)
-      refresh()
     }
+    refresh()
   }
 
   const chipStyle = (active: boolean) => ({

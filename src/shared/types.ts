@@ -11,6 +11,7 @@ export interface Transaction {
   date: string // ISO yyyy-mm-dd
   recurring: boolean
   recurringMonths: number // 0 = non ricorrente, N = quanti mesi
+  recurringGroupId?: string // ID condiviso fra le occorrenze della stessa serie
   category: string
 }
 

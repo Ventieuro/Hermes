@@ -75,6 +75,9 @@ const STRINGS = {
       (desc: string) => `Delete "${desc}"?`,
       (desc: string) => `¿Eliminar "${desc}"?`,
     ),
+    eliminaRicorrenteScope:       t('Eliminare solo questa o tutte le collegate?',      'Delete just this one or all linked?',    '¿Eliminar solo esta o todas?'),
+    eliminaTutte:                 t('Tutte le collegate',                               'All linked',                             'Todas'),
+    eliminaSoloQuesta:            t('Solo questa',                                      'Just this one',                          'Solo esta'),
     aggiungiMovimento:            t('Aggiungi movimento',                              'Add transaction',                        'Añadir movimiento'),
     graficoSpese:                 t('Dove vanno i soldi',                              'Where your money goes',                  'A dónde va el dinero'),
     nessunGrafico:                t('Nessuna uscita in questo periodo.',               'No expenses in this period.',            'No hay gastos en este período.'),
@@ -138,6 +141,9 @@ const STRINGS = {
     aggiungiCategoria:      t('Aggiungi',                             'Add',                            'Añadir'),
     salvaPerFuturo:         t('Salva per il futuro',                  'Save for future',                'Guardar para el futuro'),
     labelPerCosaOpzionale:  t('Per cosa? (opzionale)',                'What for? (optional)',            '¿Para qué? (opcional)'),
+    modificaRicorrenteScope: t('Aggiornare anche le altre occorrenze collegate?', 'Update the other linked occurrences too?', '¿Actualizar también las demás ocurrencias?'),
+    modificaTutte:           t('Sì, aggiorna tutte',                  'Yes, update all',                 'Sí, actualizar todas'),
+    modificaSoloQuesta:      t('No, solo questa',                     'No, just this one',               'No, solo esta'),
   },
 
   // ── Categorie ──────────────────────────────────────────
@@ -228,6 +234,9 @@ const STRINGS = {
       (desc: string) => `Delete "${desc}"?`,
       (desc: string) => `¿Eliminar "${desc}"?`,
     ),
+    eliminaRicorrenteScope: t('Eliminare solo questa o tutte le collegate?', 'Delete just this one or all linked?', '¿Eliminar solo esta o todas?'),
+    eliminaTutte:    t('Tutte le collegate',           'All linked',                  'Todas'),
+    eliminaSoloQuesta: t('Solo questa',                'Just this one',               'Solo esta'),
   },
 
   // ── Settings ───────────────────────────────────────────

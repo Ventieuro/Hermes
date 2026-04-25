@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Mascot from '../components/Mascot'
 import AddTransactionForm from '../components/AddTransactionForm'
-import { loadTransactions, getTransactionsInPeriod, deleteTransaction, loadSettings, saveSettings } from '../shared/storage'
+import { loadTransactions, getTransactionsInPeriod, deleteTransaction, deleteTransactionsByGroupId, loadSettings, saveSettings } from '../shared/storage'
 import type { Transaction } from '../shared/types'
 import ExpensePieChart from '../components/ExpensePieChart'
 import { DASHBOARD, MASCOTTE, translateCategory } from '../shared/labels'
@@ -90,10 +90,18 @@ function Dashboard() {
       confirmLabel: DASHBOARD.eliminaLabel,
       cancelLabel: '❌ Annulla',
     })
-    if (ok) {
+    if (!ok) return
+    if (tx.recurringGroupId) {
+      const deleteAll = await showConfirm({
+        message: DASHBOARD.eliminaRicorrenteScope,
+        confirmLabel: DASHBOARD.eliminaTutte,
+        cancelLabel: DASHBOARD.eliminaSoloQuesta,
+      })
+      deleteAll ? deleteTransactionsByGroupId(tx.recurringGroupId) : deleteTransaction(tx.id)
+    } else {
       deleteTransaction(tx.id)
-      refresh()
     }
+    refresh()
   }
 
   function handleCategoryClick(canonicalKey: string) {

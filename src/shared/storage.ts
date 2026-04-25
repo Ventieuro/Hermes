@@ -48,6 +48,7 @@ function isValidTransaction(data: unknown): data is Transaction {
     typeof t.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(t.date) &&
     typeof t.recurring === 'boolean' &&
     typeof t.recurringMonths === 'number' &&
+    (t.recurringGroupId === undefined || typeof t.recurringGroupId === 'string') &&
     typeof t.category === 'string'
   )
 }
@@ -101,6 +102,22 @@ export function addTransaction(tx: Transaction) {
 
 export function deleteTransaction(id: string) {
   const all = loadTransactions().filter((t) => t.id !== id)
+  saveTransactions(all)
+}
+
+export function deleteTransactionsByGroupId(groupId: string) {
+  const all = loadTransactions().filter((t) => t.recurringGroupId !== groupId)
+  saveTransactions(all)
+}
+
+export function updateTransactionsByGroupId(
+  groupId: string,
+  patch: Pick<Transaction, 'type' | 'description' | 'amount' | 'category' | 'recurring' | 'recurringMonths'>,
+) {
+  const all = loadTransactions().map((t) => {
+    if (t.recurringGroupId !== groupId) return t
+    return normalizeTransaction({ ...t, ...patch, updatedAt: new Date().toISOString() })
+  })
   saveTransactions(all)
 }
 
