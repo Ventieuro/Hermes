@@ -17,6 +17,7 @@ interface SpaceDonutChartProps {
   totalIncome: number
   totalExpenses: number
   size?: number
+  hideIncome?: boolean
   onCategoryClick?: (canonicalKey: string) => void
 }
 
@@ -192,6 +193,8 @@ function drawOrbits(
 }
 
 // ─── Center text ─────────────────────────────────────────
+const HIDDEN = '••••'
+
 function drawCenter(
   ctx: CanvasRenderingContext2D,
   cx: number,
@@ -199,6 +202,7 @@ function drawCenter(
   innerR: number,
   totalIncome: number,
   totalExpenses: number,
+  hideIncome = false,
 ) {
   // Dark bg circle
   const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, innerR)
@@ -225,7 +229,7 @@ function drawCenter(
 
   ctx.font = 'bold 14px system-ui, sans-serif'
   ctx.fillStyle = '#e8eaf6'
-  ctx.fillText(formatEuro(totalIncome), cx, cy - 8)
+  ctx.fillText(hideIncome ? HIDDEN : formatEuro(totalIncome), cx, cy - 8)
 
   ctx.font = 'bold 9px system-ui, sans-serif'
   ctx.fillStyle = '#ef4444'
@@ -237,7 +241,7 @@ function drawCenter(
 }
 
 // ─── Component ───────────────────────────────────────────
-function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, onCategoryClick }: SpaceDonutChartProps) {
+function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, hideIncome = false, onCategoryClick }: SpaceDonutChartProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const starsRef = useRef<Star[]>([])
   const animRef = useRef<number>(0)
@@ -313,7 +317,7 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, onCat
       })
 
       // Center text
-      drawCenter(c, cx, cy, innerR, totalIncome, totalExpenses)
+      drawCenter(c, cx, cy, innerR, totalIncome, totalExpenses, hideIncome)
 
       animRef.current = requestAnimationFrame(frame)
     }
@@ -321,7 +325,7 @@ function SpaceDonutChart({ slices, totalIncome, totalExpenses, size = 320, onCat
     animRef.current = requestAnimationFrame(frame)
 
     return () => cancelAnimationFrame(animRef.current)
-  }, [slices, totalIncome, totalExpenses, size])
+  }, [slices, totalIncome, totalExpenses, size, hideIncome])
 
   useEffect(() => {
     const cleanup = draw()

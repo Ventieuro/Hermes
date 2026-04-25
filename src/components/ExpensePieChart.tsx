@@ -4,6 +4,7 @@ import { DASHBOARD, normalizeCategoryKey, translateCategory } from '../shared/la
 import SolarSystemChart from './SolarSystemChart'
 import SpaceDonutChart from './SpaceDonutChart'
 import CometChart from './CometChart'
+import { useAmounts } from '../shared/AmountsContext'
 
 // ─── Colori per le categorie di uscita ───────────────────
 const EXPENSE_COLORS = [
@@ -81,6 +82,7 @@ function ExpensePieChart({ transactions, onCategoryClick, onViewChange }: Expens
   const totalIncome = transactions.filter((t) => t.type === 'entrata').reduce((s, t) => s + t.amount, 0)
   const totalExpenses = transactions.filter((t) => t.type === 'uscita').reduce((s, t) => s + t.amount, 0)
   const [view, setView] = useState<'pie' | 'solar' | 'comet'>('pie')
+  const { amountsVisible } = useAmounts()
 
   function changeView(v: 'pie' | 'solar' | 'comet') {
     setView(v)
@@ -149,7 +151,7 @@ function ExpensePieChart({ transactions, onCategoryClick, onViewChange }: Expens
       ) : view === 'solar' ? (
         <SolarSystemChart transactions={transactions} onCategoryClick={onCategoryClick} />
       ) : (
-        <SpaceDonutChart slices={slices} totalIncome={totalIncome} totalExpenses={totalExpenses} size={280} onCategoryClick={onCategoryClick} />
+        <SpaceDonutChart slices={slices} totalIncome={totalIncome} totalExpenses={totalExpenses} size={280} hideIncome={!amountsVisible} onCategoryClick={onCategoryClick} />
       )}
     </div>
   )

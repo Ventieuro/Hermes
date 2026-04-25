@@ -48,6 +48,8 @@ const STRINGS = {
     navMovimenti:   t('Movimenti',    'Transactions',  'Movimientos'),
     navSettings:    t('Impostazioni', 'Settings',      'Configuracion'),
     navAdd:         t('Aggiungi',     'Add',           'Agregar'),
+    nascondiImporti: t('Nascondi importi', 'Hide amounts', 'Ocultar importes'),
+    mostraImporti:   t('Mostra importi',   'Show amounts',  'Mostrar importes'),
   },
 
   // ── Temi ───────────────────────────────────────────────

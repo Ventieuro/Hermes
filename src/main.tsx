@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { HashRouter } from 'react-router-dom'
 import { ThemeProvider } from './shared/ThemeContext'
 import { DialogProvider } from './shared/DialogContext'
+import { AmountsProvider } from './shared/AmountsContext'
 import { initPersistentStorage, migrateCategoryKeys } from './shared/storage'
 import App from './App'
 import './index.css'
@@ -94,6 +95,27 @@ function showUpdateNotification(registration: ServiceWorkerRegistration) {
   document.body.appendChild(msg)
 }
 
+// ─── Fix iOS Safari black screen (Quick Note / viewport change) ───
+// Quando iOS "Note Rapide" o un overlay cambia il viewport e poi lo ripristina,
+// Safari a volte non ridisegna la pagina. Forziamo un repaint al ritorno.
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    document.body.style.display = 'none'
+    // Trigger reflow — accesso a offsetHeight è intenzionale
+    void document.body.offsetHeight
+    document.body.style.display = ''
+  }
+})
+
+// Stesso fix per il caso BFCache (tasto Indietro del browser)
+window.addEventListener('pageshow', (e) => {
+  if (e.persisted) {
+    document.body.style.display = 'none'
+    void document.body.offsetHeight
+    document.body.style.display = ''
+  }
+})
+
 async function bootstrap() {
   // Setup listener per aggiornamenti SW
   setupSWUpdateListener()
@@ -108,9 +130,11 @@ async function bootstrap() {
     <StrictMode>
       <HashRouter>
         <ThemeProvider>
-          <DialogProvider>
-            <App />
-          </DialogProvider>
+          <AmountsProvider>
+            <DialogProvider>
+              <App />
+            </DialogProvider>
+          </AmountsProvider>
         </ThemeProvider>
       </HashRouter>
     </StrictMode>,

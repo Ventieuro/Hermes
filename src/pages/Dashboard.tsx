@@ -8,6 +8,9 @@ import ExpensePieChart from '../components/ExpensePieChart'
 import { DASHBOARD, MASCOTTE, translateCategory } from '../shared/labels'
 import { getCategoryIcon } from '../shared/categoryIcons'
 import { useDialog } from '../shared/DialogContext'
+import { useAmounts } from '../shared/AmountsContext'
+
+const HIDDEN = '••••'
 
 function getPeriod(payDay: number, offset: number) {
   const today = new Date()
@@ -48,6 +51,7 @@ function getMascotMessage(saldo: number, count: number): { mood: 'happy' | 'sad'
 function Dashboard() {
   const settings = loadSettings()
   const { showConfirm } = useDialog()
+  const { amountsVisible } = useAmounts()
   const navigate = useNavigate()
   const [payDay, setPayDay] = useState(settings.payDay)
   const [monthOffset, setMonthOffset] = useState(0)
@@ -204,7 +208,7 @@ function Dashboard() {
           boxShadow: '0 0 14px color-mix(in srgb, var(--tx-income-border) 90%, transparent)',
         }}>
           <p style={{ margin: 0, fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--tx-income-label)' }}>{DASHBOARD.entrate}</p>
-          <p style={{ margin: '4px 0 0', fontSize: '14px', fontWeight: 800, color: 'var(--tx-income-text)', lineHeight: 1.2 }}>{formatEuro(entrate)}</p>
+          <p style={{ margin: '4px 0 0', fontSize: '14px', fontWeight: 800, color: 'var(--tx-income-text)', lineHeight: 1.2 }}>{amountsVisible ? formatEuro(entrate) : HIDDEN}</p>
         </div>
 
         <div style={{
@@ -266,7 +270,9 @@ function Dashboard() {
                   </p>
                 </div>
                 <span style={{ fontSize: '14px', fontWeight: 700, flexShrink: 0, color: tx.type === 'entrata' ? 'var(--tx-income-text)' : 'var(--tx-expense-text)' }}>
-                  {tx.type === 'entrata' ? '+' : '-'}{formatEuro(tx.amount)}
+                  {tx.type === 'entrata'
+                    ? (!amountsVisible ? HIDDEN : `+${formatEuro(tx.amount)}`)
+                    : `-${formatEuro(tx.amount)}`}
                 </span>
                 <button onClick={() => setEditingTx(tx)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '15px', padding: '4px', color: 'var(--text-muted)' }} aria-label="Modifica">✏️</button>
                 <button onClick={() => handleDelete(tx)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '15px', padding: '4px', color: 'var(--text-muted)' }} aria-label={DASHBOARD.eliminaLabel}>🗑</button>
