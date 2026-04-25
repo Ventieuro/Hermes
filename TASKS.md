@@ -31,6 +31,10 @@
 
 ## Completati
 
+### ✅ TASK-050 — Deploy fix Safari e aggiornamenti form (25/04/2026)
+- [x] Eseguito deploy dell'ultima versione su GitHub Pages
+- [x] Verificato esito della pubblicazione ✅
+
 ### ✅ TASK-049 — Fix Safari iPhone per submit vicino alla toolbar (25/04/2026)
 - [x] Aumentata safe-area e padding inferiore del modale aggiunta movimento
 - [x] Alzato visivamente il bottone submit dalla toolbar Safari

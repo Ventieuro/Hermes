@@ -6,6 +6,14 @@
 
 ## [25/04/2026] — Sessione 6
 
+### TASK-050: Deploy fix Safari e aggiornamenti form
+**File modificati:** `TASKS.md`, `CHANGELOG.md`
+
+- Eseguito `npm run deploy` dopo gli ultimi aggiornamenti al form e al fix Safari iPhone
+- Build di produzione completata correttamente durante il deploy
+- Pubblicazione GitHub Pages completata con output `Published`
+- **Deploy check:** ✅ Passato
+
 ### TASK-049: Fix Safari iPhone per submit troppo vicino alla toolbar
 **File modificati:** `src/components/AddTransactionForm.tsx`, `TASKS.md`, `CHANGELOG.md`
 
