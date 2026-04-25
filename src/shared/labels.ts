@@ -305,7 +305,7 @@ const STRINGS = {
       (used: string, max: string, pct: number) => `Usado ${used} de aproximadamente ${max} (${pct}%)`,
     ),
     spazioLocaleWarning: t('⚠️ Spazio locale quasi pieno: valuta backup/esportazione e pulizia dati vecchi.', '⚠️ Local storage is getting full: consider backup/export and cleaning old data.', '⚠️ El espacio local se está llenando: considera backup/exportación y limpieza de datos antiguos.'),
-    spazioLocaleNota:   t('Stima basata su limite tipico browser (~5 MB per dominio).', 'Estimate based on typical browser limit (~5 MB per origin).', 'Estimación basada en el límite típico del navegador (~5 MB por dominio).'),
+    spazioLocaleNota:   t('Stima basata su limite tipico IndexedDB (~50 MB per dominio).', 'Estimate based on typical IndexedDB limit (~50 MB per origin).', 'Estimación basada en el límite típico de IndexedDB (~50 MB por dominio).'),
   },
 
   // ── Notifiche ──────────────────────────────────────────

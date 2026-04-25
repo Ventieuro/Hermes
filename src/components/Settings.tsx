@@ -27,22 +27,8 @@ import { SETTINGS, NOTIFICHE, AUTO_BACKUP, getLocale, setLocale, type Locale } f
 import { FEATURES } from '../app/features'
 import { useDialog } from '../shared/DialogContext'
 
-const LOCAL_STORAGE_ESTIMATED_LIMIT_BYTES = 5 * 1024 * 1024
-
-function getLocalStorageUsedBytes(): number {
-  try {
-    let used = 0
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i)
-      if (!key) continue
-      const value = localStorage.getItem(key) ?? ''
-      used += key.length + value.length
-    }
-    return used
-  } catch {
-    return 0
-  }
-}
+// IndexedDB típico limit è 50MB, con possibilità di persistenza fino a 50GB
+const LOCAL_STORAGE_ESTIMATED_LIMIT_BYTES = 50 * 1024 * 1024
 
 function formatBytesAsMB(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
@@ -121,8 +107,59 @@ function SettingsContent({ onRequestClose: _onRequestClose }: SettingsContentPro
   const [driveStatus, setDriveStatus] = useState<'idle' | DriveSyncResult>('idle')
   const [isDriveSyncing, setIsDriveSyncing] = useState(false)
   const [autoBackup, setAutoBackup] = useState<AutoBackupSettings>(loadAutoBackupSettings)
-  const localStorageUsedBytes = getLocalStorageUsedBytes()
-  const localStoragePercent = Math.min(100, Math.round((localStorageUsedBytes / LOCAL_STORAGE_ESTIMATED_LIMIT_BYTES) * 100))
+  const [localStorageUsedBytes, setLocalStorageUsedBytes] = useState(0)
+
+  // Calculate storage usage on mount and periodically
+  useEffect(() => {
+    async function calculateStorageUsage() {
+      try {
+        // Try to open IndexedDB and calculate size
+        const db = await new Promise<IDBDatabase>((resolve, reject) => {
+          const req = indexedDB.open('hermes-db', 1)
+          req.onsuccess = () => resolve(req.result)
+          req.onerror = () => reject(req.error)
+        })
+
+        // Get all keys from store
+        const keys = await new Promise<IDBValidKey[]>((resolve, reject) => {
+          const tx = db.transaction('kv', 'readonly')
+          const req = tx.objectStore('kv').getAllKeys()
+          req.onsuccess = () => resolve(req.result as IDBValidKey[])
+          req.onerror = () => reject(req.error)
+        })
+
+        // Estimate total size
+        let total = 0
+        for (const key of keys) {
+          const val = await new Promise<string | null>((resolve, reject) => {
+            const tx = db.transaction('kv', 'readonly')
+            const req = tx.objectStore('kv').get(key)
+            req.onsuccess = () => resolve(req.result ? JSON.stringify(req.result) : null)
+            req.onerror = () => reject(req.error)
+          })
+          if (val) {
+            total += (typeof key === 'string' ? key.length : 10) + val.length
+          }
+        }
+        db.close()
+        setLocalStorageUsedBytes(total)
+      } catch {
+        // Fallback: calculate from localStorage
+        let total = 0
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i)
+          if (!key) continue
+          const value = localStorage.getItem(key) ?? ''
+          total += key.length + value.length
+        }
+        setLocalStorageUsedBytes(total)
+      }
+    }
+
+    calculateStorageUsage()
+  }, [])
+
+  const localStoragePercent = Math.min(100, parseFloat(((localStorageUsedBytes / LOCAL_STORAGE_ESTIMATED_LIMIT_BYTES) * 100).toFixed(1)))
   const isStorageHigh = localStoragePercent >= 70
 
   function toggleNotifications() {
