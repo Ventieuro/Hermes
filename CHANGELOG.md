@@ -6,6 +6,14 @@
 
 ## [25/04/2026] — Sessione 6
 
+### TASK-056: Test update frase grafico spese
+**File modificati:** `src/shared/labels.ts`, `TASKS.md`, `CHANGELOG.md`
+
+- Migliorata la label del grafico spese in Dashboard: da `Dove vanno i soldi` a `Come spendi i tuoi soldi`
+- Aggiornate anche le traduzioni EN/ES per mantenere coerenza copy
+- Preparato il rilascio per validare il comportamento di aggiornamento lato PWA
+- **Build check:** ✅ Passato
+
 ### TASK-055: Migrazione storage a IndexedDB con preservazione dati
 **File modificati:** `src/shared/storage.ts`, `src/main.tsx`, `TASKS.md`, `CHANGELOG.md`
 

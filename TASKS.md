@@ -34,6 +34,10 @@
 
 ## Completati
 
+### ✅ TASK-056 — Test update: migliorata frase grafico spese (25/04/2026)
+- [x] Aggiornata label dashboard da "Dove vanno i soldi" a una frase più naturale
+- [x] Build e deploy eseguiti per testare la propagazione update ✅
+
 ### ✅ TASK-055 — Migrazione storage a IndexedDB con preservazione dati (25/04/2026)
 - [x] Introdotto layer IndexedDB con fallback sicuro su localStorage
 - [x] Implementata migrazione automatica one-shot dei dati esistenti da localStorage

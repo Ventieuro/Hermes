@@ -1,5 +1,6 @@
 /**
  * Sistema i18n dell'app.
+ * ✅ Sistema di auto-update ATTIVO — test #2 del sistema di notifica
  *
  * ╔══════════════════════════════════════════════════════════════════╗
  * ║  AGGIUNGERE UNA NUOVA LABEL:                                   ║
@@ -79,7 +80,7 @@ const STRINGS = {
     eliminaTutte:                 t('Tutte le collegate',                               'All linked',                             'Todas'),
     eliminaSoloQuesta:            t('Solo questa',                                      'Just this one',                          'Solo esta'),
     aggiungiMovimento:            t('Aggiungi movimento',                              'Add transaction',                        'Añadir movimiento'),
-    graficoSpese:                 t('Dove vanno i soldi',                              'Where your money goes',                  'A dónde va el dinero'),
+    graficoSpese:                 t('Come spendi i tuoi soldi',                        'How you spend your money',               'Cómo gastas tu dinero'),
     nessunGrafico:                t('Nessuna uscita in questo periodo.',               'No expenses in this period.',            'No hay gastos en este período.'),
     risparmiLabel:                t('Risparmi',                                        'Savings',                                'Ahorros'),
     categorieLabel:               t('Categorie',                                       'Categories',                             'Categorías'),
