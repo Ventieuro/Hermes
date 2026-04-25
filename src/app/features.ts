@@ -20,11 +20,4 @@ export const FEATURES = {
    * Trasferimento dati PC -> telefono tramite QR chunked.
    */
   qrTransfer: false,
-
-  /**
-   * Sezione modalita dati (Locale/Drive) nei Settings.
-   * Tenere false per forzare sync 100% manuale via export/import file,
-   * lasciando comunque il codice Drive pronto per il futuro.
-   */
-  codeTransfer: false,
 } as const

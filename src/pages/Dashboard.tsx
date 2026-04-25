@@ -97,7 +97,11 @@ function Dashboard() {
         confirmLabel: DASHBOARD.eliminaTutte,
         cancelLabel: DASHBOARD.eliminaSoloQuesta,
       })
-      deleteAll ? deleteTransactionsByGroupId(tx.recurringGroupId) : deleteTransaction(tx.id)
+      if (deleteAll) {
+        deleteTransactionsByGroupId(tx.recurringGroupId)
+      } else {
+        deleteTransaction(tx.id)
+      }
     } else {
       deleteTransaction(tx.id)
     }

@@ -7,15 +7,6 @@ import {
   importAllData,
 } from '../shared/storage'
 import {
-  connectDrive,
-  loadSyncSettings,
-  pullDriveToLocal,
-  saveSyncSettings,
-  syncDriveNow,
-  setLocalMode,
-  type DriveSyncResult,
-} from '../shared/driveSync'
-import {
   loadAutoBackupSettings,
   saveAutoBackupSettings,
   pickFolder,
@@ -76,7 +67,7 @@ function Settings({ onClose }: SettingsProps) {
                 border: '1px solid var(--border)',
               }}
             >
-              <SettingsContent onRequestClose={() => setIsOpen(false)} />
+              <SettingsContent />
             </div>
           )}
         </div>
@@ -86,7 +77,7 @@ function Settings({ onClose }: SettingsProps) {
       {onClose && (
         <div className="w-full" ref={panelRef}>
           {/* Settings Content */}
-          <SettingsContent onRequestClose={onClose} />
+          <SettingsContent />
         </div>
       )}
     </>
@@ -94,18 +85,11 @@ function Settings({ onClose }: SettingsProps) {
 }
 
 // ─── Settings Content Component ───
-interface SettingsContentProps {
-  onRequestClose?: () => void
-}
-
-function SettingsContent({ onRequestClose: _onRequestClose }: SettingsContentProps) {
+function SettingsContent() {
   const { theme, setTheme } = useTheme()
   const { showConfirm, showPrompt } = useDialog()
   const [notifSettings, setNotifSettings] = useState(loadNotificationSettings)
   const [importStatus, setImportStatus] = useState<'idle' | 'ok' | 'invalid' | 'wrong-password'>('idle')
-  const [syncSettings, setSyncSettings] = useState(loadSyncSettings)
-  const [driveStatus, setDriveStatus] = useState<'idle' | DriveSyncResult>('idle')
-  const [isDriveSyncing, setIsDriveSyncing] = useState(false)
   const [autoBackup, setAutoBackup] = useState<AutoBackupSettings>(loadAutoBackupSettings)
   const [localStorageUsedBytes, setLocalStorageUsedBytes] = useState(0)
 
@@ -216,65 +200,6 @@ function SettingsContent({ onRequestClose: _onRequestClose }: SettingsContentPro
     }
     reader.readAsText(file)
     e.target.value = ''
-  }
-
-  async function handleConnectDrive() {
-    setIsDriveSyncing(true)
-    try {
-      const result = await connectDrive()
-      setDriveStatus(result)
-      setSyncSettings(loadSyncSettings())
-    } finally {
-      setIsDriveSyncing(false)
-      setTimeout(() => setDriveStatus('idle'), 3500)
-    }
-  }
-
-  function handleUseLocalMode() {
-    setLocalMode()
-    setSyncSettings(loadSyncSettings())
-    setDriveStatus('idle')
-  }
-
-  function handleUseDriveMode() {
-    const current = loadSyncSettings()
-    const next = { ...current, mode: 'drive' as const }
-    saveSyncSettings(next)
-    setSyncSettings(next)
-  }
-
-  async function handleSyncNow() {
-    const pwd = await showPrompt({
-      title: SETTINGS.passwordImporta,
-      message: SETTINGS.passwordImporta,
-      inputType: 'password',
-      confirmLabel: 'OK',
-    })
-    if (!pwd) return
-
-    setIsDriveSyncing(true)
-    try {
-      const pullResult = await pullDriveToLocal(pwd)
-      if (pullResult !== 'ok' && pullResult !== 'no-cloud-data') {
-        setDriveStatus(pullResult)
-        return
-      }
-
-      const pushResult = await syncDriveNow(pwd)
-      setDriveStatus(pushResult)
-      setSyncSettings(loadSyncSettings())
-    } finally {
-      setIsDriveSyncing(false)
-      setTimeout(() => setDriveStatus('idle'), 3500)
-    }
-  }
-
-  function getDriveStatusLabel() {
-    if (driveStatus === 'ok') return SETTINGS.driveStatoOk
-    if (driveStatus === 'no-cloud-data') return SETTINGS.driveStatoNoData
-    if (driveStatus === 'missing-client-id') return SETTINGS.driveStatoNoClient
-    if (driveStatus === 'needs-password' || driveStatus === 'wrong-password') return SETTINGS.passwordErrata
-    return SETTINGS.driveStatoAuth
   }
 
   function updateAutoBackup(patch: Partial<AutoBackupSettings>) {
@@ -523,7 +448,7 @@ function SettingsContent({ onRequestClose: _onRequestClose }: SettingsContentPro
             className="text-xs font-semibold uppercase tracking-wide mb-3"
             style={{ color: 'var(--text-muted)' }}
           >
-            {SETTINGS.sincronizzazione}
+            {SETTINGS.esportaDati}
           </h3>
           <div className="flex flex-col gap-2">
             <button
@@ -573,108 +498,7 @@ function SettingsContent({ onRequestClose: _onRequestClose }: SettingsContentPro
               />
             </label>
 
-            {FEATURES.codeTransfer && (
-              <div
-                className="rounded-xl p-3"
-                style={{
-                  backgroundColor: 'var(--bg-secondary)',
-                  border: '1px solid var(--border)',
-                }}
-              >
-                <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>
-                  {SETTINGS.modalitaDati}
-                </p>
 
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    onClick={handleUseLocalMode}
-                    className={`py-2 rounded-lg text-xs font-medium transition ${syncSettings.mode === 'local' ? 'ring-2' : ''}`}
-                    style={{
-                      backgroundColor: syncSettings.mode === 'local' ? 'var(--accent-light)' : 'var(--bg-card)',
-                      color: syncSettings.mode === 'local' ? 'var(--accent)' : 'var(--text-secondary)',
-                      border: '1px solid var(--border)',
-                      '--tw-ring-color': 'var(--accent)',
-                    } as React.CSSProperties}
-                  >
-                    {SETTINGS.soloLocale}
-                  </button>
-
-                  <button
-                    onClick={handleUseDriveMode}
-                    className={`py-2 rounded-lg text-xs font-medium transition ${syncSettings.mode === 'drive' ? 'ring-2' : ''}`}
-                    style={{
-                      backgroundColor: syncSettings.mode === 'drive' ? 'var(--accent-light)' : 'var(--bg-card)',
-                      color: syncSettings.mode === 'drive' ? 'var(--accent)' : 'var(--text-secondary)',
-                      border: '1px solid var(--border)',
-                      '--tw-ring-color': 'var(--accent)',
-                    } as React.CSSProperties}
-                  >
-                    {SETTINGS.syncDrive}
-                  </button>
-                </div>
-
-                {syncSettings.mode === 'drive' && (
-                  <div className="mt-2 space-y-2">
-                    {!syncSettings.driveConnected ? (
-                      <button
-                        onClick={handleConnectDrive}
-                        disabled={isDriveSyncing}
-                        className="w-full py-2 rounded-lg text-sm font-medium disabled:opacity-60"
-                        style={{
-                          backgroundColor: 'var(--bg-card)',
-                          color: 'var(--text-primary)',
-                          border: '1px solid var(--border)',
-                        }}
-                      >
-                        {SETTINGS.driveConnetti}
-                      </button>
-                    ) : (
-                      <>
-                        <button
-                          onClick={handleSyncNow}
-                          disabled={isDriveSyncing}
-                          className="w-full py-2 rounded-lg text-sm font-medium disabled:opacity-60"
-                          style={{
-                            backgroundColor: 'var(--bg-card)',
-                            color: 'var(--text-primary)',
-                            border: '1px solid var(--border)',
-                          }}
-                        >
-                          {SETTINGS.driveSyncOra}
-                        </button>
-
-                        <button
-                          onClick={handleUseLocalMode}
-                          className="w-full py-2 rounded-lg text-sm"
-                          style={{
-                            backgroundColor: 'var(--bg-card)',
-                            color: 'var(--text-secondary)',
-                            border: '1px solid var(--border)',
-                          }}
-                        >
-                          {SETTINGS.driveDisconnetti}
-                        </button>
-                      </>
-                    )}
-                  </div>
-                )}
-
-                {driveStatus !== 'idle' && (
-                  <p
-                    className="text-xs mt-2"
-                    style={{
-                      color: driveStatus === 'ok' || driveStatus === 'no-cloud-data' ? 'var(--accent)' : '#ef4444',
-                    }}
-                  >
-                    {getDriveStatusLabel()}
-                  </p>
-                )}
-
-                <p className="text-[11px] mt-2" style={{ color: 'var(--text-muted)' }}>
-                  {syncSettings.lastSyncedAt ? new Date(syncSettings.lastSyncedAt).toLocaleString() : '-'}
-                </p>
-              </div>
-            )}
           </div>
         </div>
       )}
