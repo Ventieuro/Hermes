@@ -31,6 +31,35 @@
 
 ## Completati
 
+### ✅ TASK-044 — OCR Scanner Scontrini (25/04/2026)
+- [x] Installato `tesseract.js` (v7, lato client)
+- [x] Creato `src/shared/receiptUtils.ts` con `processImage()` (canvas) e `parseReceiptText()`
+- [x] Creato `src/components/ReceiptScanner.tsx` con gestione stato `useReducer`
+- [x] Multi-foto: merge testo OCR di più immagini
+- [x] Parsing regex scontrini italiani: articoli + TOTALE
+- [x] Validazione somma articoli vs totale rilevato
+- [x] Tabella risultati editabile (modifica nome/prezzo, rimuovi riga)
+- [x] Selezione categoria uscita
+- [x] Due modalità import: "Crea N transazioni" o "Spesa unica"
+- [x] Pulsante "📷 Scontrino" in Dashboard (accanto header Movimenti)
+- [x] Label i18n in `labels.ts` sezione `ocr` (IT/EN/ES)
+- [x] **Enhancement**: Fotocamera live con barre guida verticali (`getUserMedia`)
+- [x] **Enhancement**: Risultati parziali in tempo reale durante OCR
+- [x] **Enhancement**: Barra progresso somma → totale (verde se approvato)
+- [x] **Enhancement**: Pulsante "Aggiungi riga manuale" nella fase risultati
+- [x] **Enhancement**: Nuovi label i18n (`guidaAllineamento`, `chiudiCamera`, `aggiungiManuale`, `approvatoScontrino`, `parzialeMentre`)
+- [x] Build check ✅
+
+### ✅ TASK-043b — Transazioni ricorrenti: cascade edit/delete + fix input (25/04/2026)
+- [x] Aggiunto campo `recurringGroupId` in `Transaction` (`types.ts`)
+- [x] Aggiunte funzioni `deleteTransactionsByGroupId` e `updateTransactionsByGroupId` (`storage.ts`)
+- [x] Le nuove serie ricorrenti ottengono un `recurringGroupId` condiviso
+- [x] Dialog "Solo questa / Tutte le collegate" su elimina (Dashboard + Movimenti)
+- [x] Dialog "Solo questa / Aggiorna tutte" su modifica (AddTransactionForm)
+- [x] Fix input "per quanti mesi": stato stringa + `type="text"` per eliminare zeri iniziali
+- [x] Label i18n aggiornate (sezioni `form`, `dashboard`, `movimenti`)
+- [x] Build check ✅
+
 ### ✅ TASK-041 — Backup automatico alla chiusura app (24/04/2026)
 - [x] Creato `src/shared/autoBackup.ts` con logica backup (download / cartella FSA)
 - [x] Aggiunta sezione "Backup automatico" in `Settings.tsx`

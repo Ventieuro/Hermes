@@ -314,6 +314,46 @@ const STRINGS = {
                       'Para instalar: toca ⬆️ y luego "Añadir a pantalla de inicio"'),
   },
 
+  // ── OCR Scontrino ──────────────────────────────────────
+  ocr: {
+    titolo:            t('📷 Scansiona Scontrino',                  '📷 Scan Receipt',                         '📷 Escanear Ticket'),
+    aggiungi:          t('Aggiungi foto',                            'Add photo',                               'Añadir foto'),
+    scatta:            t('Scatta foto',                              'Take photo',                              'Tomar foto'),
+    analizza:          t('🔍 Analizza scontrino',                    '🔍 Analyse receipt',                      '🔍 Analizar ticket'),
+    elaborazione:      t('Analisi in corso…',                        'Analysing…',                              'Analizando…'),
+    fotoLabel:         tf(
+      (c: number, t: number) => `Foto ${c} di ${t}`,
+      (c: number, t: number) => `Photo ${c} of ${t}`,
+      (c: number, t: number) => `Foto ${c} de ${t}`,
+    ),
+    nessuneFoto:       t('Aggiungi almeno una foto dello scontrino.', 'Add at least one receipt photo.',        'Añade al menos una foto del ticket.'),
+    totaleRilevato:    t('Totale rilevato',                          'Detected total',                          'Total detectado'),
+    totaleCalcolato:   t('Totale calcolato',                         'Calculated total',                        'Total calculado'),
+    nessunTotale:      t('Totale non rilevato',                        'Total not detected',                      'Total no detectado'),
+    sommaValida:       t('✅ Somma verificata',                       '✅ Sum verified',                          '✅ Suma verificada'),
+    sommaNonValida:    t('⚠️ Somma non corrispondente',              '⚠️ Sum mismatch',                          '⚠️ Suma no coincide'),
+    nessunArticolo:    t('Nessun articolo rilevato. Riprova con una foto più nitida.', 'No items detected. Try a clearer photo.', 'No se detectaron artículos. Intenta con una foto más nítida.'),
+    categoriaLabel:    t('Categoria spesa',                          'Expense category',                        'Categoría de gasto'),
+    creaArticoli:      tf(
+      (n: number) => `Crea ${n} transazion${n === 1 ? 'e' : 'i'}`,
+      (n: number) => `Create ${n} transaction${n === 1 ? '' : 's'}`,
+      (n: number) => `Crear ${n} transacción${n === 1 ? '' : 'es'}`,
+    ),
+    creaTotale:        t('Importa come spesa unica',                 'Import as single expense',                'Importar como gasto único'),
+    errore:            t('Errore durante l\'analisi. Riprova.',      'Analysis failed. Try again.',             'Error en el análisis. Inténtalo de nuevo.'),
+    rimuoviFoto:       t('Rimuovi',                                   'Remove',                                  'Quitar'),
+    colonnaArticolo:   t('Articolo',                                  'Item',                                    'Artículo'),
+    colonnaPrezzo:     t('Prezzo',                                    'Price',                                   'Precio'),
+    nuovaFoto:         t('+ Altra foto',                              '+ Add more',                              '+ Otra foto'),
+    tornaIndietro:     t('← Riprova',                                 '← Retry',                                 '← Reintentar'),
+    apriScanner:       t('📷 Scontrino',                              '📷 Receipt',                               '📷 Ticket'),
+    guidaAllineamento: t('Allinea lo scontrino tra le linee',         'Align the receipt between the lines',      'Alinea el ticket entre las líneas'),
+    chiudiCamera:      t('Annulla',                                   'Cancel',                                   'Cancelar'),
+    aggiungiManuale:   t('+ Aggiungi riga',                           '+ Add row',                                '+ Añadir fila'),
+    approvatoScontrino: t('✅ Scontrino approvato!',                   '✅ Receipt approved!',                      '✅ ¡Ticket aprobado!'),
+    parzialeMentre:    t('Articoli rilevati finora:',                 'Items detected so far:',                   'Artículos detectados hasta ahora:'),
+  },
+
   // ── Backup Automatico ─────────────────────────────────
   autoBackup: {
     titolo:          t('Backup automatico',                  'Auto backup',                   'Copia de seguridad automática'),
@@ -455,3 +495,4 @@ export const SETTINGS:  Labels['settings']  = localize(STRINGS.settings)
 export const NOTIFICHE: Labels['notifiche'] = localize(STRINGS.notifiche)
 export const PWA:       Labels['pwa']       = localize(STRINGS.pwa)
 export const AUTO_BACKUP: Labels['autoBackup'] = localize(STRINGS.autoBackup)
+export const OCR:         Labels['ocr']         = localize(STRINGS.ocr)

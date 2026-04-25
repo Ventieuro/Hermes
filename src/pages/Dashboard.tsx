@@ -2,10 +2,11 @@ import { useState, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Mascot from '../components/Mascot'
 import AddTransactionForm from '../components/AddTransactionForm'
+import ReceiptScanner from '../components/ReceiptScanner'
 import { loadTransactions, getTransactionsInPeriod, deleteTransaction, deleteTransactionsByGroupId, loadSettings, saveSettings } from '../shared/storage'
 import type { Transaction } from '../shared/types'
 import ExpensePieChart from '../components/ExpensePieChart'
-import { DASHBOARD, MASCOTTE, translateCategory } from '../shared/labels'
+import { DASHBOARD, MASCOTTE, translateCategory, OCR } from '../shared/labels'
 import { getCategoryIcon } from '../shared/categoryIcons'
 import { useDialog } from '../shared/DialogContext'
 
@@ -52,6 +53,7 @@ function Dashboard() {
   const [payDay, setPayDay] = useState(settings.payDay)
   const [monthOffset, setMonthOffset] = useState(0)
   const [showForm, setShowForm] = useState(false)
+  const [showScanner, setShowScanner] = useState(false)
   const [editingTx, setEditingTx] = useState<Transaction | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
   const [chartView, setChartView] = useState<'pie' | 'solar' | 'comet'>('pie')
@@ -227,9 +229,23 @@ function Dashboard() {
 
       {/* ── 5. Ultimi movimenti (solo uscite, nascosto in Annuale) ─── */}
       {chartView !== 'comet' && <div style={{ padding: '16px 16px 0' }}>
-        <h2 style={{ margin: '0 0 10px', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)' }}>
-          {DASHBOARD.movimenti}
-        </h2>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+          <h2 style={{ margin: 0, fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--text-muted)' }}>
+            {DASHBOARD.movimenti}
+          </h2>
+          <button
+            onClick={() => setShowScanner(true)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '5px',
+              padding: '5px 10px', borderRadius: '20px', cursor: 'pointer',
+              fontSize: '11px', fontWeight: 700,
+              background: 'var(--bg-secondary)', border: '1px solid var(--border)',
+              color: 'var(--text-secondary)',
+            }}
+          >
+            {OCR.apriScanner}
+          </button>
+        </div>
 
         {sortedTx.length === 0 ? (
           <div style={{ padding: '32px 16px', textAlign: 'center', borderRadius: '18px', background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
@@ -276,6 +292,9 @@ function Dashboard() {
       )}
       {editingTx && (
         <AddTransactionForm onClose={() => setEditingTx(null)} onSaved={refresh} editTransaction={editingTx} />
+      )}
+      {showScanner && (
+        <ReceiptScanner onClose={() => setShowScanner(false)} onDone={refresh} />
       )}
     </div>
   )

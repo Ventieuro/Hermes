@@ -4,6 +4,43 @@
 
 ---
 
+## [25/04/2026] — Sessione 6
+
+### TASK-044b: Enhancement OCR Scanner — Fotocamera live + risultati in tempo reale
+**File modificati:** `src/components/ReceiptScanner.tsx`, `src/shared/labels.ts`
+
+- **Fotocamera live con barre guida**: nuova fase `camera` che usa `getUserMedia` con overlay CSS (barre verticali bianche al 14%/86%, zone laterali scurite al 52%, angolini d'inquadratura). Scatto con canvas → `File`, poi torna alla fase `input`. Fallback automatico al file picker se `getUserMedia` non disponibile.
+- **Risultati parziali in tempo reale**: durante la fase `elaborazione`, dopo ogni immagine OCR viene eseguito `parseReceiptText()` e la tabella si aggiorna dal vivo con gli articoli rilevati finora.
+- **Barra progresso verso totale**: nella fase `risultati`, barra da 0% al 100% che diventa verde quando `somma ≈ totale`; badge "✅ Scontrino approvato!" al raggiungimento.
+- **Aggiungi riga manuale**: pulsante tratteggiato sotto la tabella che aggiunge una riga vuota editabile (azione `AGGIUNGI_ARTICOLO_MANUALE`).
+- **Due pulsanti camera/upload**: nella fase `input`, layout a griglia con pulsante fotocamera (accent) e pulsante carica file (secondary).
+- 5 nuovi label i18n: `guidaAllineamento`, `chiudiCamera`, `aggiungiManuale`, `approvatoScontrino`, `parzialeMentre`
+- **Build check:** ✅ Passato — **Deploy:** ✅ Pubblicato
+
+### TASK-044: OCR Scanner Scontrini
+**File creati:** `src/shared/receiptUtils.ts`, `src/components/ReceiptScanner.tsx`
+**File modificati:** `src/shared/labels.ts`, `src/pages/Dashboard.tsx`
+
+- Installato `tesseract.js` v7 per OCR lato client (nessuna API esterna)
+- `receiptUtils.ts`: `processImage()` — pre-processing canvas (scala di grigi + contrasto ×1.6, resize max 2400px); `parseReceiptText()` — parsing regex scontrini italiani (prezzi con virgola, riga TOTALE, filtro righe irrilevanti)
+- `ReceiptScanner.tsx`: modale completo con `useReducer`, supporto multi-foto con merge OCR, barra di progresso, tabella risultati editabile (modifica nome/prezzo, elimina righe), validazione somma vs totale, selettore categoria, due pulsanti: "Crea N transazioni" e "Importa come spesa unica"
+- Accesso tramite pulsante "📷 Scontrino" nell'header della sezione Movimenti in Dashboard
+- Sezione `ocr` aggiunta a `labels.ts` con 18 label (IT/EN/ES)
+- **Build check:** ✅ Passato
+
+### TASK-043b: Cascade edit/delete transazioni ricorrenti + fix input mesi
+**File modificati:** `src/shared/types.ts`, `src/shared/storage.ts`, `src/shared/labels.ts`, `src/components/AddTransactionForm.tsx`, `src/pages/Dashboard.tsx`, `src/pages/Movimenti.tsx`
+
+- `types.ts`: aggiunto campo opzionale `recurringGroupId` a `Transaction`
+- `storage.ts`: aggiunte `deleteTransactionsByGroupId()` e `updateTransactionsByGroupId()`
+- Le nuove serie ricorrenti ricevono un `recurringGroupId` condiviso (stesso ID per tutte le copie)
+- Elimina ricorrente: dialog "Solo questa / Tutte le collegate" in Dashboard e Movimenti
+- Modifica ricorrente: dialog "No, solo questa / Sì, aggiorna tutte" in AddTransactionForm
+- Fix leading-zero bug: campo "per quanti mesi" cambiato da `type="number"` a `type="text" inputMode="numeric"` con stato stringa
+- **Build check:** ✅ Passato
+
+---
+
 ## [24/04/2026] — Sessione 5
 
 ### TASK-040: Filtro date Dal/Al in Movimenti
