@@ -114,7 +114,7 @@ function ExpensePieChart({ transactions, onCategoryClick, onViewChange }: Expens
                 color: view === 'pie' ? '#fff' : 'var(--text-muted)',
               }}
             >
-              � {DASHBOARD.vistaTorta}
+              🔭 {DASHBOARD.vistaTorta}
             </button>
             <button
               onClick={() => changeView('solar')}
