@@ -31,6 +31,26 @@
 
 ## Completati
 
+### ✅ TASK-048 — Deploy aggiornamento UI form (25/04/2026)
+- [x] Eseguito deploy dell'ultima versione su GitHub Pages
+- [x] Verificato esito publish ✅
+
+### ✅ TASK-047 — Restyling scelta scontrino/manuale con segmented control (25/04/2026)
+- [x] Sostituiti i due pulsanti iniziali con un segmented control piu chiaro
+- [x] Aggiunto un pannello contestuale per la modalita scontrino con CTA dedicata
+- [x] Build check e verifica runtime dello scanner dal nuovo layout ✅
+
+### ✅ TASK-046 — Riposiziona scelta scontrino/manuale in cima al form (25/04/2026)
+- [x] Spostata la scelta "Inserisci tramite scontrino / Inserisci manualmente" in alto nella modale
+- [x] Lasciata sotto l'intera sezione normale con toggle Entrata/Uscita e resto del form
+- [x] Build check e verifica runtime del trigger scanner ✅
+
+### ✅ TASK-045 — Sposta inserimento scontrino dentro Nuova uscita (25/04/2026)
+- [x] Rimosso il pulsante fotocamera dall'header Movimenti in Dashboard
+- [x] Aggiunta nel form "Nuova uscita" la sezione con due opzioni: "Inserisci tramite scontrino" e "Inserisci manualmente"
+- [x] Collegato il pulsante scontrino all'apertura dello scanner OCR senza alterare il flusso di import
+- [x] Build check ✅
+
 ### ✅ TASK-044 — OCR Scanner Scontrini (25/04/2026)
 - [x] Installato `tesseract.js` (v7, lato client)
 - [x] Creato `src/shared/receiptUtils.ts` con `processImage()` (canvas) e `parseReceiptText()`
