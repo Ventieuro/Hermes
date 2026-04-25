@@ -6,6 +6,14 @@
 
 ## [25/04/2026] — Sessione 6
 
+### TASK-051: Deploy novita correnti
+**File modificati:** `TASKS.md`, `CHANGELOG.md`
+
+- Eseguito deploy finale della versione corrente con script di progetto
+- Build di produzione completata correttamente durante la pipeline di deploy
+- Pubblicazione GitHub Pages completata con output `Published`
+- **Deploy check:** ✅ Passato
+
 ### TASK-050: Deploy fix Safari e aggiornamenti form
 **File modificati:** `TASKS.md`, `CHANGELOG.md`
 

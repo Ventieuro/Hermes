@@ -31,6 +31,10 @@
 
 ## Completati
 
+### ✅ TASK-051 — Deploy novita correnti (25/04/2026)
+- [x] Eseguito deploy della versione aggiornata su GitHub Pages
+- [x] Verificato esito pubblicazione ✅
+
 ### ✅ TASK-050 — Deploy fix Safari e aggiornamenti form (25/04/2026)
 - [x] Eseguito deploy dell'ultima versione su GitHub Pages
 - [x] Verificato esito della pubblicazione ✅
