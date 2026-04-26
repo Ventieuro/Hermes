@@ -306,6 +306,7 @@ const STRINGS = {
     ),
     spazioLocaleWarning: t('⚠️ Spazio locale quasi pieno: valuta backup/esportazione e pulizia dati vecchi.', '⚠️ Local storage is getting full: consider backup/export and cleaning old data.', '⚠️ El espacio local se está llenando: considera backup/exportación y limpieza de datos antiguos.'),
     spazioLocaleNota:   t('Stima basata su limite tipico IndexedDB (~50 MB per dominio).', 'Estimate based on typical IndexedDB limit (~50 MB per origin).', 'Estimación basada en el límite típico de IndexedDB (~50 MB por dominio).'),
+    versione:           t('Versione', 'Version', 'Versión'),
   },
 
   // ── Notifiche ──────────────────────────────────────────
@@ -366,6 +367,12 @@ const STRINGS = {
     aggiungiManuale:   t('+ Aggiungi riga',                           '+ Add row',                                '+ Añadir fila'),
     approvatoScontrino: t('✅ Scontrino approvato!',                   '✅ Receipt approved!',                      '✅ ¡Ticket aprobado!'),
     parzialeMentre:    t('Articoli rilevati finora:',                 'Items detected so far:',                   'Artículos detectados hasta ahora:'),
+    prezziDaVerificare: tf(
+      (n: number) => `⚠️ ${n} prezzo${n === 1 ? '' : 'i'} da verificare`,
+      (n: number) => `⚠️ ${n} price${n === 1 ? '' : 's'} to review`,
+      (n: number) => `⚠️ ${n} precio${n === 1 ? '' : 's'} por revisar`,
+    ),
+    prezzoIncerto:     t('Prezzo incerto — verifica e correggi se necessario', 'Uncertain price — check and correct if needed', 'Precio incierto — verifica y corrige si es necesario'),
   },
 
   // ── Backup Automatico ─────────────────────────────────

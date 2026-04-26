@@ -18,6 +18,10 @@ export interface ReceiptItem {
   qty?: number
   /** Prezzo unitario, se la riga precedente era "N × prezzo_unitario" */
   unitPrice?: number
+  /** Confidenza del prezzo: 'uncertain' = verificare manualmente */
+  confidence?: 'ok' | 'uncertain'
+  /** Motivo dell'incertezza sul prezzo */
+  uncertainReason?: 'iva8' | 'linea_rumorosa' | 'moltiplicatore_errato'
 }
 
 export interface ParsedReceipt {
@@ -120,7 +124,7 @@ export function parseReceiptText(rawText: string): ParsedReceipt {
 
   // Prezzo italiano: 1–4 cifre, virgola/punto, 2-3 decimali,
   // eventuale lettera IVA (A-D, inclusa D=22%), simbolo €, o OCR-misread (8 al posto di B)
-  const priceRegex = /(\d{1,4}[,.]\d{2,3})\s*[ABCDabcd8€¢]?\s*$/
+  const priceRegex = /(\d{1,4}[,.]\d{2,3})\s*([ABCDabcd8€¢])?\s*$/
 
   // Parole chiave che identificano la riga TOTALE
   const totalKw = /\b(?:TOTALE?|TOT\.?|IMPORTO|TOTALE\s+EURO)\b/i
@@ -184,6 +188,7 @@ export function parseReceiptText(rawText: string): ParsedReceipt {
     if (!match) { pendingQty = undefined; pendingUnitPrice = undefined; continue }
 
     const priceStr = match[1].replace(',', '.')
+    const ivaChar = match[2] ?? ''
     // Prezzi al peso hanno 3 decimali (es. 3.780 = 3,78€): arrotonda a 2
     const price = parseFloat(parseFloat(priceStr).toFixed(2))
     if (isNaN(price) || price <= 0 || price > 9999) { pendingQty = undefined; pendingUnitPrice = undefined; continue }
@@ -208,10 +213,32 @@ export function parseReceiptText(rawText: string): ParsedReceipt {
 
     if (name.length < 2) { pendingQty = undefined; pendingUnitPrice = undefined; continue }
 
-    const item: ReceiptItem = { id: crypto.randomUUID(), name, price }
+    // ── Valutazione confidenza prezzo ────────────────────
+    // '8' dopo il prezzo = probabile OCR misread di 'B' → zona cifre inaffidabile
+    const reasonIva = ivaChar === '8'
+    // '!' nel nome = suffisso IVA finito nel campo descrizione → riga OCR rumorosa
+    const reasonNoise = name.endsWith('!') || name.startsWith('!')
+    const itemUncertain = reasonIva || reasonNoise
+    const itemReason = reasonIva ? 'iva8' as const
+                     : reasonNoise ? 'linea_rumorosa' as const
+                     : undefined
+
+    const item: ReceiptItem = {
+      id: crypto.randomUUID(),
+      name,
+      price,
+      confidence: itemUncertain ? 'uncertain' : 'ok',
+      ...(itemReason ? { uncertainReason: itemReason } : {}),
+    }
     if (pendingQty !== undefined && pendingUnitPrice !== undefined) {
       item.qty = pendingQty
       item.unitPrice = pendingUnitPrice
+      // Verifica moltiplicazione: se non torna il parser ha letto male qty o prezzo
+      const expectedTotal = parseFloat((pendingQty * pendingUnitPrice).toFixed(2))
+      if (Math.abs(expectedTotal - price) > 0.02) {
+        item.confidence = 'uncertain'
+        item.uncertainReason = item.uncertainReason ?? 'moltiplicatore_errato'
+      }
     }
     items.push(item)
     pendingQty = undefined

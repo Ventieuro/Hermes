@@ -709,6 +709,13 @@ function SettingsContent() {
         </div>
       </div>
 
+      {/* ── Versione app ──────────────────────────────── */}
+      <div className="px-4 py-5 text-center">
+        <p className="text-[11px]" style={{ color: 'var(--text-muted)' }}>
+          {SETTINGS.versione} {__APP_VERSION__}
+        </p>
+      </div>
+
     </>
   )
 }

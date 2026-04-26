@@ -111,7 +111,8 @@ function scanReducer(state: ScanState, action: ScanAction): ScanState {
       return {
         ...state,
         articoli: state.articoli.map((a) =>
-          a.id === action.id ? { ...a, price: isNaN(price) ? a.price : price } : a,
+          // L'utente ha verificato il prezzo → azzera l'incertezza
+          a.id === action.id ? { ...a, price: isNaN(price) ? a.price : price, confidence: 'ok' } : a,
         ),
       }
     }
@@ -168,6 +169,9 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
   )
   const progressoPerc = state.totale ? Math.min(100, Math.round((sommaArticoli / state.totale) * 100)) : 0
   const approvatoScontrino = state.totale !== null && Math.abs(sommaArticoli - state.totale) <= 0.02
+
+  // Articoli con prezzo incerto (segnalati dal parser OCR)
+  const uncertainCount = state.articoli.filter((a) => a.confidence === 'uncertain').length
 
   // ── Setup camera quando la fase diventa 'camera' ──────
   useEffect(() => {
@@ -420,13 +424,23 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
               {/* Griglia anteprime foto */}
               {state.foto.length > 0 && (
                 <div className="grid grid-cols-3 gap-2">
-                  {state.foto.map((file, idx) => (
+                  {state.foto.map((file, idx) => {
+                    const objectUrl = URL.createObjectURL(file)
+                    return (
                     <div key={idx} style={{ position: 'relative', borderRadius: '10px', overflow: 'hidden', border: '1px solid var(--border)' }}>
                       <img
-                        src={URL.createObjectURL(file)}
+                        src={objectUrl}
                         alt={`Foto ${idx + 1}`}
-                        style={{ width: '100%', height: '90px', objectFit: 'cover', display: 'block' }}
+                        onClick={() => {
+                          const a = document.createElement('a')
+                          a.href = URL.createObjectURL(file)
+                          a.target = '_blank'
+                          a.rel = 'noopener'
+                          a.click()
+                        }}
+                        style={{ width: '100%', height: '90px', objectFit: 'cover', display: 'block', cursor: 'zoom-in' }}
                       />
+                      {/* Rimuovi */}
                       <button
                         onClick={() => dispatch({ type: 'RIMUOVI_FOTO', index: idx })}
                         style={{
@@ -438,8 +452,23 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
                         }}
                         aria-label={OCR.rimuoviFoto}
                       >✕</button>
+                      {/* Scarica */}
+                      <a
+                        href={objectUrl}
+                        download={file.name || `scontrino-${idx + 1}.jpg`}
+                        style={{
+                          position: 'absolute', bottom: '4px', right: '4px',
+                          width: '22px', height: '22px', borderRadius: '50%',
+                          background: 'rgba(0,0,0,0.6)', color: '#fff',
+                          fontSize: '11px', textDecoration: 'none',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        }}
+                        aria-label="Scarica foto"
+                        title="Scarica foto"
+                      >⬇</a>
                     </div>
-                  ))}
+                    )
+                  })}
                 </div>
               )}
 
@@ -542,6 +571,36 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
           {/* ── FASE: RISULTATI ──────────────────────── */}
           {state.fase === 'risultati' && (
             <>
+              {/* Striscia foto originali */}
+              {state.foto.length > 0 && (
+                <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
+                  {state.foto.map((file, idx) => {
+                    const objectUrl = URL.createObjectURL(file)
+                    return (
+                      <div key={idx} style={{ position: 'relative', flexShrink: 0, borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border)', width: '72px', height: '72px' }}>
+                        <img
+                          src={objectUrl}
+                          alt={`Foto ${idx + 1}`}
+                          onClick={() => { const a = document.createElement('a'); a.href = URL.createObjectURL(file); a.target = '_blank'; a.rel = 'noopener'; a.click() }}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', cursor: 'zoom-in' }}
+                        />
+                        <a
+                          href={objectUrl}
+                          download={file.name || `scontrino-${idx + 1}.jpg`}
+                          style={{
+                            position: 'absolute', bottom: '3px', right: '3px',
+                            width: '20px', height: '20px', borderRadius: '50%',
+                            background: 'rgba(0,0,0,0.6)', color: '#fff',
+                            fontSize: '10px', textDecoration: 'none',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          }}
+                          title="Scarica foto"
+                        >⬇</a>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
               {/* Barra progresso somma → totale */}
               {state.totale !== null ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
@@ -560,10 +619,13 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
                 <p className="text-xs text-center" style={{ color: 'var(--text-muted)' }}>{OCR.nessunTotale}</p>
               )}
 
-              {/* Nessun articolo */}
-              {state.articoli.length === 0 && (
-                <p className="text-sm text-center py-4" style={{ color: 'var(--text-muted)' }}>
-                  {OCR.nessunArticolo}
+              {/* Banner prezzi da verificare */}
+              {uncertainCount > 0 && (
+                <p
+                  className="text-xs text-center font-semibold py-1 rounded-lg"
+                  style={{ color: '#d97706', background: 'rgba(251,191,36,0.12)', border: '1px solid rgba(251,191,36,0.3)' }}
+                >
+                  {OCR.prezziDaVerificare(uncertainCount)}
                 </p>
               )}
 
@@ -622,16 +684,17 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
                         key={item.id}
                         defaultValue={item.price.toFixed(2).replace('.', ',')}
                         onBlur={(e) => dispatch({ type: 'MODIFICA_PREZZO', id: item.id, valore: e.target.value })}
+                        title={item.confidence === 'uncertain' ? OCR.prezzoIncerto : undefined}
                         style={{
                           fontSize: '13px',
                           fontWeight: 600,
                           textAlign: 'right',
                           background: 'var(--input-bg)',
-                          border: '1px solid var(--input-border)',
+                          border: item.confidence === 'uncertain' ? '1px solid #f59e0b' : '1px solid var(--input-border)',
                           borderRadius: '8px',
                           padding: '4px 6px',
                           outline: 'none',
-                          color: 'var(--text-primary)',
+                          color: item.confidence === 'uncertain' ? '#d97706' : 'var(--text-primary)',
                           width: '100%',
                         }}
                       />
