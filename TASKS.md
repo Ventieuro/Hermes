@@ -28,11 +28,48 @@
 - [ ] Definire soglia operativa (es. warning 70-80%) e flusso guidato utente
 - [ ] Considerare eventuale migrazione a IndexedDB se la crescita dati continua
 
+## Completati
+
+### ✅ TASK-065 — Deploy fix timezone + deduplicazione import MoneyPlus
+
+### ✅ TASK-064 — Fix timezone getTransactionsInPeriod + deduplicazione import MoneyPlus
+- Fix bug timezone: `getTransactionsInPeriod` confrontava timestamp UTC vs locale → transazioni nel giorno di fine periodo escluse
+- `storage.ts`: rimpiazzato confronto `getTime()` con confronto stringhe `YYYY-MM-DD` locale
+- `MoneyPlusImporter.tsx`: aggiunta deduplicazione — confronto `data|importo|tipo` con transazioni esistenti
+  - Transazioni già importate pre-deselezionate con badge giallo "già importata"
+  - Header mostra contatore duplicati (es. `3 trovate · 3 già importate`)
+
 ## In Corso
 
 <!-- Nessun task in corso -->
 
 ## Completati
+
+### ✅ TASK-063 — Convertitore backup MoneyPlus → Hermes (26/04/2026)
+- [x] Installate dipendenze `fflate` e `sql.js` per unzip + SQLite WASM
+- [x] Copiato `sql-wasm.wasm` in `/public/`
+- [x] Creato `src/components/MoneyPlusImporter.tsx` con auto-detection schema DB
+- [x] Aggiunto pulsante "📦 Importa da MoneyPlus" in Settings (sezione Esporta dati)
+- [x] Build e deploy ✅
+
+### ✅ TASK-062 — Fix: chiusura scanner scontrino solo con ✕ (26/04/2026)
+- [x] Rimosso handler `onClick` backdrop in `ReceiptScanner.tsx`
+- [x] Aggiornato handler `AddTransactionForm.tsx` per non chiudere se scanner aperto
+- [x] Build e deploy ✅
+
+### ✅ TASK-061 — Fix iOS Safari black screen (Quick Note overlay) (25/04/2026)
+- [x] Aggiunto listener `visibilitychange` in `main.tsx` per forzare repaint
+- [x] Aggiunto listener `pageshow` (BFCache) per coprire tasto Indietro Safari
+- [x] Build e deploy ✅
+
+### ✅ TASK-060 — Entrate nascoste di default (25/04/2026)
+- [x] Modificato `AmountsContext.tsx`: default `false` invece di `true`
+- [x] Build e deploy ✅
+
+### ✅ TASK-059 — Nascondi entrate nel grafico a torta (25/04/2026)
+- [x] Aggiunto prop `hideIncome` a `SpaceDonutChart.tsx`
+- [x] `ExpensePieChart.tsx` legge `useAmounts` e passa `hideIncome={!amountsVisible}`
+- [x] Build e deploy ✅
 
 ### ✅ TASK-056 — Test update: migliorata frase grafico spese (25/04/2026)
 - [x] Aggiornata label dashboard da "Dove vanno i soldi" a una frase più naturale

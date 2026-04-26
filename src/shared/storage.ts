@@ -263,17 +263,21 @@ export function updateTransaction(updated: Transaction) {
   saveTransactions(all)
 }
 
+function toLocalIso(d: Date): string {
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+
 export function getTransactionsInPeriod(
   transactions: Transaction[],
   start: Date,
   end: Date,
 ): Transaction[] {
-  const s = start.getTime()
-  const e = end.getTime()
-  return transactions.filter((t) => {
-    const d = new Date(t.date).getTime()
-    return d >= s && d <= e
-  })
+  const s = toLocalIso(start)
+  const e = toLocalIso(end)
+  return transactions.filter((t) => t.date >= s && t.date <= e)
 }
 
 export function loadSettings(): AppSettings {

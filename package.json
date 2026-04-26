@@ -13,9 +13,12 @@
     "deploy": "npm run build && gh-pages -d dist"
   },
   "dependencies": {
+    "@types/sql.js": "^1.4.11",
+    "fflate": "^0.8.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.14.1",
+    "sql.js": "^1.14.1",
     "tesseract.js": "^7.0.0"
   },
   "devDependencies": {

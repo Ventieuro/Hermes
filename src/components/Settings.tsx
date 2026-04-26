@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useTheme } from '../shared/ThemeContext'
+import MoneyPlusImporter from './MoneyPlusImporter'
 import {
   loadNotificationSettings,
   saveNotificationSettings,
@@ -100,6 +101,7 @@ function SettingsContent() {
   const [biometricSupported, setBiometricSupported] = useState(false)
   const [biometricEnabled, setBiometricEnabled] = useState(isBiometricCredentialSaved)
   const [biometricError, setBiometricError] = useState('')
+  const [showMoneyPlusImporter, setShowMoneyPlusImporter] = useState(false)
   const pinIsSet = !!loadPin()
 
   // Calculate storage usage on mount and periodically
@@ -568,9 +570,25 @@ function SettingsContent() {
               />
             </label>
 
+            {/* ─── Importa da MoneyPlus ─── */}
+            <button
+              onClick={() => setShowMoneyPlusImporter(true)}
+              className="w-full py-2 rounded-xl text-sm font-medium transition active:scale-95"
+              style={{
+                backgroundColor: 'var(--bg-secondary)',
+                color: 'var(--text-primary)',
+                border: '1px solid var(--border)',
+              }}
+            >
+              📦 Importa da MoneyPlus
+            </button>
 
           </div>
         </div>
+      )}
+
+      {showMoneyPlusImporter && (
+        <MoneyPlusImporter onDone={() => setShowMoneyPlusImporter(false)} />
       )}
 
       {/* ─── Backup Section ─── */}

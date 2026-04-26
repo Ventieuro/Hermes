@@ -4,6 +4,63 @@
 
 ---
 
+## [26/04/2026] — Sessione 8
+
+### TASK-064: Fix timezone + deduplicazione import MoneyPlus
+**File modificati:** `src/shared/storage.ts`, `src/components/MoneyPlusImporter.tsx`
+
+- **Fix bug timezone:** `getTransactionsInPeriod` usava `getTime()` confrontando ms UTC vs Date locale (UTC+2) → le transazioni nel giorno di fine periodo venivano escluse. Soluzione: confronto stringhe `YYYY-MM-DD` via helper `toLocalIso()`, immune da fuso orario
+- **Deduplicazione import MoneyPlus:** al caricamento di un `.MoneyPlusPack` vengono confrontate le transazioni già presenti in Hermes tramite chiave `data|importo|tipo`. Le transazioni già importate sono pre-deselezionate con badge giallo "già importata" e il contatore nell'header mostra quante sono duplicate
+- **Build check:** ✅ Passato
+- **Deploy:** ✅ GitHub Pages
+
+---
+
+## [26/04/2026] — Sessione 7
+
+### TASK-063: Convertitore backup MoneyPlus → Hermes
+**File modificati:** `src/components/MoneyPlusImporter.tsx` (nuovo), `src/components/Settings.tsx`, `public/sql-wasm.wasm` (nuovo), `package.json`
+
+- Installate dipendenze `fflate` (unzip in-browser) e `sql.js` (SQLite WASM)
+- Creato componente `MoneyPlusImporter` con:
+  - Decompressione ZIP del `.MoneyPlusPack` senza upload su server
+  - Lettura `meta.json` per info origine
+  - Auto-detection schema SQLite (3 pattern: tabella `transactions`, Core Data `ZTRANSACTION`, fallback generico)
+  - Conversione timestamp Core Data (secondi dal 2001) → date ISO
+  - Anteprima selezionabile con checkbox prima dell'importazione
+- Integrato pulsante "📦 Importa da MoneyPlus" in Settings → sezione Esporta dati
+- **Build check:** ✅ Passato
+
+### TASK-062: Fix chiusura scanner scontrino solo con ✕
+**File modificati:** `src/components/ReceiptScanner.tsx`, `src/components/AddTransactionForm.tsx`
+
+- Rimosso `onClick` backdrop in `ReceiptScanner.tsx` che chiudeva lo scanner al tap fuori
+- Aggiornato `AddTransactionForm.tsx` per non chiudere il form quando lo scanner è aperto
+- **Build check:** ✅ Passato
+
+### TASK-061: Fix iOS Safari black screen (Quick Note overlay)
+**File modificati:** `src/main.tsx`
+
+- Aggiunto listener `visibilitychange`: forza repaint nascondendo/ripristinando `body` quando l'app torna in primo piano
+- Aggiunto listener `pageshow` (persisted): copre il caso BFCache (tasto Indietro Safari)
+- **Build check:** ✅ Passato
+
+### TASK-060: Entrate nascoste di default
+**File modificati:** `src/shared/AmountsContext.tsx`
+
+- Cambiato default `amountsVisible` da `true` a `false` (entrate nascoste all'avvio)
+- **Build check:** ✅ Passato
+
+### TASK-059: Nascondi entrate nel grafico a torta
+**File modificati:** `src/components/SpaceDonutChart.tsx`, `src/components/ExpensePieChart.tsx`
+
+- Aggiunto prop `hideIncome?: boolean` a `SpaceDonutChart`
+- Aggiornato `drawCenter` per mostrare `••••` al posto del totale entrate quando `hideIncome` è true
+- `ExpensePieChart` legge `useAmounts()` e passa `hideIncome={!amountsVisible}` al donut
+- **Build check:** ✅ Passato
+
+---
+
 ## [25/04/2026] — Sessione 6
 
 ### TASK-056: Test update frase grafico spese
