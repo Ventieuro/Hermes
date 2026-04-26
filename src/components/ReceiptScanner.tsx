@@ -10,7 +10,7 @@
  *  - Categoria unica selezionabile per tutti gli articoli importati
  */
 
-import { useReducer, useRef, useEffect } from 'react'
+import { useReducer, useRef, useEffect, useState } from 'react'
 import { createWorker } from 'tesseract.js'
 import { processImage, parseReceiptText, type ReceiptItem } from '../shared/receiptUtils'
 import { addTransaction, generateId } from '../shared/storage'
@@ -156,6 +156,7 @@ interface ReceiptScannerProps {
 
 function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
   const [state, dispatch] = useReducer(scanReducer, STATO_INIZIALE)
+  const [fotoLightbox, setFotoLightbox] = useState<number | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
@@ -311,6 +312,60 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
   // RENDER
   // ─────────────────────────────────────────────────────
 
+  // ─────────────────────────────────────────────────────
+  // LIGHTBOX foto
+  // ─────────────────────────────────────────────────────
+  if (fotoLightbox !== null && state.foto[fotoLightbox]) {
+    const file = state.foto[fotoLightbox]
+    const objectUrl = URL.createObjectURL(file)
+    return (
+      <div
+        onClick={() => setFotoLightbox(null)}
+        style={{
+          position: 'fixed', inset: 0, zIndex: 9300,
+          background: 'rgba(0,0,0,0.92)',
+          display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center',
+        }}
+      >
+        {/* Immagine */}
+        <img
+          src={objectUrl}
+          alt={`Foto ${fotoLightbox + 1}`}
+          onClick={e => e.stopPropagation()}
+          style={{ maxWidth: '100%', maxHeight: 'calc(100dvh - 80px)', objectFit: 'contain', borderRadius: '8px' }}
+        />
+        {/* Toolbar */}
+        <div
+          onClick={e => e.stopPropagation()}
+          style={{ marginTop: '16px', display: 'flex', gap: '12px', alignItems: 'center' }}
+        >
+          <a
+            href={objectUrl}
+            download={file.name || `scontrino-${fotoLightbox + 1}.jpg`}
+            style={{
+              padding: '10px 24px', borderRadius: '12px',
+              background: 'rgba(255,255,255,0.15)', color: '#fff',
+              fontSize: '14px', fontWeight: 600, textDecoration: 'none',
+            }}
+          >
+            ⬇ Scarica
+          </a>
+          <button
+            onClick={() => setFotoLightbox(null)}
+            style={{
+              padding: '10px 24px', borderRadius: '12px',
+              background: 'rgba(255,255,255,0.1)', color: '#fff',
+              fontSize: '14px', fontWeight: 600, border: 'none', cursor: 'pointer',
+            }}
+          >
+            ✕ Chiudi
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   // ── FASE: CAMERA ─────────────────────────────────
   if (state.fase === 'camera') {
     return (
@@ -431,13 +486,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
                       <img
                         src={objectUrl}
                         alt={`Foto ${idx + 1}`}
-                        onClick={() => {
-                          const a = document.createElement('a')
-                          a.href = URL.createObjectURL(file)
-                          a.target = '_blank'
-                          a.rel = 'noopener'
-                          a.click()
-                        }}
+                        onClick={() => setFotoLightbox(idx)}
                         style={{ width: '100%', height: '90px', objectFit: 'cover', display: 'block', cursor: 'zoom-in' }}
                       />
                       {/* Rimuovi */}
@@ -581,7 +630,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
                         <img
                           src={objectUrl}
                           alt={`Foto ${idx + 1}`}
-                          onClick={() => { const a = document.createElement('a'); a.href = URL.createObjectURL(file); a.target = '_blank'; a.rel = 'noopener'; a.click() }}
+                          onClick={() => setFotoLightbox(idx)}
                           style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', cursor: 'zoom-in' }}
                         />
                         <a

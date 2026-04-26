@@ -226,7 +226,11 @@ npm run preview         # Preview build produzione
    - Numero task e titolo
    - File creati/modificati
    - Descrizione sintetica delle modifiche
-3. Eseguire `npm run build` per verificare che tutto compili
+3. **`package.json`** — bump `version`:
+   - patch `0.x.y → 0.x.(y+1)` per bugfix/refactor
+   - minor `0.x.y → 0.(x+1).0` per nuove feature
+   - major `0.x.y → 1.0.0` solo a rilascio stabile
+4. Eseguire `npm run deploy` per verificare che tutto compili e pubblicare
 
 ## Stile di Risposta (Caveman Mode)
 

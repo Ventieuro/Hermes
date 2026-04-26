@@ -1,0 +1,39 @@
+{
+  "stable": true,
+  "description": "Bar/caffetteria Crema e Cioccolato — Documento Commerciale",
+  "source": [
+    "foto_1.jpg"
+  ],
+  "notes": "Scontrino bar: 2 cappuccini, 1 krapfen crema, 1 brioches ripiena. IVA 10% su tutto.",
+  "knownIssues": [
+    "Data non trovata: OCR legge 5-04-2026 invece di 26-04-2026 (cifra iniziale mancante)",
+    "KRAPFEN CREA 4g: OCR misread di Krapfen Crema, il 4g e un artefatto"
+  ],
+  "expected": {
+    "itemCount": 4,
+    "total": 6.6,
+    "parserReadTotal": 6.6,
+    "isValid": true,
+    "date": "2026-04-26",
+    "parserReadDate": null,
+    "items": [
+      {
+        "name": "CAPPUCCINO",
+        "price": 1.6
+      },
+      {
+        "name": "CAPPUCCINO",
+        "price": 1.6
+      },
+      {
+        "name": "KRAPFEN CREA 4g",
+        "price": 2,
+        "note": "OCR misread di Krapfen Crema"
+      },
+      {
+        "name": "BRIOCHES RIPIENA",
+        "price": 1.4
+      }
+    ]
+  }
+}

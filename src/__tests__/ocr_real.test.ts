@@ -178,3 +178,50 @@ describe('ScontrinoCorto1 — ristorante (1 foto, scontrino fisico)', () => {
       })
   })
 })
+
+// ─── ScontrinoCorto2 — bar/caffetteria, 1 foto ──────────
+
+describe('ScontrinoCorto2 — bar (1 foto)', () => {
+  const expected = JSON.parse(readFileSync(join(FIXTURES, 'ScontrinoCorto2', 'expected.json'), 'utf-8'))
+  stableIt(expected.stable)('estrae articoli e totale', { timeout: 120_000 }, async () => {
+    const dir = join(FIXTURES, 'ScontrinoCorto2')
+    const e = expected.expected
+
+    const text = await ocrFiles([join(dir, 'foto_1.jpg')])
+    const result = parseReceiptText(text)
+
+    console.log('\n--- TESTO GREZZO ---\n' + text)
+    console.log('\n=== ARTICOLI ESTRATTI ===')
+    result.items.forEach((item, i) => {
+      const breakdown = item.qty !== undefined
+        ? ` (${item.qty} × ${item.unitPrice?.toFixed(2)} €)`
+        : ''
+      console.log(`  ${i + 1}. "${item.name}"${breakdown} → ${item.price.toFixed(2)} €`)
+    })
+    console.log(`\n  Data            : ${result.date ?? 'non trovata'}`)
+    console.log(`  Totale estratto : ${result.total?.toFixed(2) ?? 'non trovato'} €`)
+
+    const expectedTotal = e.parserReadTotal !== undefined ? e.parserReadTotal : e.total
+    const expectedDate  = e.parserReadDate  !== undefined ? e.parserReadDate  : e.date
+
+    if (expectedTotal !== null) expect(result.total).toBe(expectedTotal)
+    expect(result.items.length).toBe(e.itemCount)
+    expect(result.isValid).toBe(e.isValid)
+    if (expectedDate !== null) expect(result.date).toBe(expectedDate)
+
+    // Verifica articoli item per item
+    const mustFind = (e.items ?? []).filter((i: { parserMissing?: boolean }) => !i.parserMissing)
+    const usedIdx = new Set<number>()
+    mustFind.forEach((exp: { name: string; price: number; parserReadPrice?: number }) => {
+      const assertPrice = exp.parserReadPrice ?? exp.price
+      const idx = result.items.findIndex(
+        (item, pos) => !usedIdx.has(pos) && item.name.startsWith(exp.name.slice(0, 6)),
+      )
+      expect(idx, `articolo "${exp.name}" non trovato`).toBeGreaterThanOrEqual(0)
+      if (idx >= 0) {
+        usedIdx.add(idx)
+        expect(result.items[idx].price).toBe(assertPrice)
+      }
+    })
+  })
+})

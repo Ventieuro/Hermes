@@ -122,12 +122,17 @@ export function parseReceiptText(rawText: string): ParsedReceipt {
   let total: number | null = null
   let date: string | undefined
 
+  // Tipo scontrino: "Documento Commerciale" (bar/caffetteria) vs supermercato/ristorante
+  // Attiva logiche specifiche: filtro righe moltiplicatore garbled, strip prefisso OCR
+  const isDocCommerciale = /DOCUMENTO\s+COMM/i.test(rawText)
+
   // Prezzo italiano: 1–4 cifre, virgola/punto, 2-3 decimali,
   // eventuale lettera IVA (A-D, inclusa D=22%), simbolo €, o OCR-misread (8 al posto di B)
   const priceRegex = /(\d{1,4}[,.]\d{2,3})\s*([ABCDabcd8€¢])?\s*$/
 
   // Parole chiave che identificano la riga TOTALE
-  const totalKw = /\b(?:TOTALE?|TOT\.?|IMPORTO|TOTALE\s+EURO)\b/i
+  // PAGAMENTO ELETTRONICO: nei Documenti Commerciali il totale può stare solo su questa riga
+  const totalKw = /\b(?:TOTALE?|TOT\.?|IMPORTO|TOTALE\s+EURO|PAGAMENTO\s+ELETTRONICO)\b/i
 
   // Riga moltiplicatore: "3 X 2,00" → qty=3, unitPrice=2.00
   // Cattura qty e prezzo unitario per associarli all'articolo successivo
@@ -139,7 +144,7 @@ export function parseReceiptText(rawText: string): ParsedReceipt {
   // Righe da ignorare (non sono articoli)
   // NOTA: non usare CARTA da sola — matcherebbe "CARTA IGIENICA" ecc.
   // Per il metodo di pagamento usare BANCOMAT o "CARTA DI CREDITO" / "MASTERCARD" / "VISA"
-  const skipKw = /\b(?:SUBTOTALE|S\.TOTALE|IVA|SCONTO|SCONTI|RESTO|CONTANTE|BANCOMAT|MASTERCARD|VISA|PAGATO|PAGAMENTO|PUNTI|TESSERA|OPERATORE|CASSA|P\.?IVA|C\.?F\.?|SCONTRINO|FISCALE|CAMBIO|BORSINA|SACCHETTO|GRAZIE|ARRIVEDERCI|WWW\.|HTTP|TEL|FAX|EMAIL|ORARIO|APERTURA|DATA|ORA)\b/i
+  const skipKw = /\b(?:SUBTOTALE|S\.TOTALE|IVA|SCONTO|SCONTI|RESTO|CONTANTE|BANCOMAT|MASTERCARD|VISA|PAGATO|PAGAMENTO|PUNTI|TESSERA|OPERATORE|CASSA|P\.?IVA|C\.?F\.?|SCONTRINO|FISCALE|CAMBIO|BORSINA|SACCHETTO|GRAZIE|ARRIVEDERCI|WWW\.|HTTP|TEL|FAX|EMAIL|ORARIO|APERTURA|DATA|ORA|DI\s+CUI)\b/i
 
   // Stato: riga moltiplicatore in attesa di essere associata all'articolo successivo
   let pendingQty: number | undefined
@@ -202,16 +207,35 @@ export function parseReceiptText(rawText: string): ParsedReceipt {
     }
 
     // ── Articolo ─────────────────────────────────────────
+    // Doc Commerciale: riga "N × PREZZO" garbled dall'OCR (es. "1 x 1,60" → "3 TREE 1,60")
+    // Se il candidato-nome inizia con cifra → è una riga moltiplicatore mal letta → pendingQty
+    if (isDocCommerciale) {
+      const candidateName = line.slice(0, match.index ?? line.length)
+        .replace(/^[|\\/*~_^`#@_®©™]+/, '').trim()
+      if (/^\d/.test(candidateName)) {
+        pendingQty = 1
+        pendingUnitPrice = price
+        continue
+      }
+    }
+
     // Il nome è tutto ciò che precede il prezzo nel testo
     const nameRaw = line.slice(0, match.index ?? line.length).trim()
-    const name = nameRaw
+    let name = nameRaw
       // Rimuove caratteri non alfanumerici di contorno (simboli OCR-spurii)
-      .replace(/^[|\\/*~_^`#@_]+/, '')
+      .replace(/^[|\\/*~_^`#@_®©™]+/, '')
       .replace(/[|\\/*~_^`#@_]+$/, '')
       .replace(/\s{2,}/g, ' ')
+      // Rimuove percentuale IVA inline (es. "10,00%" o "10%") dal nome
+      .replace(/\s*\d+[,.]\d+%/g, '')
+      .replace(/\s*\d+%/g, '')
       .trim()
 
-    if (name.length < 2) { pendingQty = undefined; pendingUnitPrice = undefined; continue }
+    // Doc Commerciale: strip prefisso OCR da riga moltiplicatore fusa con articolo
+    // (es. "i CAPPUCCINO" → "CAPPUCCINO", dove "i" è OCR di "1 x")
+    if (isDocCommerciale) name = name.replace(/^[a-z]\s+/, '').trim()
+
+    if (name.length < 3) { pendingQty = undefined; pendingUnitPrice = undefined; continue }
 
     // ── Valutazione confidenza prezzo ────────────────────
     // '8' dopo il prezzo = probabile OCR misread di 'B' → zona cifre inaffidabile
