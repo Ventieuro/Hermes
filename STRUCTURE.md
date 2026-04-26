@@ -1,6 +1,6 @@
 # AstroCoin — Struttura del Progetto
 
-> Ultimo aggiornamento: 25 Aprile 2026
+> Ultimo aggiornamento: 26 Aprile 2026
 
 ```
 AstroCoin/
@@ -16,7 +16,28 @@ AstroCoin/
 │   ├── App.tsx                        → Definizione route
 │   ├── index.css                      → Variabili CSS temi + import Tailwind
 │   ├── main.tsx                       → Entry point, stack Provider
-│   ├── vite-env.d.ts                  → Tipi ambiente Vite
+│   ├── vite-env.d.ts                  → Tipi ambiente Vite (__APP_VERSION__)
+│   ├── __tests__/
+│   │   ├── setup.ts                   → Setup globale Vitest (mock localStorage)
+│   │   ├── labels.test.ts             → Test labels.ts (i18n)
+│   │   ├── ocr.test.ts                → Test parser su testo sintetico
+│   │   ├── ocr_real.test.ts           → Test OCR su foto reali (Tesseract.js)
+│   │   ├── storage.test.ts            → Test CRUD storage
+│   │   ├── theme.test.ts              → Test ThemeContext
+│   │   └── fixtures/
+│   │       └── receipts/
+│   │           ├── PARSER_NOTES.md    → Documentazione regole parser OCR
+│   │           ├── ScontrinoLungo1/   → Supermercato (3 foto .jpeg, completo)
+│   │           │   └── expected.json
+│   │           ├── ScontrinoLungo2/   → Stesso scontrino (3 foto .jpg, parziale)
+│   │           │   └── expected.json
+│   │           ├── ScontrinoCorto1/   → Ristorante preconto (1 foto .jpg)
+│   │           │   └── expected.json
+│   │           ├── ScontrinoCorto2/   → Bar Documento Commerciale (1 foto .jpg)
+│   │           │   └── expected.json
+│   │           └── synthetic/         → Testo sintetico (no foto)
+│   │               ├── expected.json
+│   │               └── scontrino_lungo.txt
 │   ├── app/
 │   │   └── features.ts                → Feature flags globali
 │   ├── components/

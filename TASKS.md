@@ -30,6 +30,56 @@
 
 ## Completati
 
+### ✅ TASK-075 — Fix lightbox foto: blob URL → overlay inline (26/04/2026)
+- [x] Rimosso `window.open(blob:...)` su tap foto — causava ERR_UPLOAD_FILE_CHANGED su mobile
+- [x] Aggiunto `useState<number|null>` per lightbox index in `ReceiptScanner.tsx`
+- [x] Overlay fullscreen con immagine + pulsante ⬇ Scarica + ✕ Chiudi (blob rimane nella stessa tab)
+- [x] Build e deploy ✅
+
+### ✅ TASK-074 — Fix parser: logiche per tipo scontrino "Documento Commerciale" (26/04/2026)
+- [x] `receiptUtils.ts`: rilevamento `DOCUMENTO COMM` nel testo → flag `isDocCommerciale`
+- [x] Righe moltiplicatore garbled (nome inizia con cifra) trattate come pending e skippate
+- [x] Strip prefisso OCR singola lettera minuscola fusa con nome articolo (es. `i CAPPUCCINO` → `CAPPUCCINO`)
+- [x] `totalKw` esteso con `PAGAMENTO ELETTRONICO`
+- [x] `skipKw` esteso con `DI CUI` (filtra `di cui IVA`)
+- [x] `ScontrinoCorto2/expected.json` aggiornato: itemCount 4, total 6.60, isValid true
+- [x] Build e deploy ✅
+
+### ✅ TASK-073 — PARSER_NOTES.md: documentazione regole parser OCR (26/04/2026)
+- [x] Creato `src/__tests__/fixtures/receipts/PARSER_NOTES.md`
+- [x] Documenta: struttura scontrini italiani, skipKw, problemi totale/data, OCR noise, filtri nome, confidence, sconti, tipi scontrino, fixture presenti, backlog
+
+### ✅ TASK-072 — Fixture ScontrinoCorto2: bar Crema e Cioccolato (26/04/2026)
+- [x] Creata `src/__tests__/fixtures/receipts/ScontrinoCorto2/` con foto reale e `expected.json`
+- [x] Parser migliorato: strip `®©™`, strip percentuale IVA inline (`10,00%`), soglia minima nome alzata a 3 char
+- [x] `ocr_real.test.ts`: aggiunto describe block ScontrinoCorto2
+- [x] Build e deploy ✅
+
+### ✅ TASK-071 — Fixture ScontrinoLungo2 + per-item assertions (26/04/2026)
+- [x] Creata `src/__tests__/fixtures/receipts/ScontrinoLungo2/` (stessa ricevuta ScontrinoLungo1, 3 foto copertura parziale)
+- [x] `ocr_real.test.ts`: aggiornato con `usedIdx` Set per gestire articoli duplicati; assertions per-item con `parserReadPrice`
+- [x] Build e deploy ✅
+
+### ✅ TASK-070 — Versione app in Settings (26/04/2026)
+- [x] `vite.config.ts`: `define.__APP_VERSION__` iniettato da `package.json`
+- [x] `vite-env.d.ts`: dichiarato `declare const __APP_VERSION__: string`
+- [x] `Settings.tsx`: aggiunta riga versione in fondo
+- [x] `labels.ts`: aggiunto `versione` in sezione SETTINGS
+- [x] Build e deploy ✅
+
+### ✅ TASK-069 — Photo view/download in ReceiptScanner (26/04/2026)
+- [x] Fase input: griglia anteprime foto con tap=lightbox, ⬇=download, ✕=rimuovi
+- [x] Fase risultati: striscia orizzontale scrollabile 72×72px con stesse azioni
+- [x] Build e deploy ✅
+
+### ✅ TASK-068 — Sistema confidence prezzi OCR (26/04/2026)
+- [x] `receiptUtils.ts`: aggiunto `confidence: 'ok'|'uncertain'` e `uncertainReason` su `ReceiptItem`
+- [x] Segnali: lettera IVA letta come `8` → `iva8`; nome con `!` → `linea_rumorosa`; qty×unit≠price → `moltiplicatore_errato`
+- [x] `ReceiptScanner.tsx`: bordo arancio sui prezzi incerti, banner "N prezzi da verificare"
+- [x] Editing prezzo → azzera `confidence` a `ok`
+- [x] Label i18n: `prezziDaVerificare`, `prezzoIncerto`
+- [x] Build e deploy ✅
+
 ### ✅ TASK-067 — Miglioramento parser OCR + test stabili (26/04/2026)
 - Fix parser: `BANCOMAT|MASTERCARD|VISA` invece di `CARTA` come skipKw
 - Fix parser: IVA class regex include `D`, `€`, OCR misread `8`→`B`

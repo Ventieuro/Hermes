@@ -6,6 +6,70 @@
 
 ## [26/04/2026] — Sessione 9
 
+### TASK-068: Sistema confidence prezzi OCR incerti
+**File modificati:** `src/shared/receiptUtils.ts`, `src/components/ReceiptScanner.tsx`, `src/shared/labels.ts`
+
+- **`ReceiptItem`**: aggiunti campi opzionali `confidence: 'ok'|'uncertain'` e `uncertainReason: 'iva8'|'linea_rumorosa'|'moltiplicatore_errato'`
+- **Segnali incertezza**: IVA letta come `8` → `iva8`; nome con `!` → `linea_rumorosa`; `qty×unitPrice≠price` → `moltiplicatore_errato`
+- **UI**: prezzo con bordo arancio se `uncertain`; banner "⚠️ N prezzi da verificare" sopra la tabella
+- **Editing**: modifica prezzo utente azzera `confidence` a `ok`
+- **Labels**: `prezziDaVerificare` (tf parametrica), `prezzoIncerto` (tooltip)
+- **Build check:** ✅
+
+### TASK-069: Photo view/download in ReceiptScanner
+**File modificati:** `src/components/ReceiptScanner.tsx`
+
+- **Fase input**: griglia anteprime foto con tap → lightbox, ⬇ → download, ✕ → rimuovi
+- **Fase risultati**: striscia orizzontale scrollabile (72×72px) con le stesse azioni
+- **Build check:** ✅
+
+### TASK-070: Versione app in Settings
+**File modificati:** `vite.config.ts`, `src/vite-env.d.ts`, `src/components/Settings.tsx`, `src/shared/labels.ts`
+
+- **`vite.config.ts`**: `define.__APP_VERSION__` iniettato da `package.json` via `JSON.stringify(pkg.version)`
+- **`vite-env.d.ts`**: `declare const __APP_VERSION__: string`
+- **`Settings.tsx`**: riga versione in fondo al pannello
+- **Labels**: `versione` in sezione SETTINGS (IT/EN/ES)
+- **Build check:** ✅
+
+### TASK-071: Fixture ScontrinoLungo2 + per-item assertions
+**File modificati:** `src/__tests__/fixtures/receipts/ScontrinoLungo2/expected.json`, `src/__tests__/ocr_real.test.ts`
+
+- **ScontrinoLungo2**: stessa ricevuta di ScontrinoLungo1, 3 foto a copertura parziale (parte centrale); `parserReadTotal: null`, `parserReadDate: null`
+- **`ocr_real.test.ts`**: `usedIdx` Set per gestire nomi duplicati nelle assertions per-item; campi `parserReadPrice` e `parserMissing` supportati
+- **Build check:** ✅
+
+### TASK-072: Fixture ScontrinoCorto2 (bar Crema e Cioccolato)
+**File modificati:** `src/__tests__/fixtures/receipts/ScontrinoCorto2/expected.json`, `src/__tests__/ocr_real.test.ts`, `src/shared/receiptUtils.ts`
+
+- **Fixture**: Documento Commerciale bar/caffetteria, 4 articoli (2 cappuccini, krapfen crema, brioches)
+- **Parser**: strip `®©™` da inizio nome, strip percentuale IVA inline (`10,00%` / `10%`), soglia minima nome alzata da 2 a 3 caratteri
+- **`ocr_real.test.ts`**: aggiunto describe block ScontrinoCorto2
+- **Build check:** ✅
+
+### TASK-073: PARSER_NOTES.md
+**File creati:** `src/__tests__/fixtures/receipts/PARSER_NOTES.md`
+
+- Documento con: struttura scontrini italiani, tabella skipKw completa, problemi noti totale/data, noise OCR, filtri nome, sistema confidence, sconti, casi per tipo, tabella fixture, backlog miglioramenti
+
+### TASK-074: Fix parser logiche Documento Commerciale
+**File modificati:** `src/shared/receiptUtils.ts`, `src/__tests__/fixtures/receipts/ScontrinoCorto2/expected.json`
+
+- **`isDocCommerciale`**: flag rilevato da `DOCUMENTO COMM` nel testo grezzo
+- **Righe moltiplicatore garbled**: nei Doc Commerciali, riga con nome che inizia con cifra → `pendingQty=1, pendingUnitPrice` e skip
+- **Strip prefisso OCR**: singola lettera minuscola fusa con nome (es. `i CAPPUCCINO` → `CAPPUCCINO`)
+- **`totalKw`**: aggiunto `PAGAMENTO ELETTRONICO`
+- **`skipKw`**: aggiunto `DI CUI` (filtra `di cui IVA 0,60`)
+- **`expected.json`**: itemCount 4, parserReadTotal 6.60, isValid true
+- **Build check:** ✅ 40/40 passed
+
+### TASK-075: Fix lightbox foto (blob URL → overlay inline)
+**File modificati:** `src/components/ReceiptScanner.tsx`
+
+- **Problema**: `window.open(blob:...)` su mobile causava `ERR_UPLOAD_FILE_CHANGED` (blob context non trasferito tra tab)
+- **Fix**: `useState<number|null>` per index foto selezionata; overlay fullscreen con `<img>` inline + ⬇ Scarica + ✕ Chiudi
+- **Build check:** ✅
+
 ### TASK-066 + TASK-067: Fixture OCR + miglioramento parser + test stabili
 **File modificati:** `src/shared/receiptUtils.ts`, `src/__tests__/ocr_real.test.ts`, `src/__tests__/ocr.test.ts`, `src/__tests__/fixtures/receipts/**`, `package.json`
 
