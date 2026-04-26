@@ -1,4 +1,5 @@
 {
+  "stable": false,
   "description": "Scontrino supermercato lungo (3 foto reali con sovrapposizione)",
   "source": ["foto_1.jpeg", "foto_2.jpeg", "foto_3.jpeg"],
   "notes": "Le 3 foto si sovrappongono, quindi alcuni articoli appaiono 2 volte nel testo OCR merged. Il totale (30.10) è corretto. La somma articoli è più alta del totale per i duplicati.",

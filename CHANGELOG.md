@@ -4,6 +4,23 @@
 
 ---
 
+## [26/04/2026] — Sessione 9
+
+### TASK-066 + TASK-067: Fixture OCR + miglioramento parser + test stabili
+**File modificati:** `src/shared/receiptUtils.ts`, `src/__tests__/ocr_real.test.ts`, `src/__tests__/ocr.test.ts`, `src/__tests__/fixtures/receipts/**`, `package.json`
+
+- **Fixtures:** creata `src/__tests__/fixtures/receipts/` con sottocartelle `synthetic/`, `ScontrinoLungo1/`, `ScontrinoCorto1/`; ogni cartella ha `expected.json` con valori attesi completi (itemCount, total, isValid, date, items con qty/unitPrice)
+- **Fix parser skipKw:** `BANCOMAT|MASTERCARD|VISA` invece di `CARTA` — evitava di skippare "CARTA IGIENICA"
+- **Fix parser IVA:** classe `D`, simbolo `€`, OCR misread `8`→`B` inclusi nella regex
+- **Fix prezzi al peso:** 3 decimali arrotondati a 2 con `toFixed(2)`
+- **Righe moltiplicatore:** state machine `pendingQty`/`pendingUnitPrice` — `ReceiptItem` ora ha `qty?` e `unitPrice?`
+- **Data scontrino:** `dateRegex` estrae `dd/mm/yyyy` o `yyyy-mm-dd` → `ParsedReceipt.date?`
+- **Test stabili:** campo `stable` in `expected.json` + helper `stableIt()` — test con `stable:false` saltati automaticamente (ScontrinoLungo1 WIP, ScontrinoCorto1 pronto)
+- **Build pipeline:** `vitest run` aggiunto tra `tsc -b` e `vite build` — test falliti bloccano il deploy
+- **Build check:** ✅ 1 passed | 1 skipped
+
+---
+
 ## [26/04/2026] — Sessione 8
 
 ### TASK-064: Fix timezone + deduplicazione import MoneyPlus

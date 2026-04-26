@@ -23,22 +23,27 @@
 
 ## Da Fare
 
-### � TASK-066 — Fixture scontrini per test OCR
-- [ ] Creare cartella `src/__tests__/fixtures/receipts/` per scontrini di test
-- [ ] Aggiungere scontrini campione (foto reali o sintetiche) coprendo casi diversi:
-      - Scontrino supermercato (importo, data, totale)
-      - Scontrino ristorante
-      - Scontrino farmacia
-      - Scontrino con importo ambiguo o formattazione non standard
-- [ ] Creare test unitari in `src/__tests__/ocr.test.ts` che verifichino il parsing dei campi chiave (importo, data, categoria) per ogni fixture
-- [ ] Documentare i casi attesi (expected output) per ogni scontrino
-
-### �🔜 TASK-054 — Promemoria gestione spazio dati (non implementare ora)
+### 🔜 TASK-054 — Promemoria gestione spazio dati (non implementare ora)
 - [ ] Valutare strategia archiviazione storica (es. export annuale + pulizia dati vecchi)
 - [ ] Definire soglia operativa (es. warning 70-80%) e flusso guidato utente
 - [ ] Considerare eventuale migrazione a IndexedDB se la crescita dati continua
 
 ## Completati
+
+### ✅ TASK-067 — Miglioramento parser OCR + test stabili (26/04/2026)
+- Fix parser: `BANCOMAT|MASTERCARD|VISA` invece di `CARTA` come skipKw
+- Fix parser: IVA class regex include `D`, `€`, OCR misread `8`→`B`
+- Fix parser: prezzi 3 decimali arrotondati a 2
+- Parser: righe moltiplicatore (`3×2,00`) → `qty`/`unitPrice` sull'articolo successivo
+- Parser: estrazione data scontrino (`dd/mm/yyyy`, `yyyy-mm-dd`)
+- `expected.json`: campo `stable` per distinguere test pronti da WIP
+- `ocr_real.test.ts`: `stableIt()` — `stable:false` salta automaticamente
+- `package.json`: `vitest run` aggiunto in build pipeline
+
+### ✅ TASK-066 — Fixture scontrini per test OCR (26/04/2026)
+- Creata `src/__tests__/fixtures/receipts/` con `synthetic/`, `ScontrinoLungo1/`, `ScontrinoCorto1/`
+- `expected.json` per ogni scontrino con valori attesi completi
+- Test sintetici `ocr.test.ts` (5 ✅) e reali `ocr_real.test.ts`
 
 ### ✅ TASK-065 — Deploy fix timezone + deduplicazione import MoneyPlus
 

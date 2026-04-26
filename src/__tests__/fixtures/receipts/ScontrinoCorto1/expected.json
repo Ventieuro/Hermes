@@ -1,10 +1,21 @@
 {
-  "description": "Scontrino ristorante (screenshot app, prezzi interi senza decimali)",
+  "stable": true,
+  "description": "Scontrino ristorante Trattoria I Giganti (Cabras) — preconto non fiscale",
   "source": ["foto_1.jpg"],
-  "notes": "foto_1.jpg è uno screenshot dell'interfaccia app, non la foto diretta del foglio. Il parser legge il totale ma non gli articoli (prezzi senza virgola decimale).",
+  "notes": "Preconto non fiscale. Contiene righe moltiplicatore (3X2,00 e 22X1,50) associate agli articoli successivi.",
   "expected": {
-    "itemCount": 0,
-    "total": 93.50,
-    "isValid": false
+    "itemCount": 6,
+    "total": 90.00,
+    "isValid": true,
+    "date": "2016-05-22",
+    "items": [
+      { "name": "COPERTÒ",                  "price": 6.00,  "qty": 3,  "unitPrice": 2.00 },
+      { "name": "DEGUSTAZIONE 8 PORTATE",  "price": 33.00, "qty": 22, "unitPrice": 1.50 },
+      { "name": "GRIGLIATA MISTA DI PESCE","price": 30.00 },
+      { "name": "GAMB. ALLA GRIGLIA O VERN","price": 15.00 },
+      { "name": "VINO B.SFUSO 1/21",        "price": 4.00 },
+      { "name": "BIBITE LATTINA",           "price": 2.00 }
+    ]
   }
 }
+

@@ -14,6 +14,10 @@ export interface ReceiptItem {
   id: string
   name: string
   price: number
+  /** Numero di pezzi, se la riga precedente era "N × prezzo_unitario" */
+  qty?: number
+  /** Prezzo unitario, se la riga precedente era "N × prezzo_unitario" */
+  unitPrice?: number
 }
 
 export interface ParsedReceipt {
@@ -21,6 +25,8 @@ export interface ParsedReceipt {
   total: number | null
   /** true se la somma degli articoli corrisponde al totale (±2 centesimi) */
   isValid: boolean
+  /** Data dello scontrino in formato ISO yyyy-mm-dd, se rilevata */
+  date?: string
 }
 
 // ─── Pre-processing immagine (Canvas) ────────────────────
@@ -97,7 +103,9 @@ export function processImage(file: File): Promise<string> {
  * Gestisce:
  *  - prezzi con virgola italiana (1,50) o punto (1.50)
  *  - riga TOTALE / TOT. / IMPORTO
- *  - suffisso IVA (A/B/C) dopo il prezzo
+ *  - suffisso IVA (A/B/C/D) dopo il prezzo
+ *  - righe moltiplicatore "N × prezzo_unitario" → annotate sull'articolo successivo
+ *  - estrazione data dallo scontrino (dd/mm/yyyy, dd-mm-yyyy, yyyy-mm-dd)
  *  - righe non pertinenti (intestazione, P.IVA, ecc.)
  */
 export function parseReceiptText(rawText: string): ParsedReceipt {
@@ -108,6 +116,7 @@ export function parseReceiptText(rawText: string): ParsedReceipt {
 
   const items: ReceiptItem[] = []
   let total: number | null = null
+  let date: string | undefined
 
   // Prezzo italiano: 1–4 cifre, virgola/punto, 2-3 decimali,
   // eventuale lettera IVA (A-D, inclusa D=22%), simbolo €, o OCR-misread (8 al posto di B)
@@ -116,32 +125,61 @@ export function parseReceiptText(rawText: string): ParsedReceipt {
   // Parole chiave che identificano la riga TOTALE
   const totalKw = /\b(?:TOTALE?|TOT\.?|IMPORTO|TOTALE\s+EURO)\b/i
 
-  // Righe "quantità × prezzo unitario" (es: "3 X 2,00", "22 X 1,50", "22 XK 1,50"):
-  // non sono articoli, sono il dettaglio moltiplicativo che precede l'articolo col totale.
-  // [a-zA-Z]* copre varianti OCR come "XK", "Xx", ecc.
-  const qtyUnitLineRegex = /^\d+\s*[xX×][a-zA-Z]*\s*\d/
+  // Riga moltiplicatore: "3 X 2,00" → qty=3, unitPrice=2.00
+  // Cattura qty e prezzo unitario per associarli all'articolo successivo
+  const qtyUnitRegex = /^(\d+)\s*[xX×][a-zA-Z]*\s*(\d{1,4}[,.]\d{2,3})/
+
+  // Data: dd/mm/yyyy, dd-mm-yyyy, yyyy-mm-dd
+  const dateRegex = /\b(\d{2})[\-\/](\d{2})[\-\/](\d{4})\b|\b(\d{4})[\-\/](\d{2})[\-\/](\d{2})\b/
 
   // Righe da ignorare (non sono articoli)
   // NOTA: non usare CARTA da sola — matcherebbe "CARTA IGIENICA" ecc.
   // Per il metodo di pagamento usare BANCOMAT o "CARTA DI CREDITO" / "MASTERCARD" / "VISA"
   const skipKw = /\b(?:SUBTOTALE|S\.TOTALE|IVA|SCONTO|SCONTI|RESTO|CONTANTE|BANCOMAT|MASTERCARD|VISA|PAGATO|PAGAMENTO|PUNTI|TESSERA|OPERATORE|CASSA|P\.?IVA|C\.?F\.?|SCONTRINO|FISCALE|CAMBIO|BORSINA|SACCHETTO|GRAZIE|ARRIVEDERCI|WWW\.|HTTP|TEL|FAX|EMAIL|ORARIO|APERTURA|DATA|ORA)\b/i
 
+  // Stato: riga moltiplicatore in attesa di essere associata all'articolo successivo
+  let pendingQty: number | undefined
+  let pendingUnitPrice: number | undefined
+
   for (const line of lines) {
-    if (skipKw.test(line)) continue
-    if (qtyUnitLineRegex.test(line)) continue  // salta "N x prezzo_unitario"
+    // ── Cerca data (su tutte le righe, anche quelle skippate) ──
+    if (!date) {
+      const dm = line.match(dateRegex)
+      if (dm) {
+        if (dm[4]) {
+          // yyyy-mm-dd
+          date = `${dm[4]}-${dm[5]}-${dm[6]}`
+        } else {
+          // dd/mm/yyyy o dd-mm-yyyy → converti in ISO
+          const [d, m, y] = [dm[1], dm[2], dm[3]]
+          date = `${y}-${m}-${d}`
+        }
+      }
+    }
+
+    if (skipKw.test(line)) { pendingQty = undefined; pendingUnitPrice = undefined; continue }
+
+    // ── Riga moltiplicatore "N × prezzo_unitario" ──
+    const qtyMatch = line.match(qtyUnitRegex)
+    if (qtyMatch) {
+      pendingQty = parseInt(qtyMatch[1], 10)
+      pendingUnitPrice = parseFloat(parseFloat(qtyMatch[2].replace(',', '.')).toFixed(2))
+      continue
+    }
 
     const match = line.match(priceRegex)
-    if (!match) continue
+    if (!match) { pendingQty = undefined; pendingUnitPrice = undefined; continue }
 
     const priceStr = match[1].replace(',', '.')
     // Prezzi al peso hanno 3 decimali (es. 3.780 = 3,78€): arrotonda a 2
     const price = parseFloat(parseFloat(priceStr).toFixed(2))
-    if (isNaN(price) || price <= 0 || price > 9999) continue
+    if (isNaN(price) || price <= 0 || price > 9999) { pendingQty = undefined; pendingUnitPrice = undefined; continue }
 
     // ── Riga TOTALE ──────────────────────────────────────
     if (totalKw.test(line)) {
       // Conserva il valore più alto trovato (alcuni scontrini stampano il totale più volte)
       if (total === null || price > total) total = price
+      pendingQty = undefined; pendingUnitPrice = undefined
       continue
     }
 
@@ -150,19 +188,26 @@ export function parseReceiptText(rawText: string): ParsedReceipt {
     const nameRaw = line.slice(0, match.index ?? line.length).trim()
     const name = nameRaw
       // Rimuove caratteri non alfanumerici di contorno (simboli OCR-spurii)
-      .replace(/^[|\\/*~_^`#@]+/, '')
-      .replace(/[|\\/*~_^`#@]+$/, '')
+      .replace(/^[|\\/*~_^`#@_]+/, '')
+      .replace(/[|\\/*~_^`#@_]+$/, '')
       .replace(/\s{2,}/g, ' ')
       .trim()
 
-    if (name.length < 2) continue
+    if (name.length < 2) { pendingQty = undefined; pendingUnitPrice = undefined; continue }
 
-    items.push({ id: crypto.randomUUID(), name, price })
+    const item: ReceiptItem = { id: crypto.randomUUID(), name, price }
+    if (pendingQty !== undefined && pendingUnitPrice !== undefined) {
+      item.qty = pendingQty
+      item.unitPrice = pendingUnitPrice
+    }
+    items.push(item)
+    pendingQty = undefined
+    pendingUnitPrice = undefined
   }
 
   // ── Validazione somma vs totale ───────────────────────
   const sum = parseFloat(items.reduce((acc, i) => acc + i.price, 0).toFixed(2))
   const isValid = total !== null && Math.abs(sum - total) <= 0.02
 
-  return { items, total, isValid }
+  return { items, total, isValid, ...(date ? { date } : {}) }
 }
