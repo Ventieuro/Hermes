@@ -393,6 +393,9 @@ function MoneyPlusImporter({ onDone }: MoneyPlusImporterProps) {
               <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
                 Seleziona il file <strong style={{ color: 'var(--text-primary)' }}>.MoneyPlusPack</strong> esportato dall'app MoneyPlus.
               </p>
+              <p className="text-xs rounded-xl p-3" style={{ color: 'var(--text-muted)', backgroundColor: 'var(--bg-secondary)' }}>
+                🐟 <strong>iPhone:</strong> apri il file in Dropbox/Files → tocca Condividi → <em>Salva su File</em> → poi selezionalo qui.
+              </p>
               {step === 'error' && (
                 <p className="text-sm rounded-xl p-3" style={{ color: '#ef4444', backgroundColor: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)' }}>
                   ❌ {error}
@@ -410,7 +413,7 @@ function MoneyPlusImporter({ onDone }: MoneyPlusImporterProps) {
                 <span className="text-sm font-medium">Seleziona .MoneyPlusPack</span>
                 <input
                   type="file"
-                  accept=".MoneyPlusPack,.zip"
+                  accept=".MoneyPlusPack,.zip,application/zip,application/octet-stream,*/*"
                   style={{ display: 'none' }}
                   onChange={handleFile}
                 />

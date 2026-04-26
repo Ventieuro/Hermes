@@ -23,7 +23,17 @@
 
 ## Da Fare
 
-### 🔜 TASK-054 — Promemoria gestione spazio dati (non implementare ora)
+### � TASK-066 — Fixture scontrini per test OCR
+- [ ] Creare cartella `src/__tests__/fixtures/receipts/` per scontrini di test
+- [ ] Aggiungere scontrini campione (foto reali o sintetiche) coprendo casi diversi:
+      - Scontrino supermercato (importo, data, totale)
+      - Scontrino ristorante
+      - Scontrino farmacia
+      - Scontrino con importo ambiguo o formattazione non standard
+- [ ] Creare test unitari in `src/__tests__/ocr.test.ts` che verifichino il parsing dei campi chiave (importo, data, categoria) per ogni fixture
+- [ ] Documentare i casi attesi (expected output) per ogni scontrino
+
+### �🔜 TASK-054 — Promemoria gestione spazio dati (non implementare ora)
 - [ ] Valutare strategia archiviazione storica (es. export annuale + pulizia dati vecchi)
 - [ ] Definire soglia operativa (es. warning 70-80%) e flusso guidato utente
 - [ ] Considerare eventuale migrazione a IndexedDB se la crescita dati continua

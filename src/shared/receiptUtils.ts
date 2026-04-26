@@ -109,8 +109,9 @@ export function parseReceiptText(rawText: string): ParsedReceipt {
   const items: ReceiptItem[] = []
   let total: number | null = null
 
-  // Prezzo italiano: 1–4 cifre, virgola/punto, 2 decimali, eventuale lettera IVA
-  const priceRegex = /(\d{1,4}[,.](?:\d{2}))\s*[ABCabc]?\s*$/
+  // Prezzo italiano: 1–4 cifre, virgola/punto, 2-3 decimali,
+  // eventuale lettera IVA (A-D, inclusa D=22%), simbolo €, o OCR-misread (8 al posto di B)
+  const priceRegex = /(\d{1,4}[,.]\d{2,3})\s*[ABCDabcd8€¢]?\s*$/
 
   // Parole chiave che identificano la riga TOTALE
   const totalKw = /\b(?:TOTALE?|TOT\.?|IMPORTO|TOTALE\s+EURO)\b/i
@@ -121,7 +122,9 @@ export function parseReceiptText(rawText: string): ParsedReceipt {
   const qtyUnitLineRegex = /^\d+\s*[xX×][a-zA-Z]*\s*\d/
 
   // Righe da ignorare (non sono articoli)
-  const skipKw = /\b(?:SUBTOTALE|S\.TOTALE|IVA|SCONTO|SCONTI|RESTO|CONTANTE|CARTA|PAGATO|PAGAMENTO|PUNTI|TESSERA|OPERATORE|CASSA|P\.?IVA|C\.?F\.?|SCONTRINO|FISCALE|CAMBIO|BORSINA|SACCHETTO|GRAZIE|ARRIVEDERCI|WWW\.|HTTP|TEL|FAX|EMAIL|ORARIO|APERTURA|DATA|ORA)\b/i
+  // NOTA: non usare CARTA da sola — matcherebbe "CARTA IGIENICA" ecc.
+  // Per il metodo di pagamento usare BANCOMAT o "CARTA DI CREDITO" / "MASTERCARD" / "VISA"
+  const skipKw = /\b(?:SUBTOTALE|S\.TOTALE|IVA|SCONTO|SCONTI|RESTO|CONTANTE|BANCOMAT|MASTERCARD|VISA|PAGATO|PAGAMENTO|PUNTI|TESSERA|OPERATORE|CASSA|P\.?IVA|C\.?F\.?|SCONTRINO|FISCALE|CAMBIO|BORSINA|SACCHETTO|GRAZIE|ARRIVEDERCI|WWW\.|HTTP|TEL|FAX|EMAIL|ORARIO|APERTURA|DATA|ORA)\b/i
 
   for (const line of lines) {
     if (skipKw.test(line)) continue
@@ -131,7 +134,8 @@ export function parseReceiptText(rawText: string): ParsedReceipt {
     if (!match) continue
 
     const priceStr = match[1].replace(',', '.')
-    const price = parseFloat(priceStr)
+    // Prezzi al peso hanno 3 decimali (es. 3.780 = 3,78€): arrotonda a 2
+    const price = parseFloat(parseFloat(priceStr).toFixed(2))
     if (isNaN(price) || price <= 0 || price > 9999) continue
 
     // ── Riga TOTALE ──────────────────────────────────────

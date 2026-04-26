@@ -1,0 +1,10 @@
+{
+  "description": "Scontrino ristorante (screenshot app, prezzi interi senza decimali)",
+  "source": ["foto_1.jpg"],
+  "notes": "foto_1.jpg è uno screenshot dell'interfaccia app, non la foto diretta del foglio. Il parser legge il totale ma non gli articoli (prezzi senza virgola decimale).",
+  "expected": {
+    "itemCount": 0,
+    "total": 93.50,
+    "isValid": false
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "description": "Scontrino supermercato (testo sintetico, 20 articoli)",
+  "source": "synthetic/scontrino_lungo.txt",
+  "expected": {
+    "itemCount": 20,
+    "total": 55.69,
+    "isValid": true,
+    "firstItem": { "name": "PASTA BARILLA", "price": 1.29 }
+  }
+}
