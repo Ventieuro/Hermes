@@ -64,14 +64,79 @@ describe('ScontrinoLungo1 — supermercato (3 foto)', () => {
     console.log(`  N. articoli      : ${result.items.length}`)
     console.log(`  Valido           : ${result.isValid}`)
 
-    // Usa parserReadTotal se disponibile (totale che il parser legge oggi)
-    // total è il ground truth reale — diventerà l'assertion quando il parser sarà migliorato
-    const expectedTotal = expected.expected.parserReadTotal ?? expected.expected.total
-    const expectedDate = expected.expected.parserReadDate ?? expected.expected.date
+    // parserReadTotal/Date: valore che il parser legge oggi (può essere null se non trovato).
+    // Se il campo è absent (undefined) usa il ground truth. Non usare ?? perché null è un valore valido.
+    const e = expected.expected
+    const expectedTotal = e.parserReadTotal !== undefined ? e.parserReadTotal : e.total
+    const expectedDate  = e.parserReadDate  !== undefined ? e.parserReadDate  : e.date
     expect(result.total).toBe(expectedTotal)
-    expect(result.items.length).toBe(expected.expected.itemCount)
-    expect(result.isValid).toBe(expected.expected.isValid)
-    expect(result.date).toBe(expectedDate)
+    expect(result.items.length).toBe(e.itemCount)
+    expect(result.isValid).toBe(e.isValid)
+    expect(result.date ?? null).toBe(expectedDate)
+
+    // Verifica articoli attesi (quelli che il parser DEVE trovare, senza parserMissing)
+    // usedIdx evita che duplicati con lo stesso nome prefisso matchino sempre il primo
+    const mustFind = (e.items ?? []).filter((i: { parserMissing?: boolean }) => !i.parserMissing)
+    const usedIdx = new Set<number>()
+    mustFind.forEach((exp: { name: string; price: number; parserReadPrice?: number }) => {
+      const assertPrice = exp.parserReadPrice ?? exp.price
+      const idx = result.items.findIndex((i, pos) => !usedIdx.has(pos) && i.name.startsWith(exp.name.slice(0, 6)))
+      expect(idx, `articolo "${exp.name}" non trovato`).toBeGreaterThanOrEqual(0)
+      if (idx >= 0) {
+        usedIdx.add(idx)
+        expect(result.items[idx].price).toBe(assertPrice)
+      }
+    })
+  })
+})
+
+// ─── ScontrinoLungo2 — supermercato, 3 foto parziali ───────────────
+
+describe('ScontrinoLungo2 — supermercato (3 foto, copertura parziale)', () => {
+  const expected = JSON.parse(readFileSync(join(FIXTURES, 'ScontrinoLungo2', 'expected.json'), 'utf-8'))
+  stableIt(expected.stable)('estrae articoli e totale', { timeout: 120_000 }, async () => {
+    const dir = join(FIXTURES, 'ScontrinoLungo2')
+
+    const text = await ocrFiles([
+      join(dir, 'foto_1.jpg'),
+      join(dir, 'foto_2.jpg'),
+      join(dir, 'foto_3.jpg'),
+    ])
+    const result = parseReceiptText(text)
+
+    console.log('\n=== ARTICOLI ESTRATTI ===')
+    result.items.forEach((item, i) => {
+      const breakdown = item.qty !== undefined
+        ? ` (${item.qty} × ${item.unitPrice?.toFixed(2)} €)`
+        : ''
+      console.log(`  ${i + 1}. "${item.name}"${breakdown} → ${item.price.toFixed(2)} €`)
+    })
+    console.log(`\n  Data             : ${result.date ?? 'non trovata'}`)
+    console.log(`  Totale estratto  : ${result.total?.toFixed(2) ?? 'non trovato'} €`)
+    console.log(`  Somma articoli   : ${result.items.reduce((s, i) => s + i.price, 0).toFixed(2)} €`)
+    console.log(`  N. articoli      : ${result.items.length}`)
+    console.log(`  Valido           : ${result.isValid}`)
+
+    const e2 = expected.expected
+    const expectedTotal = e2.parserReadTotal !== undefined ? e2.parserReadTotal : e2.total
+    const expectedDate  = e2.parserReadDate  !== undefined ? e2.parserReadDate  : e2.date
+    expect(result.total).toBe(expectedTotal)
+    expect(result.items.length).toBe(e2.itemCount)
+    expect(result.isValid).toBe(e2.isValid)
+    expect(result.date ?? null).toBe(expectedDate)
+
+    // Verifica articoli attesi (quelli che il parser DEVE trovare, senza parserMissing)
+    const mustFind2 = (e2.items ?? []).filter((i: { parserMissing?: boolean }) => !i.parserMissing)
+    const usedIdx2 = new Set<number>()
+    mustFind2.forEach((exp: { name: string; price: number; parserReadPrice?: number }) => {
+      const assertPrice = exp.parserReadPrice ?? exp.price
+      const idx = result.items.findIndex((i, pos) => !usedIdx2.has(pos) && i.name.startsWith(exp.name.slice(0, 6)))
+      expect(idx, `articolo "${exp.name}" non trovato`).toBeGreaterThanOrEqual(0)
+      if (idx >= 0) {
+        usedIdx2.add(idx)
+        expect(result.items[idx].price).toBe(assertPrice)
+      }
+    })
   })
 })
 

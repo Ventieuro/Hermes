@@ -157,6 +157,19 @@ export function parseReceiptText(rawText: string): ParsedReceipt {
       }
     }
 
+    // ── Riga TOTALE (controlla PRIMA di skipKw) ──────────
+    // Necessario perché "IMPORTO PAGATO" e simili contengono parole
+    // presenti in skipKw (PAGATO) ma devono aggiornare il totale.
+    const earlyMatch = line.match(priceRegex)
+    if (earlyMatch && totalKw.test(line)) {
+      const earlyPrice = parseFloat(parseFloat(earlyMatch[1].replace(',', '.')).toFixed(2))
+      if (!isNaN(earlyPrice) && earlyPrice > 0 && earlyPrice <= 9999) {
+        if (total === null || earlyPrice > total) total = earlyPrice
+      }
+      pendingQty = undefined; pendingUnitPrice = undefined
+      continue
+    }
+
     if (skipKw.test(line)) { pendingQty = undefined; pendingUnitPrice = undefined; continue }
 
     // ── Riga moltiplicatore "N × prezzo_unitario" ──
