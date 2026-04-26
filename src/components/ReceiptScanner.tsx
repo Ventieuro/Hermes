@@ -385,7 +385,6 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         padding: '16px',
       }}
-      onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
       <div
         style={{
