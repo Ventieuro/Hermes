@@ -157,7 +157,8 @@ interface ReceiptScannerProps {
 function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
   const [state, dispatch] = useReducer(scanReducer, STATO_INIZIALE)
   const [fotoLightbox, setFotoLightbox] = useState<number | null>(null)
-  const [fotoUrls, setFotoUrls] = useState<string[]>([])
+  // Cache URL oggetti per file: creazione sincrona → zero render extra
+  const urlCacheRef = useRef<Map<File, string>>(new Map())
   const fileInputRef = useRef<HTMLInputElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
@@ -196,13 +197,24 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
     return () => { streamRef.current?.getTracks().forEach(t => t.stop()) }
   }, [])
 
-  // ── Object URL stabili per anteprime foto ─────────
-  // Crea una sola volta per file, revoca al cambio array
+  // ── Revoca URL per file rimossi ───────────────────
   useEffect(() => {
-    const urls = state.foto.map(f => URL.createObjectURL(f))
-    setFotoUrls(urls)
-    return () => urls.forEach(u => URL.revokeObjectURL(u))
+    const cache = urlCacheRef.current
+    for (const [file, url] of cache) {
+      if (!state.foto.includes(file)) {
+        URL.revokeObjectURL(url)
+        cache.delete(file)
+      }
+    }
   }, [state.foto])
+
+  /** Restituisce URL stabile per una foto (la crea solo la prima volta) */
+  function getFotoUrl(file: File): string {
+    if (!urlCacheRef.current.has(file)) {
+      urlCacheRef.current.set(file, URL.createObjectURL(file))
+    }
+    return urlCacheRef.current.get(file)!
+  }
 
   // ── Apri fotocamera (o fallback al file picker) ──────
   function aprireCamera() {
@@ -324,9 +336,9 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
   // ─────────────────────────────────────────────────────
   // LIGHTBOX foto
   // ─────────────────────────────────────────────────────
-  if (fotoLightbox !== null && fotoUrls[fotoLightbox]) {
+  if (fotoLightbox !== null && state.foto[fotoLightbox]) {
     const file = state.foto[fotoLightbox]
-    const objectUrl = fotoUrls[fotoLightbox]
+    const objectUrl = getFotoUrl(file)
     return (
       <div
         onClick={() => setFotoLightbox(null)}
@@ -489,7 +501,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
               {state.foto.length > 0 && (
                 <div className="grid grid-cols-3 gap-2">
                   {state.foto.map((file, idx) => {
-                    const objectUrl = fotoUrls[idx] ?? ''
+                    const objectUrl = getFotoUrl(file)
                     return (
                     <div key={idx} style={{ position: 'relative', borderRadius: '10px', overflow: 'hidden', border: '1px solid var(--border)' }}>
                       <img
@@ -633,7 +645,7 @@ function ReceiptScanner({ onClose, onDone }: ReceiptScannerProps) {
               {state.foto.length > 0 && (
                 <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
                   {state.foto.map((file, idx) => {
-                    const objectUrl = fotoUrls[idx] ?? ''
+                    const objectUrl = getFotoUrl(file)
                     return (
                       <div key={idx} style={{ position: 'relative', flexShrink: 0, borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border)', width: '72px', height: '72px' }}>
                         <img
