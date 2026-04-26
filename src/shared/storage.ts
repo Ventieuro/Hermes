@@ -115,6 +115,13 @@ export async function initPersistentStorage(): Promise<void> {
   indexedDbReady = true
 }
 
+/** Resetta la cache in-memory. Usato nei test per isolare i test tra loro. */
+export function clearStorageCache() {
+  storageCache.clear()
+  indexedDbReady = false
+  storageEngine = 'localStorage'
+}
+
 function getManagedItem(key: ManagedKey): string | null {
   if (storageCache.has(key)) return storageCache.get(key) ?? null
   const fallback = localStorage.getItem(key)

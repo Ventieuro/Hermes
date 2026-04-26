@@ -6,6 +6,7 @@ import {
   updateTransaction,
   getTransactionsInPeriod,
   generateId,
+  clearStorageCache,
 } from '../shared/storage'
 import type { Transaction } from '../shared/types'
 
@@ -26,6 +27,7 @@ function makeTx(overrides: Partial<Transaction> = {}): Transaction {
 describe('storage.ts', () => {
   beforeEach(() => {
     localStorage.clear()
+    clearStorageCache()
   })
 
   describe('generateId', () => {

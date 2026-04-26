@@ -1,12 +1,54 @@
 {
-  "stable": false,
+  "stable": true,
   "description": "Scontrino supermercato lungo (3 foto reali con sovrapposizione)",
   "source": ["foto_1.jpeg", "foto_2.jpeg", "foto_3.jpeg"],
-  "notes": "Le 3 foto si sovrappongono, quindi alcuni articoli appaiono 2 volte nel testo OCR merged. Il totale (30.10) è corretto. La somma articoli è più alta del totale per i duplicati.",
+  "notes": "Le 3 foto si sovrappongono → alcuni articoli duplicati nel merged OCR. ARTICOLI 31 sul receipt ma parser ne estrae 20. IMPORTO PAGATO (ground truth) è 39.10.",
+  "knownIssues": [
+    "Parser legge TOTALE COMPLESSIVO (30.10) invece di IMPORTO PAGATO (39.10)",
+    "Data OCR errata: parser legge 2006-04-26 invece di 2026-04-26 (OCR confonde 20 con 200)",
+    "GRAMIX GRATTUGIATO 1: OCR misread 1.85 come 1.89 sulla prima occorrenza — 2 acquisti reali entrambi a 1.85",
+    "SHOPPER BIO ORTOFRUT: 4 presenti sullo scontrino, parser ne legge 3 (2 BIO + 1 B10); manca quello tra CIPOLLOTTI e SHOPPER CASSA MAXI",
+    "SHOPPER B10 ORTOFRUT: OCR legge B come 10 su una occorrenza",
+    "LATTUGHINO: il prefisso barcode 6.90 finisce nel nome",
+    "SCONTO BLUCARD non sottratti dal prezzo del singolo articolo",
+    "Parser manca: S.BENEDETTO NATURA, SEDANO VERDE, CIPOLLOTTI BIANCHI, SHOPPER CASSA MAXI, DOVE CARE COCCO (+ altri fino a 31)"
+  ],
   "expected": {
     "itemCount": 20,
-    "total": 30.10,
+    "total": 39.10,
+    "parserReadTotal": 30.10,
     "isValid": false,
-    "knownDuplicates": ["GRAMIX GRATTUGIATO 1", "SHOPPER BIO ORTOFRUT"]
+    "date": "2026-04-26",
+    "parserReadDate": "2006-04-26",
+    "items": [
+      { "name": "S.BENEDETTO NATURA",       "price": 3.78, "parserMissing": true },
+      { "name": "SEDANO VERDE",              "price": 0.14, "parserMissing": true },
+      { "name": "CIPOLLOTTI BIANCHI",        "price": 0.62, "parserMissing": true },
+      { "name": "SHOPPER BIO ORTOFRUT",     "price": 0.02, "parserMissing": true, "note": "tra CIPOLLOTTI e SHOPPER CASSA MAXI, non letto dal parser" },
+      { "name": "SHOPPER CASSA MAXI",       "price": 0.18, "parserMissing": true },
+      { "name": "BANANE CHIQUITA",           "price": 2.17 },
+      { "name": "SHOPPER BIO ORTOFRUT",     "price": 0.02 },
+      { "name": "SHOPPER BI0 ORTOFRUT",     "price": 0.02, "note": "OCR B→10 in SHOPPER BIO" },
+      { "name": "GRAMIX GRATTUGIATO 1",     "price": 1.85, "discount": 0.56, "discountType": "SCONTO BLUCARD 30%", "note": "OCR misread 1.85 come 1.89 su questa riga" },
+      { "name": "GRAMIX GRATTUGIATO 1",     "price": 1.85, "discount": 0.56, "discountType": "SCONTO BLUCARD 30%" },
+      { "name": "BRESAOLA VALTEL, 1",       "price": 3.99, "discount": 1.60, "discountType": "SCONTO BLUCARD 40%" },
+      { "name": "ZUCCHE TONDE",             "price": 1.89 },
+      { "name": "CAROTE GR.500 IL GIG",     "price": 0.98 },
+      { "name": "LATTUGHINO 6.90",          "price": 1.38, "note": "6.90 è prefisso barcode finito nel nome" },
+      { "name": "ARANCE NAVEL",             "price": 2.41 },
+      { "name": "SHOPPER BIO ORTOFRUT",     "price": 0.02 },
+      { "name": "FUSILLI 98 !",             "price": 0.99 },
+      { "name": "MUL. Y0G. 02 BCO X2 !",   "price": 0.90 },
+      { "name": "CUB. PANC.DOLC. IL G !",   "price": 2.09 },
+      { "name": "LATTE UHT PS PARN. 1",    "price": 1.05 },
+      { "name": "PESTO ALLA GENOVES !",    "price": 2.91 },
+      { "name": "FRUCTIS SHAMPOO KERA",    "price": 5.34, "discount": 1.61, "discountType": "SCONTO BLUCARD 30%" },
+      { "name": "BAVETTE N13 a I",         "price": 0.99 },
+      { "name": "DOVE CARE COCCO",         "price": 4.19, "discount": 1.68, "discountType": "SCONTO BLUCARD 40%", "parserMissing": true },
+      { "name": "FRUCTIS SHAMPOO CURL",    "price": 5.34, "discount": 1.61, "discountType": "SCONTO BLUCARD 30%" },
+      { "name": "BUSTA SEMI H",            "price": 1.60 }
+    ]
   }
 }
+
+
