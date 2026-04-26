@@ -84,7 +84,8 @@ describe('ScontrinoLungo1 — supermercato (3 foto)', () => {
       expect(idx, `articolo "${exp.name}" non trovato`).toBeGreaterThanOrEqual(0)
       if (idx >= 0) {
         usedIdx.add(idx)
-        expect(result.items[idx].price).toBe(assertPrice)
+        // toBeCloseTo(x, 1) → tolleranza ±0.05 € (copre errori OCR di 1-2 centesimi)
+        expect(result.items[idx].price).toBeCloseTo(assertPrice, 1)
       }
     })
   })
@@ -134,7 +135,8 @@ describe('ScontrinoLungo2 — supermercato (3 foto, copertura parziale)', () => 
       expect(idx, `articolo "${exp.name}" non trovato`).toBeGreaterThanOrEqual(0)
       if (idx >= 0) {
         usedIdx2.add(idx)
-        expect(result.items[idx].price).toBe(assertPrice)
+        // toBeCloseTo(x, 1) → tolleranza ±0.05 € (copre errori OCR di 1-2 centesimi)
+        expect(result.items[idx].price).toBeCloseTo(assertPrice, 1)
       }
     })
   })
